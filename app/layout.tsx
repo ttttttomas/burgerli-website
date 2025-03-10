@@ -3,8 +3,16 @@ import { Geist, Geist_Mono, Roboto, Inter, Pattaya } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Logo from './components/Logo'
 
+export const geist = Geist({
+  variable: "--font-geist",
+  subsets: ["latin"]
+})
+
+export const geistMono = Geist_Mono({
+  variable: "--font-geist_mono",
+  subsets: ["latin"]
+})
 
 export const roboto = Roboto({
   variable: "--font-roboto",

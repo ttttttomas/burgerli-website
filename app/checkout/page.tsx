@@ -74,8 +74,8 @@ export default function CheckoutPage() {
                     <path d="M150.299 33.0318C150.805 33.5319 151.135 32.2134 151.659 31.9699C154.492 30.6612 154.376 33.3305 154.835 33.6812C155.146 33.9183 155.91 32.6616 157.335 33.2786C159.132 34.0547 158.122 36.3441 158.39 36.6071C158.588 36.7987 161.512 35.9999 161.903 38.1464C162.476 41.2996 157.406 42.0173 157.419 38.2308C155.826 39.624 153.693 38.8121 153.858 36.6071C151.876 38.1237 149.856 36.2889 150.296 34.0092C147.635 36.3506 145.799 31.8335 148.201 31.4016C150.478 30.9957 150.015 32.746 150.303 33.035L150.299 33.0318Z" fill="#FDFEFE"/>
                     </g>
                     <defs>
-                    <filter id="filter0_d_1042_8859" x="0" y="0" width="572" height="74" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <filter id="filter0_d_1042_8859" x="0" y="0" width="572" height="74" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                     <feOffset dx="6" dy="8"/>
                     <feGaussianBlur stdDeviation="3"/>
@@ -99,8 +99,8 @@ export default function CheckoutPage() {
                     <path d="M150.299 33.0318C150.805 33.5319 151.135 32.2134 151.659 31.9699C154.492 30.6612 154.376 33.3305 154.835 33.6812C155.146 33.9183 155.91 32.6616 157.335 33.2786C159.132 34.0547 158.122 36.3441 158.39 36.6071C158.588 36.7987 161.512 35.9999 161.903 38.1464C162.476 41.2996 157.406 42.0173 157.419 38.2308C155.826 39.624 153.693 38.8121 153.858 36.6071C151.876 38.1237 149.856 36.2889 150.296 34.0092C147.635 36.3506 145.799 31.8335 148.201 31.4016C150.478 30.9957 150.015 32.746 150.303 33.035L150.299 33.0318Z" fill="#FDFEFE"/>
                     </g>
                     <defs>
-                    <filter id="filter0_d_1042_8859" x="0" y="0" width="572" height="74" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <filter id="filter0_d_1042_8859" x="0" y="0" width="572" height="74" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                     <feOffset dx="6" dy="8"/>
                     <feGaussianBlur stdDeviation="3"/>
@@ -124,8 +124,8 @@ export default function CheckoutPage() {
                     <path d="M150.299 33.0318C150.805 33.5319 151.135 32.2134 151.659 31.9699C154.492 30.6612 154.376 33.3305 154.835 33.6812C155.146 33.9183 155.91 32.6616 157.335 33.2786C159.132 34.0547 158.122 36.3441 158.39 36.6071C158.588 36.7987 161.512 35.9999 161.903 38.1464C162.476 41.2996 157.406 42.0173 157.419 38.2308C155.826 39.624 153.693 38.8121 153.858 36.6071C151.876 38.1237 149.856 36.2889 150.296 34.0092C147.635 36.3506 145.799 31.8335 148.201 31.4016C150.478 30.9957 150.015 32.746 150.303 33.035L150.299 33.0318Z" fill="#FDFEFE"/>
                     </g>
                     <defs>
-                    <filter id="filter0_d_1042_8859" x="0" y="0" width="572" height="74" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <filter id="filter0_d_1042_8859" x="0" y="0" width="572" height="74" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                    <feFlood floodOpacity="0" result="BackgroundImageFix"/>
                     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
                     <feOffset dx="6" dy="8"/>
                     <feGaussianBlur stdDeviation="3"/>

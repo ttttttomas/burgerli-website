@@ -1,5 +1,5 @@
 import Carrusel from './components/home/Carrusel';
-import Productos from './components/home/Productos'
+import SectionProductos from './components/home/SectionProductos'
 import Cart from './components/home/Cart'
 import Sucursales from './components/home/Sucursales'
 import Zonas from './components/home/Zonas';
@@ -14,7 +14,7 @@ export default function Home() {
       className='flex justify-between my-10 mx-5 gap-10 rounded-xl' 
       id="tienda"
       >
-          <Productos />
+          <SectionProductos />
           <Cart />
       </section>
       <section id="sucursales">

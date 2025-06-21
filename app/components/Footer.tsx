@@ -32,7 +32,12 @@ export default function Header() {
             </ul>
             <div className="flex justify-between items-center bg-[#222222] text-white px-10 py-1">
                 <p className={roboto.className}>Todos los derechos reservados 2025 © Burgerli</p>
-                <p className={roboto.className}>Desarrollado por: iWeb</p>
+                <div className="flex items-center gap-2">
+                <p className={roboto.className}>Desarrollado por:</p>
+                <Link target="_blank" href='https://www.iwebtecnology.com'>
+                    <img src="/iweb.png" alt="iWeb" />
+                </Link>
+                </div>
             </div>
         </footer>
     )

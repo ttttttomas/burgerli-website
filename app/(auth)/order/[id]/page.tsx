@@ -10,7 +10,7 @@ import Moto from "@/app/components/icons/Moto";
 import Link from "next/link";
 
 export default function OrderIDPage() {
-  const [currentStep, setCurrentStep] = useState(-1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [steps, setSteps] = useState([
     {
       label: "Pedido confirmado",
@@ -20,7 +20,7 @@ export default function OrderIDPage() {
     {
       label: "Pedido en preparacion",
       icon: <Order2 />,
-      active: false,
+      active: true,
     },
     {
       label: "Pedido en camino",

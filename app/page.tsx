@@ -3,6 +3,7 @@ import SectionProductos from './components/home/SectionProductos'
 import Cart from './components/home/Cart'
 import Sucursales from './components/home/Sucursales'
 import Zonas from './components/home/Zonas';
+import CartMobile from './components/home/CartMobile';
 
 export default function Home() {
   return (
@@ -16,6 +17,9 @@ export default function Home() {
       >
           <SectionProductos />
           <Cart />
+          {/* <section className='xl:hidden fixed bottom-0 z-30 w-full pt-28 h-min cart text-white rounded-2xl bg-primary py-3 px-5'>
+            <CartMobile />
+          </section> */}
       </section>
       <section id="sucursales">
           <Sucursales />

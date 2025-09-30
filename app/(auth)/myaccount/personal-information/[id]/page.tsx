@@ -2,8 +2,8 @@
 import Ubicacion from "@/app/components/icons/Ubicacion"
 // import {inter,pattaya} from "@/app/layout"
 import { Inter, Pattaya } from "next/font/google";
-import { UsersClient } from "@/types"
-import axios from "axios";
+// import { UsersClient } from "@/types"
+// import axios from "axios";
 
 const inter = Inter({
   variable: "--font-inter",

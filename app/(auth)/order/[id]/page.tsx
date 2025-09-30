@@ -70,8 +70,7 @@ const setStep = (idx: number) => {
   const clamped = Math.max(0, Math.min(idx, STATUS_BY_STEP.length - 1));
   setOrder(o => ({ ...o, status: STATUS_BY_STEP[clamped] }));
 };
-// const next = () => setStep(currentStep + 1);
-// const prev = () => setStep(currentStep - 1);
+// 
 
   return (
     <main className="w-full flex bg-[#FCEDCC] antialiased">

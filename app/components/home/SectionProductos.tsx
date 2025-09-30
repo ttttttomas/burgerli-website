@@ -1,11 +1,16 @@
 'use client'
-import { pattaya } from "@/app/layout";
+import { Pattaya } from "next/font/google";
 import "./Productos.css";
 import ModalProducts from "../ModalProducts";
 import useProducts from "@/app/hooks/useProducts";
 import { Burgers } from "@/types";
 import { useEffect, useState } from "react";
 
+const pattaya = Pattaya({
+  weight: ["400"],
+  variable: "--font-pattaya",
+  subsets: ["latin"],
+});
 
 export default function Productos() {
   const [burgers, setBurgers] = useState<Burgers[]>([]);

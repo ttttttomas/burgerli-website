@@ -5,6 +5,7 @@ import Sucursales from './components/home/Sucursales'
 import Zonas from './components/home/Zonas';
 
 export default function Home() {
+
   return (
     <main className='w-full'>
       <section id="carrusel">

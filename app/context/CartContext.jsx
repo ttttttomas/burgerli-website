@@ -1,68 +1,78 @@
 'use client'
 import { createContext, useContext, useState } from 'react'
+import { toast } from 'sonner'
 
 export const CartContext = createContext()
 
 export const CartContextProvider = ({children}) => {
-  const [cart, setCart] = useState([
-    {
-      id: "1",
-      name: "Hamburguesa triple queso",
-      description: "Extra: Sin, Papas",
-      price: 10,
-      quantity: 1,
-      image: "https://via.placeholder.com/150",
-      category: "general",
-    }
-  ])
+  // const [cart, setCart] = useState<Cart>([])
+  const [cartProducts, setCartProducts] = useState([])
 
-      const addToCart = (item) => {
-      const productFound = cart.findIndex((product) => product.id === item.id)
-      
-      if (productFound >= 0) {
-        const newCart = structuredClone(cart)
-        newCart[productFound].quantity += 1
-        console.log(newCart)
-        setCart(newCart)
+  const addToCart = (item) => {
+    const productFound = cartProducts.findIndex((product) => product.price === item.price)
+    
+    if (productFound >= 0) {
+      const newCart = structuredClone(cartProducts)
+      newCart[productFound].quantity += 1
+      console.log(newCart)
+      setCartProducts(newCart)
+    }
+    setCartProducts(prevState => ([
+      ...prevState,
+      {
+        ...item,
+        quantity : 1
       }
-      setCart(prevState => ([
-        ...prevState,
-        {
-          ...item,
-          quantity : 1
-        }
-      ]))
+    ]))
+    toast.success("Producto agregado al carrito")
     };
 
-    const removeFromCart = (item) => {
-     setCart(prevState => prevState.filter((product) => product.id !== item.id))
-    }
-
-    const addQuantity = (item) => {
-      const productFound = cart.findIndex((product) => product.id === item.id)
+  const removeFromCart = (item) => {
+      setCartProducts(prevState => prevState.filter((product) => product.price !== item.price))
+      toast.error("Producto eliminado del carrito")
+  }
+  const addQuantity = (item) => {
+      const productFound = cartProducts.findIndex((product) => product.price === item.price)
+      
       if (productFound >= 0) {
-        const newCart = structuredClone(cart)
+        const newCart = structuredClone(cartProducts)
         newCart[productFound].quantity += 1
-        return setCart(newCart)
+        return setCartProducts(newCart)
       }
-    }
+  }
+
+    const removeQuantity = (item) => {
+      const productIndex = cartProducts.findIndex((product) => product.price === item.price);
+
+      if (productIndex >= 0) {
+        const product = cartProducts[productIndex];
+      
+        // 👇 si la cantidad es 0 o 1, no seguimos
+        if (product.quantity <= 1) return;
+      
+        const newCart = structuredClone(cartProducts);
+        newCart[productIndex].quantity -= 1;
+        setCartProducts(newCart);
+      }
+};
 
     const resetCart = () => {
-      setCart([])
+      setCartProducts([])
     }
 
     const totalPricing = () => {
-      return cart.reduce((total, product) => total + product.price * product.quantity, 0)
+      return cartProducts.reduce((total, product) => total + product.price * product.quantity, 0)
     }
 
   return (
     <CartContext.Provider value={
         {
-         cart, 
-         setCart,
+         cartProducts, 
+         setCartProducts,
          addToCart,
          removeFromCart,
          addQuantity,
+         removeQuantity,
          resetCart,
          totalPricing
         }

@@ -1,151 +1,104 @@
 "use client";
 import { useState } from "react";
 import Card from "./Card";
+import { useCart } from "../context/CartContext";
 
-const ModalProducts = () => {
+
+
+const ModalProducts = ({product}) => {
+  const {addToCart} = useCart();
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState(null);
-  const [selectedExtras, setSelectedExtras] = useState([]);
-  const [notes, setNotes] = useState("");
+  const [size, setSize] = useState("Simple");
+  // const [extras, setExtras] = useState([]);
+  const [without, setWithout] = useState([]);
+  const [totalPrice] = useState(Number(product.price));
+  const [fries, setFries] = useState("Cheddar");
+  const friesList = ["Cheddar","Cheddar y Panceta","Papas Burgerli"];
+  
 
-  const products = [
-    {
-      id: 1,
-      name: "Hamburguesa Clásica",
-      description:
-        "Deliciosa hamburguesa con carne 100% res, lechuga, tomate y nuestra salsa especial",
-      price: 8.99,
-      image:
-        "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-      sizes: [
-        { id: "s", name: "Pequeña", price: 0 },
-        { id: "m", name: "Mediana", price: 2.0 },
-        { id: "l", name: "Grande", price: 3.5 },
-      ],
-      extras: [
-        { id: "cheese", name: "Queso extra", price: 1.5 },
-        { id: "bacon", name: "Tocino", price: 2.0 },
-        { id: "avocado", name: "Aguacate", price: 1.75 },
-        { id: "egg", name: "Huevo", price: 1.0 },
-      ],
-    },
-    {
-      id: 2,
-      name: "Pizza Margarita",
-      description:
-        "Pizza tradicional con salsa de tomate, mozzarella fresca y albahaca",
-      price: 12.99,
-      image:
-        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-      sizes: [
-        { id: "s", name: "Personal", price: 0 },
-        { id: "m", name: "Mediana", price: 3.0 },
-        { id: "l", name: "Familiar", price: 5.0 },
-      ],
-      extras: [
-        { id: "pepperoni", name: "Pepperoni", price: 2.5 },
-        { id: "mushrooms", name: "Champiñones", price: 1.75 },
-        { id: "olives", name: "Aceitunas", price: 1.5 },
-        { id: "extra_cheese", name: "Doble queso", price: 2.0 },
-      ],
-    },
-    {
-      id: 3,
-      name: "Ensalada César",
-      description:
-        "Fresca ensalada con pollo, croutones, parmesano y aderezo césar",
-      price: 9.5,
-      image:
-        "https://images.unsplash.com/photo-1546793665-c74683f339c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-      sizes: [
-        { id: "s", name: "Pequeña", price: 0 },
-        { id: "m", name: "Mediana", price: 1.5 },
-        { id: "l", name: "Grande", price: 2.5 },
-      ],
-      extras: [
-        { id: "shrimp", name: "Camarones", price: 3.0 },
-        { id: "avocado", name: "Aguacate", price: 1.75 },
-        { id: "bacon", name: "Tocino", price: 2.0 },
-        { id: "egg", name: "Huevo duro", price: 1.0 },
-      ],
-    },
-  ];
+  const sizePrices = { Simple: 0, Doble: 200, Triple: 300 };
+  const extraPrice = 100; 
+
 
   const openModal = (product) => {
     setSelectedProduct(product);
-    setQuantity(1);
-    setSelectedSize(product.sizes[0]);
-    setSelectedExtras([]);
-    setNotes("");
   };
 
   const closeModal = () => {
     setSelectedProduct(null);
+  }
+
+  // const handleExtraToggle = (extra, checked) => {
+  //   setExtras((prev) => {
+  //     if (checked) {
+  //       // agrega sólo si no está
+  //       if (!prev.includes(extra)) return [...prev, extra];
+  //       return prev;
+  //     } else {
+  //       // remover
+  //       return prev.filter((e) => e !== extra);
+  //     }
+  //   });
+
+  //   // si lo marcás como extra, no puede estar marcado en "sin"
+  //   setWithout((prev) => prev.filter((i) => i !== extra));
+  // };
+  
+  const handleSinToggle = (ingredient, checked) => {
+    setWithout((prev) => {
+      if (checked) {
+        if (!prev.includes(ingredient)) return [...prev, ingredient];
+        return prev;
+      } else {
+        return prev.filter((i) => i !== ingredient);
+      }
+    });
+
+    // si lo marcás "sin", lo saca de extras
+    // setExtras((prev) => prev.filter((e) => e !== ingredient));
+  };
+  const handleFriesToggle = (ingredient) => {
+    setFries(() => ingredient);
+    console.log(fries);
+    
   };
 
-  const handleExtraToggle = (extra) => {
-    if (selectedExtras.some((e) => e.id === extra.id)) {
-      setSelectedExtras(selectedExtras.filter((e) => e.id !== extra.id));
-    } else {
-      setSelectedExtras([...selectedExtras, extra]);
-    }
-  };
-  const handleSinToggle = (sin) => {
-    if (selectedExtras.some((e) => e.id === sin.id)) {
-      setSelectedExtras(selectedExtras.filter((e) => e.id !== sin.id));
-    } else {
-      setSelectedExtras([...selectedExtras, sin]);
-    }
-  };
+  // const extrasAddition = extras.reduce((sum) => sum + extraPrice, 0);
 
-  const calculateTotal = () => {
-    if (!selectedProduct) return 0;
-
-    const sizePrice = selectedSize ? selectedSize.price : 0;
-    const extrasPrice = selectedExtras.reduce(
-      (sum, extra) => sum + extra.price,
-      0
-    );
-
-    return (selectedProduct.price + sizePrice + extrasPrice) * quantity;
-  };
+  const sizeAddition = sizePrices[size] ?? 0;
+  const finalPrice = totalPrice + sizeAddition // + extrasAddition;
 
   const handleAddToCart = () => {
-    const order = {
-      product: selectedProduct,
-      quantity,
-      size: selectedSize,
-      extras: selectedExtras,
-      notes,
-      total: calculateTotal(),
-    };
-
-    console.log(
-      `Pedido agregado:\n${order.product.name} x${order.quantity}\nTamaño: ${
-        order.size.name
-      }\nExtras: ${
-        order.extras.length > 0
-          ? order.extras.map((e) => e.name).join(", ")
-          : "Ninguno"
-      }\nNotas: ${order.notes || "Ninguna"}\nTotal: $${order.total.toFixed(2)}`
-    );
+    const productReady = {
+      name: selectedProduct.name,
+      quantity: 1,
+      // extras: extras,
+      sin: without,
+      fries: fries,
+      price: finalPrice,
+      size: size,
+    }
+    addToCart(productReady);
+    
     closeModal();
   };
 
   return (
     <section>
-      <Card onClick={() => openModal(products[0])} />
+      <Card product={product} onClick={(e) => {
+        e.stopPropagation();
+        openModal(product);
+      }} />
 
       {/* Modal */}
       {selectedProduct && (
-        <section className="fixed rounded-4xl inset-0 h-screen z-50 flex items-center justify-center p-4 modal-overlay">
+        <section  className="fixed rounded-4xl inset-0 h-screen z-50 flex items-center justify-center p-4 modal-overlay">
           <div
             className="rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative bg-primary">
-              <div className="">
+              <div>
                 <button
                   onClick={closeModal}
                   className="absolute top-4 cursor-pointer right-4 rounded-full text-black font-extrabold text-3xl transition-colors"
@@ -155,9 +108,9 @@ const ModalProducts = () => {
 
                 <div className="bg-[#FCEDCC] py-5 overflow">
                   <img
-                    src={selectedProduct.image}
+                    src={selectedProduct.main_image}
                     alt={selectedProduct.name}
-                    className="size-80 mx-auto rounded-xl object-cover"
+                    className="h-96 mx-auto rounded-xl object-cover"
                   />
                 </div>
 
@@ -177,36 +130,59 @@ const ModalProducts = () => {
                   </h3>
                   <hr className="border-tertiary border-[1px]" />
                   <div className="flex flex-col justify-between items-start mt-2 gap-2">
-                    {selectedProduct.sizes.map((size) => (
-                      <div className="flex justify-between text-white font-light items-center w-full gap-2">
-                        <p>{size.name}</p>
+                    {selectedProduct.size_list.map((s) => (
+                      <div key={s} className="flex justify-between text-white font-light items-center w-full gap-2">
+                        <p>{s}</p>
                         <input
-                          onClick={() => setSelectedSize(size)}
                           type="radio"
-                          name="radio"
-                          id=""
+                          name="size"
+                          value={s}
+                          checked={size === s}
+                          onChange={() => setSize(s)}
                         />
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Extras */}
-                {selectedProduct.extras.length > 0 && (
+                {/* Extras
+                {selectedProduct.ingredients_list.length > 0 && (
                   <div className="mb-6 px-6">
                     <h3 className="text-lg mt-2 text-tertiary text-tert font-semibold">
                       Extras
                     </h3>
                     <hr className="border-tertiary my-2 border-[1px]" />
                     <div className="flex flex-col justify-between text-white font-light items-center w-full gap-2">
-                      {selectedProduct.extras.map((extra) => (
-                        <div className="flex justify-between text-white font-light items-center w-full gap-2">
-                          <p>{extra.name}</p>
+                      {selectedProduct.ingredients_list.map((extra) => (
+                        <div key={extra} className="flex justify-between text-white font-light items-center w-full gap-2">
+                          <p>{extra}</p>
                           <input
-                            onClick={() => handleExtraToggle(extra)}
                             type="checkbox"
-                            name="radio"
-                            id=""
+                            checked={extras.includes(extra)}
+                            onChange={(e) => handleExtraToggle(extra, e.target.value)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )} */}
+
+                {/* Sin */}
+                {selectedProduct.ingredients_list.length > 0 && (
+                  <div className="mb-6 px-6">
+                    <h3 className="text-lg mt-2 text-tertiary text-tert font-semibold">
+                      Sin
+                    </h3>
+                    <hr className="border-tertiary my-2 border-[1px]" />
+                    <div className="flex flex-col justify-between text-white font-light items-center w-full gap-2">
+                      {selectedProduct.ingredients_list.map((sin) => (
+                        <div key={sin} className="flex justify-between text-white font-light items-center w-full gap-2">
+                          <p>{sin}</p>
+                          <input
+                            type="checkbox"
+                            checked={without.includes(sin)}
+                            onChange={(e) => handleSinToggle(sin, e.target.checked)}
+
                           />
                         </div>
                       ))}
@@ -214,22 +190,23 @@ const ModalProducts = () => {
                   </div>
                 )}
 
-                {/* Sin */}
-                {selectedProduct.extras.length > 0 && (
+                 {/* PAPAS */}
+                 {friesList.length > 0 && (
                   <div className="mb-6 px-6">
                     <h3 className="text-lg mt-2 text-tertiary text-tert font-semibold">
-                      Sin
+                      Papas fritas
                     </h3>
                     <hr className="border-tertiary my-2 border-[1px]" />
                     <div className="flex flex-col justify-between text-white font-light items-center w-full gap-2">
-                      {selectedProduct.extras.map((sin) => (
-                        <div className="flex justify-between text-white font-light items-center w-full gap-2">
-                          <p>{sin.name}</p>
+                      {friesList.map((f) => (
+                        <div key={f} className="flex justify-between text-white font-light items-center w-full gap-2">
+                          <p>{f}</p>
                           <input
-                            onClick={() => handleSinToggle(sin)}
-                            type="checkbox"
-                            name="radio"
-                            id=""
+                            name="fries"
+                            value={f}
+                            type="radio"
+                            onChange={(e) => handleFriesToggle(e.target.value)}
+
                           />
                         </div>
                       ))}
@@ -238,17 +215,16 @@ const ModalProducts = () => {
                 )}
 
                 {/* Botón de agregar y total */}
-                <div className="bg-[#FCEDCC] px-5 py-3">
+                <div onClick={handleAddToCart} className="bg-[#FCEDCC] px-5 py-3">
                   <div
-                    onClick={handleAddToCart}
+                    // onClick={handleAddToCart()}
                     className="bg-tertiary text-xl cursor-pointer flex text-black font-bold p-3 rounded-2xl justify-between items-center"
                   >
                     <p className="">Agregar al pedido</p>
                     <p
-                      onClick={handleAddToCart}
-                      className="rounded-lg font-bold transition-colors shadow-md"
+                      className="rounded-lg font-bold"
                     >
-                      Total: ${calculateTotal().toFixed(2)}
+                      Total: ${finalPrice.toLocaleString("es-AR")}
                     </p>
                   </div>
                 </div>

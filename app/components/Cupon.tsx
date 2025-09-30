@@ -4,7 +4,7 @@ import { useState } from "react";
 export default function Cupon() {
     const [cupon, setCupon] = useState('')
     const submitCupon = () => {
-        setCupon('')
+        setCupon('CUPON')
         // CONSULTA A LA BASE DE DATOS SI ESE CUPON EXISTE
         // SI EXISTE, APLICAR CUPON
         alert("Cupon aplicado")

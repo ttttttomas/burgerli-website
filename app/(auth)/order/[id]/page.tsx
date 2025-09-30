@@ -1,48 +1,82 @@
 "use client";
 // import Aside from "@/app/components/Aside";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Order1 from "@/app/components/icons/Order-1";
 import Order2 from "@/app/components/icons/Order-2";
 import Order3 from "@/app/components/icons/Order-3";
 import Order4 from "@/app/components/icons/Order-4";
 import Ubicacion from "@/app/components/icons/Ubicacion";
 import Moto from "@/app/components/icons/Moto";
-import { Orders } from "@/types";
+import { useCart } from "@/app/context/CartContext";
+// import { Orders } from "@/types";
+
+type OrderStatus = "confirmed" | "preparing" | "on_route" | "delivered";
+type Order = {
+  id: string;
+  status: OrderStatus;            // <- clave para mapear paso
+  createdAt?: string;
+  // ...otros campos de tu orden
+};
+
 
 export default function OrderIDPage() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [steps] = useState([
-    {
-      label: "Pedido confirmado",
-      icon: <Order1 />,
-      active: true,
-    },
-    {
-      label: "Pedido en preparacion",
-      icon: <Order2 />,
-      active: true,
-    },
-    {
-      label: "Pedido en camino",
-      icon: <Order3 />,
-      active: false,
-    },
-    {
-      label: "Pedido entregado",
-      icon: <Order4 />,
-      active: false,
-    },
-  ]);
-  const [order] = useState<Orders>(
-    {} as Orders
+  const {cart} = useCart();
+  const prevStatus = useRef<OrderStatus | null>(null);
+  console.log(cart);
+  
+   const steps = useMemo(
+    () => [
+      {
+        label: "Pedido confirmado",
+        icon: <Order1 />,
+      },
+      {
+        label: "Pedido en preparación",
+        icon: <Order2 />,
+      },
+      {
+        label: "Pedido en camino",
+        icon: <Order3 />,
+      },
+      {
+        label: "Pedido entregado",
+        icon: <Order4 />,
+      },
+    ],
+    []
   );
+const [order, setOrder] = useState<{ id: string; status: OrderStatus }>({
+  id: "demo",
+  status: "confirmed",
+});
 
-  useEffect(() => {
-    const handleChangeOrder = () => {
-      setCurrentStep((prev) => prev + 1);
-    };
-    handleChangeOrder();
-  }, [order]);
+const STEP_BY_STATUS: Record<OrderStatus, number> = {
+  confirmed: 0,
+  preparing: 1,
+  on_route: 2,
+  delivered: 3,
+};
+const STATUS_BY_STEP: OrderStatus[] = ["confirmed","preparing","on_route","delivered"];
+const currentStep = STEP_BY_STATUS[order.status] ?? 0;
+console.log(currentStep);
+
+
+// useEffect(() => {
+//     if (!order?.status) return;
+//     // Sólo actualiza si realmente cambió el status
+//     if (order.status !== prevStatus.current) {
+//       const idx = STEP_BY_STATUS[order.status] ?? 0;
+//       setCurrentStep(idx);
+//       prevStatus.current = order.status;
+//     }
+//   }, [order?.status]);
+// helpers para avanzar/retroceder o setear step
+const setStep = (idx: number) => {
+  const clamped = Math.max(0, Math.min(idx, STATUS_BY_STEP.length - 1));
+  setOrder(o => ({ ...o, status: STATUS_BY_STEP[clamped] }));
+};
+const next = () => setStep(currentStep + 1);
+const prev = () => setStep(currentStep - 1);
 
   return (
     <main className="w-full flex bg-[#FCEDCC] antialiased">
@@ -64,34 +98,34 @@ export default function OrderIDPage() {
           {/* LINEA HORIZONTAL */}
           <div className="absolute top-6 left-0 right-0 h-1 bg-[#5B524B] opacity-70 z-0" />
           {/* LINEA HORIZONTAL */}
-          {steps.map((step, index) => (
-            <div
-              key={index}
-              className={`relative z-10 flex flex-col items-center text-center w-1/4`}
-            >
-              <div
-                className={`p-2 rounded-full flex items-center justify-center mb-2
-                  ${
-                    step.active
-                      ? "bg-[#442915] w-12 h-12"
-                      : "bg-[#5B524B] w-10 h-10"
-                  }
-                  ${index === currentStep && "current-step"}
-                `}
-              >
-                <div>{step.icon}</div>
+          {steps.map((step, index) => {
+            const isActive = index <= currentStep;
+            const isCurrent = index === currentStep;
+             return (
+              <div key={step.label} className="flex flex-col items-center gap-2">
+                {/* Punto del timeline */}
+                <span
+                  className={[
+                    "p-2 rounded-full flex items-center justify-center mb-1 transition-all",
+                    isActive ? "bg-primary w-12 h-12" : "bg-[#5B524B] w-10 h-10 opacity-70",
+                    isCurrent ? "ring-2 ring-black/20 current-step" : "",
+                  ].join(" ")}
+                >
+                  {step.icon}
+                </span>
+
+                {/* Label */}
+                <span
+                  className={[
+                    "text-sm",
+                    isActive ? "text-black font-semibold" : "text-gray-500",
+                  ].join(" ")}
+                >
+                  {step.label}
+                </span>
               </div>
-              <span
-                className={`${
-                  step.active
-                    ? "text-black md:text-xl font-semibold"
-                    : "text-gray-500"
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <section className="flex flex-col md:flex-row p-16 gap-20 justify-between w-full items-start">
           <div className="md:w-1/2">

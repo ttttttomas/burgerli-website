@@ -1,11 +1,18 @@
 "use client";
-// import Cheddar from '../icons/Cheddar'
-import Delivery from "./Delivery";
-import Link from "next/link";
+import Ubicacion from "../icons/Ubicacion";
+
+import { useRouter } from "next/navigation";
 import Cupon from "../Cupon";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Inter, Pattaya } from "next/font/google";
 import CartResponsive from "../CartResponsive";
+import { useCart } from "@/app/context/CartContext";
+import { CartProduct } from "@/types";
+
+import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
+import checkIsOpen from "@/app/lib/CheckShopOpen";
+import { useSession } from "@/app/context/SessionContext";
+import { toast } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -19,109 +26,337 @@ const pattaya = Pattaya({
 });
 
 export default function Cart() {
+  const { session } = useSession();
+  const router = useRouter();
+  // MODAL
   const [open, setOpen] = useState(false);
-  
-  const cart = [
-    {
-      id: "1",
+  // DELIVERY STATES
+  const [addresses] = useState([
+    { id: "a1", label: "Casa", street: "Direccion falsa 1234" },
+    { id: "a2", label: "Trabajo", street: "Av. Siempre Viva 12" },
+  ]);
+  const [addressInput, setAddressInput] = useState("");
+  const [instructions, setInstructions] = useState("");
+  const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
+  const [sucursal, setSucursal] = useState<string>("Gerli");
+  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
+  const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    null
+  );
+  const [deliveryPricing, setDeliveryPricing] = useState(5000);
+  // TOTAL STATES
+  const [salePricing] = useState(0);
+  const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
+  const {
+    cartProducts,
+    removeFromCart,
+    addQuantity,
+    removeQuantity,
+    totalPricing,
+  } = useCart();
+
+  const handleAddressInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddressInput(e.target.value);
+  };
+
+  useEffect(() => {
+    if (mode === "pickup") {
+      setDeliveryPricing(0);
+    } else {
+      setDeliveryPricing(5000);
     }
-  ]
+  }, [mode, selectedAddressId]);
+
+  const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMode(e.target.value as "delivery" | "pickup");
+  };
+  //   const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const id = e.target.value || null;
+  //   setSelectedAddressId(id);
+  // };
+
+  const subTotal = totalPricing();
+
+  const selectedAddress = useMemo(
+    () => addresses.find((a) => a.id === selectedAddressId) ?? null,
+    [addresses, selectedAddressId]
+  );
+
+  useEffect(() => {
+    setTotalPricingCart(
+      totalPricing() + salePricing + deliveryPricing - salePricing
+    );
+  }, [deliveryPricing, totalPricing, salePricing]);
+
+  const handleContinue = async () => {
+    const draft = {
+      takeaway: isTakeAwayChecked,
+      products: cartProducts,
+      delivery_mode: mode,
+      fries: cartProducts.filter((p: any) => (p.fries?.length ?? 0) > 0).map((p: any) => p.fries).flat(),
+      address: selectedAddress || addressInput || null,
+      price: totalPricingCart,
+      deliveryPrice: deliveryPricing,
+      salePricing,
+      subTotal,
+      sin: cartProducts
+        .filter((p: any) => (p.sin?.length ?? 0) > 0)
+        .map((p: any) => p.sin)
+        .flat(),
+      // extras: cartProducts.filter((p: any) => (p.extras?.length ?? 0) > 0).map((p: any) => p.extras).flat(),
+      // cupon: cupon,
+      local: sucursal,
+      order_notes: instructions,
+    };
+
+    if(!checkIsOpen()){
+      toast.error("El tiempo de apertura de la tienda no es válido");
+      return;
+    }
+
+    if (isTakeAwayChecked) {
+      // TakeAway: no necesita dirección
+      saveCheckoutDraft(draft);
+      router.push("/checkout");
+    
+    } else if (isDeliveryChecked) {
+      // Delivery: necesita dirección válida
+      if (selectedAddress || addressInput) {
+        saveCheckoutDraft(draft);
+        router.push("/checkout");
+      } else {
+        toast.error("Por favor, indique una dirección de entrega");
+      }
+    
+    } else {
+      // Si no eligió ni delivery ni takeaway
+      toast.error("Por favor, seleccione el modo de entrega");
+    }
+  };
   return (
     <>
       <div className="md:hidden fixed inset-x-0 bottom-0 z-40 px-4 pb-4 pointer-events-none">
-        {cart.length > 0 && <div className="w-full">
-          <button
-            onClick={() => {
-              setOpen(true);
-            }}
-            className="pointer-events-auto cursor-pointer w-full bg-[#c77a1a] text-black rounded-2xl shadow-2xl px-4 py-4 flex items-center justify-between text-base font-semibold">
-            <span className="flex items-center gap-3">
-              Ver pedido
-              {/* ({items.reduce((a, i) => a + i.qty, 0)}) */}
-            </span>
-            <span className="flex items-center gap-2">
-              {/* ${total.toLocaleString("es-AR")} <ChevronUp className="w-5 h-5" /> */}
-            </span>
-          </button>
-        </div>}
+        {cartProducts.length > 0 && (
+          <div className="w-full">
+            <button
+              onClick={() => {
+                setOpen(true);
+              }}
+              className="pointer-events-auto cursor-pointer w-full bg-[#c77a1a] text-black rounded-2xl shadow-2xl px-4 py-4 flex items-center justify-between text-base font-semibold"
+            >
+              <span className="flex items-center gap-3">
+                Ver pedido ({cartProducts.length})
+              </span>
+              <span className="flex items-center gap-2">
+                ${totalPricing().toLocaleString("es-AR")}
+              </span>
+            </button>
+          </div>
+        )}
       </div>
       {open && <CartResponsive closed={() => setOpen(false)} />}
 
       <section
-        className={`${inter.className} w-[450px] md:block hidden pt-28 h-min cart text-white rounded-2xl bg-primary py-3 px-5`}>
+        className={`${inter.className} w-[450px] md:block hidden pt-28 h-min cart text-white rounded-2xl bg-primary py-3 px-5`}
+      >
         <h2 className={`${pattaya.className} text-2xl`}>Mi pedido</h2>
         <ul className="flex mt-6 flex-col gap-2">
-          <li className="flex justify-between items-start">
-            <div className="flex flex-col items-start gap-1">
-              <p className="font-bold">Hamburguesa triple queso</p>
-              <small>Extra:</small>
-              <small>Sin:</small>
-              <small>Papas:</small>
-              <button className="underline cursor-pointer text-sm">
-                Eliminar
-              </button>
-            </div>
-            <div className="flex flex-col gap-3 items-center">
-              <span className="font-bold">$10.000</span>
-              <div className="flex gap-4 border rounded-xl justify-between px-2">
-                <button className="cursor-pointer"> - </button>
-                <span className="text-tertiary font-bold">1</span>
-                <button className="cursor-pointer"> + </button>
-              </div>
-            </div>
-          </li>
-          <hr className="font-bold" />
-          <li className="flex justify-between items-start">
-            <div className="flex flex-col items-start gap-1">
-              <p className="font-bold">Hamburguesa triple queso</p>
-              <small>Extra:</small>
-              <small>Sin:</small>
-              <small>Papas:</small>
-              <button className="underline cursor-pointer text-sm">
-                Eliminar
-              </button>
-            </div>
-            <div className="flex flex-col gap-3 items-center">
-              <span className="font-bold">$10.000</span>
-              <div className="flex gap-4 border rounded-xl justify-between px-2">
-                <button className="cursor-pointer"> - </button>
-                <span className="text-tertiary font-bold">1</span>
-                <button className="cursor-pointer"> + </button>
-              </div>
-            </div>
-          </li>
-          <hr className="font-bold" />
+          {cartProducts.length > 0 ? (
+            cartProducts.map((product: CartProduct) => (
+              <li
+                key={product.price}
+                className="flex justify-between items-start"
+              >
+                <div className="flex flex-col items-start gap-1">
+                  <p className="font-bold">{product.name}</p>
+                  {/* <small>Extras: {product.extras.join(", ")}</small> */}
+                  <small>Sin: {product.sin.join(", ")}</small>
+                  <small>Tamaño: {product.size}</small>
+                  <small>Papas: {product.fries}</small>
+                  <button
+                    onClick={() => removeFromCart(product)}
+                    className="underline cursor-pointer text-sm"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+                <div className="flex flex-col gap-3 items-center">
+                  <span className="font-bold">
+                    ${product.price.toLocaleString("es-AR")}
+                  </span>
+                  <div className="flex gap-4 border rounded-xl justify-between px-2">
+                    <button
+                      onClick={() => removeQuantity(product)}
+                      className="cursor-pointer"
+                    >
+                      {" "}
+                      -{" "}
+                    </button>
+                    <span className="text-tertiary font-bold">
+                      {product.quantity}
+                    </span>
+                    <button
+                      onClick={() => addQuantity(product)}
+                      className="cursor-pointer"
+                    >
+                      {" "}
+                      +{" "}
+                    </button>
+                  </div>
+                </div>
+              </li>
+            ))
+          ) : (
+            <p>No hay productos seleccionados aún.</p>
+          )}
+          {cartProducts.length > 0 && <hr className="font-bold" />}
         </ul>
         <h3 className="mt-4 font-semibold">Cupon de descuento</h3>
         <Cupon />
         <hr />
-        {<Delivery />}
+        <ul className="flex my-3 justify-between items-center">
+          <li>
+            <input
+              name="pedido"
+              type="radio"
+              value="delivery"
+              checked={mode === "delivery"}
+              onChange={handleModeChange}
+              onClick={() => {
+                setIsTakeAwayChecked(false);
+                setIsDeliveryChecked(true);
+              }}
+            />{" "}
+            Delivery
+          </li>
+          <li>
+            <input
+              name="pedido"
+              type="radio"
+              value="pickup"
+              checked={mode === "pickup"}
+              onChange={handleModeChange}
+              onClick={() => {
+                setIsDeliveryChecked(false);
+                setIsTakeAwayChecked(true);
+              }}
+            />{" "}
+            Retiro en el local
+          </li>
+        </ul>
+        {mode === "delivery" && (
+          <>
+            <p className="text-start font-bold text-lg my-4">
+              Seleccioná tu sucursal mas cercana
+            </p>
+            <select
+              onChange={(e) => setSucursal(e.target.value)}
+              className="w-full"
+            >
+              <option disabled>Seleccione una sucursal</option>
+              <option className="text-black" value="Gerli">
+                Gerli
+              </option>
+              <option className="text-black" value="Wilde">
+                Wilde
+              </option>
+              <option className="text-black" value="Lanus">
+                Lanus
+              </option>
+            </select>
+            <div className="flex flex-col gap-2">
+              {session?.user_id &&
+                addresses.map((address) => (
+                  <div
+                    key={address.id}
+                    className="flex justify-between items-center"
+                  >
+                    <div className="flex gap-3">
+                      <Ubicacion fill={"white"} />
+                      <div className="flex flex-col justify-center">
+                        {/* ACA VAN LAS DIRECCIONES GUARDADAS DEL USUARIO */}
+                        <p>{address.street}</p>
+                        <small>{address.label}</small>
+                      </div>
+                    </div>
+                    <input
+                      type="radio"
+                      name="address"
+                      className="rounded-xl"
+                      checked={selectedAddressId === address.id}
+                      onChange={() => setSelectedAddressId(address.id)}
+                    />
+                  </div>
+                ))}
+            </div>
+            <p className="text-start font-bold text-lg my-4">
+              Indicá la dirección de entrega
+            </p>
+            {!session && (
+              <div className=" py-1 my-3">
+                {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
+                <input value={addressInput} onChange={handleAddressInput} placeholder="Indique su direccion" className="w-full rounded-xl py-1 px-2 text-black bg-white" type="text" />
+              </div>
+            )}
+          </>
+        )}
+        {mode === "pickup" && (
+          <div>
+            <p className="text-start font-bold text-lg my-4">
+              Seleccioná la sucursal de retiro
+            </p>
+            <select
+              onChange={(e) => setSucursal(e.target.value)}
+              className="w-full"
+            >
+              <option disabled>Seleccione una sucursal</option>
+              <option className="text-black" value="Gerli">
+                Gerli
+              </option>
+              <option className="text-black" value="Wilde">
+                Wilde
+              </option>
+              <option className="text-black" value="Lanus">
+                Lanus
+              </option>
+            </select>
+          </div>
+        )}
         <hr />
         <ul className="my-3 text-gray-500 w-full">
           <li className="flex justify-between">
             <p>Subtotal</p>
-            <span>$20.000</span>
+            <span>${totalPricing().toLocaleString("es-AR")}</span>
           </li>
           <li className="flex justify-between">
             <p>Descuento</p>
-            <span>-$5.000</span>
+            <span>${salePricing.toLocaleString("es-AR")}</span>
           </li>
           <li className="flex justify-between">
             <p>Delivery</p>
-            <span>$5.000</span>
+            <span>${deliveryPricing.toLocaleString("es-AR")}</span>
           </li>
           <li className="flex justify-between mt-10 text-xl mb-5 font-bold text-tertiary">
             <h4>Total</h4>
-            <p>$20.000</p>
+            {totalPricingCart === null ? (
+              <p>Calculando...</p>
+            ) : (
+              <p>${totalPricingCart.toLocaleString("es-AR")}</p>
+            )}
           </li>
           <h5 className="text-white text-lg font-semibold">Instrucciones</h5>
           <hr />
-          <textarea className="bg-white rounded-xl px-3 py-1 text-black font-semibold my-5 w-full h-52"></textarea>
-          <Link href="/checkout">
-            <button className="bg-tertiary w-full py-2 cursor-pointer rounded-xl text-black font-bold text-lg">
-              Continuar
-            </button>
-          </Link>
+          <textarea
+            onChange={(e) => setInstructions(e.target.value)}
+            className="bg-white rounded-xl px-3 py-1 text-black font-semibold my-5 w-full h-52"
+          ></textarea>
+          <button
+            onClick={handleContinue}
+            className="bg-tertiary w-full py-2 cursor-pointer rounded-xl text-black font-bold text-lg"
+          >
+            Continuar
+          </button>
         </ul>
       </section>
     </>

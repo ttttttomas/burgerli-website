@@ -1,8 +1,26 @@
+'use client'
 import Ubicacion from "@/app/components/icons/Ubicacion"
-import {inter,pattaya} from "@/app/layout"
+// import {inter,pattaya} from "@/app/layout"
+import { Inter, Pattaya } from "next/font/google";
 import { UsersClient } from "@/types"
+import axios from "axios";
 
-export default function PersonalInformationPage() {
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const pattaya = Pattaya({
+  weight: ["400"],
+  variable: "--font-pattaya",
+  subsets: ["latin"],
+});
+
+export default function PersonalInformationPage({params}: {params: {id: string}}) {
+  const id = params.id;
+  console.log("id del personal information", id);
+
+  
   return (
     <section className={`w-full px-10 py-5 flex items-center justify-center gap-10 text-white ${inter.className}`}>
         <form className="bg-primary px-10 pt-20 pb-10 flex rounded-b-3xl flex-col justify-between h-3/4 w-3/5">

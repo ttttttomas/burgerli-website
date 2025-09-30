@@ -1,11 +1,11 @@
 'use client'
 import { Inter, Pattaya } from "next/font/google";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import useAuth from "@/app/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {toast} from "sonner";
+import { useSession } from "@/app/context/SessionContext";
 
 const pattaya = Pattaya({
   weight: ["400"],
@@ -20,26 +20,44 @@ const inter = Inter({
 
 export default function LoginPage() {
   const router = useRouter();
-  const {login} = useAuth()
+  const { loginUser, loading } = useSession();
+  // const { session, isLoading, updateSession } = useSession();
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>("");
+  const [id, setId] = useState<string | null>(null);
 
-   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    
-    const res = await login({username, password});
-    console.log(res);
-    if(res?.status === 200 && res?.data !== null) {
-      toast.success("Sesión iniciada con éxito");
-      router.push("/myaccount/personal-information");
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await loginUser(username, password);
+      router.push(`/`);
+      router.refresh();
+    } catch (err: any) {
+      setError(err?.message ?? "Credenciales inválidas");
+    } finally {
+      setIsSubmitting(false);
     }
-    else{
-      toast.error("Usuario o contraseña incorrectos");
-    }
-    
   };
+
+
+  // Mostrar loading si está verificando la sesión
+  if (loading) {
+    return (
+      <main className={`w-full bg-[#fdecc9] flex items-center justify-center min-h-screen ${inter.className}`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#b36912] mx-auto"></div>
+          <p className="mt-4 text-[#4b2f1e]">Verificando sesión...</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className={`w-full bg-[#fdecc9] flex items-center my-30 justify-center p-6" ${inter.className}`}>
       <div className="w-full relative max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-3xl overflow-hidden shadow-2xl">
@@ -76,6 +94,7 @@ export default function LoginPage() {
             <div className="flex items-center gap-2 bg-transparent border-b border-white/50 focus-within:border-white transition">
               <Mail className="w-4 h-4 opacity-80" />
               <input
+              value={username}
               onChange={(e) => setUsername(e.target.value)}
                 type="text"
                 autoComplete="username"
@@ -89,8 +108,8 @@ export default function LoginPage() {
             <div className="flex items-center gap-2 bg-transparent border-b border-white/50 focus-within:border-white transition">
               <Lock className="w-4 h-4 opacity-80" />
               <input
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
-
                 type={showPass ? "text" : "password"}
                 autoComplete="current-password"
                 placeholder="Ingrese su contraseña"
@@ -105,22 +124,38 @@ export default function LoginPage() {
                 {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
-
+            {
+              error && 
+              <p className="mt-3 text-sm text-red-500">
+                {error}
+              </p>
+            }
             <button className="mt-3 text-sm underline underline-offset-2 opacity-90 hover:opacity-100">
               ¿Olvidaste tu contraseña?
             </button>
 
             {/* Submit */}
-            <button type="submit" className="mt-6 w-full rounded-xl py-3 font-semibold bg-[#b36912] text-black hover:bg-[#a35f0f] active:scale-[.99] transition">
-              Ingresar
+            <button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="mt-6 w-full rounded-xl py-3 font-semibold bg-[#b36912] text-black hover:bg-[#a35f0f] active:scale-[.99] transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#b36912]"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+                  Iniciando sesión...
+                </div>
+              ) : (
+                "Ingresar"
+              )}
             </button>
 
             {/* Divider */}
-            <div className="flex items-center gap-4 my-8">
+            {/* <div className="flex items-center gap-4 my-8">
               <div className="h-px flex-1 bg-white/30" />
               <span className="text-sm">O ingresa con:</span>
               <div className="h-px flex-1 bg-white/30" />
-            </div>
+            </div> */}
 
             {/* Social buttons */}
             {/* <div className="flex items-center justify-center gap-6">

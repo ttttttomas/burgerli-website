@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { CartContextProvider } from "@/app/context/CartContext";
+import { SessionContextProvider } from "@/app/context/SessionContext";
 import {Toaster} from 'sonner'
 
 export const geist = Geist({
@@ -45,14 +46,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <SessionContextProvider>
       <CartContextProvider>
       <body className={`${roboto.className} bg-[#FCEDCC] antialiased`}>
-        <Toaster richColors/>
+        <Toaster position="bottom-center" richColors/>
         <Header />
         {children}
         <Footer />
       </body>
       </CartContextProvider>
+      </SessionContextProvider>
     </html>
   );
 }

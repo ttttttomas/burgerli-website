@@ -82,17 +82,13 @@ export default function Cart() {
   const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMode(e.target.value as "delivery" | "pickup");
   };
-  //   const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const id = e.target.value || null;
-  //   setSelectedAddressId(id);
-  // };
 
   const subTotal = totalPricing();
 
-  const selectedAddressFind = useMemo(
-    () => addresses.find((a) => a.address === selectedAddress) ?? null,
-    [addresses, selectedAddress]
-  );
+  // const selectedAddressFind = useMemo(
+  //   () => addresses.find((a) => a.address === selectedAddress) ?? null,
+  //   [addresses, selectedAddress]
+  // );
 
   const handleContinue = async () => {
     const draft = {

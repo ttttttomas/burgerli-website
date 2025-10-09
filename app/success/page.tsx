@@ -1,17 +1,25 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "../context/SessionContext";
 import { Orders } from "@/types";
 
+export const dynamic = "force-dynamic"; // evita SSG
+
 export default function SuccessPage() {
-  const { session } = useSession();
+  return <Suspense fallback={<div>Loading...</div>}>
+    <Content />
+  </Suspense>;
+}
+
+function Content() {
+  // const { session } = useSession();
   const sp = useSearchParams();
   const router = useRouter();
   const id = sp.get("order_id");
-  const { OrderById } = useSession();
   const paymentId = sp.get("payment_id");
   const status = sp.get("status");
+  const { OrderById } = useSession();
   const [order, setOrder] = useState<Orders>();
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -55,8 +63,6 @@ export default function SuccessPage() {
   //   return () => clearTimeout(t);
   // }, [order?.id_order]);
 
-
-  
   // Función para notificar a la tienda por WhatsApp
   const notifyStore = (order: any) => {
     // Mapeo de sucursales a números de WhatsApp
@@ -98,28 +104,28 @@ export default function SuccessPage() {
 
     // Crear mensaje de WhatsApp
     const message = `🍔 *NUEVA ORDEN - BURGERLI* 🍔
-
-📋 *Orden ID:* ${order.id}
-📅 *Fecha:* ${orderDate}
-💰 *Total:* $${order.price.toLocaleString("es-AR")}
-
-👤 *CLIENTE:*
-• Nombre: ${order.name}
-• Email: ${order.email}
-• Teléfono: ${order.phone}
-• Tipo: ${
-      order.delivery_mode === "delivery" ? "🛵 Delivery" : "🏪 Retiro en local"
-    }
-${
-  order.delivery_mode === "delivery"
-    ? `• Dirección: ${order.address}`
-    : `• Sucursal: ${order.local}`
-}
-
-${order.notes ? `📋 *Notas:* ${order.notes}` : ""}
-${order.sin ? `🚫 *Sin:* ${order.sin}` : ""}
-
-⚡ *¡Pedido listo para preparar!*`;
+  
+  📋 *Orden ID:* ${order.id}
+  📅 *Fecha:* ${orderDate}
+  💰 *Total:* $${order.price.toLocaleString("es-AR")}
+  
+  👤 *CLIENTE:*
+  • Nombre: ${order.name}
+  • Email: ${order.email}
+  • Teléfono: ${order.phone}
+  • Tipo: ${
+    order.delivery_mode === "delivery" ? "🛵 Delivery" : "🏪 Retiro en local"
+  }
+  ${
+    order.delivery_mode === "delivery"
+      ? `• Dirección: ${order.address}`
+      : `• Sucursal: ${order.local}`
+  }
+  
+  ${order.notes ? `📋 *Notas:* ${order.notes}` : ""}
+  ${order.sin ? `🚫 *Sin:* ${order.sin}` : ""}
+  
+  ⚡ *¡Pedido listo para preparar!*`;
 
     // Codificar el mensaje para URL
     const encodedMessage = encodeURIComponent(message);
@@ -230,10 +236,10 @@ ${order.sin ? `🚫 *Sin:* ${order.sin}` : ""}
               CLICK AQUÍ PARA ENVIAR TU PEDIDO
             </button>
             {/* {session && (
-              <p className="text-xs text-gray-500 text-center">
-                Serás redirigido a los detalles de tu orden en unos segundos...
-              </p>
-            )} */}
+        <p className="text-xs text-gray-500 text-center">
+          Serás redirigido a los detalles de tu orden en unos segundos...
+        </p>
+      )} */}
           </div>
         </div>
       )}

@@ -5,13 +5,14 @@ import Cupon from "./Cupon";
 import { useEffect, useMemo, useState } from "react";
 import { Inter, Pattaya } from "next/font/google";
 import { useCart } from "@/app/context/CartContext";
-import { CartProduct } from "@/types";
+import { Address, CartProduct } from "@/types";
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { saveCheckoutDraft } from '@/app/lib/checkoutStorage';
 import { toast } from 'sonner';
 import checkIsOpen from '../lib/CheckShopOpen';
+import { useSession } from '../context/SessionContext';
 
 
 const inter = Inter({
@@ -25,60 +26,79 @@ const pattaya = Pattaya({
   subsets: ["latin"],
 });
 export default function CartResponsive({ closed }: { closed: () => void }) {
+  const { session, userById } = useSession();
   const router = useRouter();
   // MODAL
-  // const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   // DELIVERY STATES
-  const [addresses] = useState([
-  { id: 'a1', label: 'Casa', street: 'Direccion falsa 1234' },
-  { id: 'a2', label: 'Trabajo', street: 'Av. Siempre Viva 12' },
-]);
-  const [instructions, setInstructions] = useState('');
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [addressInput, setAddressInput] = useState("");
+  const [instructions, setInstructions] = useState("");
   const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
-  const [addressInput] = useState("");
   const [sucursal, setSucursal] = useState<string>("Gerli");
-  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(false);
+  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [deliveryPricing, setDeliveryPricing] = useState(5000);
   // TOTAL STATES
   const [salePricing] = useState(0);
   const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
-  const { cartProducts, removeFromCart, addQuantity, removeQuantity, totalPricing } = useCart();
-  
+  const {
+    cartProducts,
+    removeFromCart,
+    addQuantity,
+    removeQuantity,
+    totalPricing,
+  } = useCart();
+
+  const handleAddressInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddressInput(e.target.value);
+  };
+
   useEffect(() => {
-    if (mode === 'pickup') {
+    const getUser = async () => {
+      const user = await userById(session!.user_id);
+      if (!user) return;
+      setAddresses(user?.addresses);
+    };
+    getUser();
+  }, []);
+  console.log("user", addresses);
+
+  useEffect(() => {
+    if (mode === "pickup") {
       setDeliveryPricing(0);
     } else {
       setDeliveryPricing(5000);
     }
-  }, [mode, selectedAddressId]);
-
-  const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {setMode(e.target.value as 'delivery' | 'pickup');};
-//   const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//   const id = e.target.value || null;
-//   setSelectedAddressId(id);
-// };
-
-  const subTotal = totalPricing()
-
-  const selectedAddress = useMemo(
-  () => addresses.find(a => a.id === selectedAddressId) ?? null,
-  [addresses, selectedAddressId]
-);
+  }, [mode, selectedAddress]);
 
   useEffect(() => {
     setTotalPricingCart(
       totalPricing() + salePricing + deliveryPricing - salePricing
-    ); 
+    );
   }, [deliveryPricing, totalPricing, salePricing]);
+
+  const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMode(e.target.value as "delivery" | "pickup");
+  };
+
+  const subTotal = totalPricing();
+
+  // const selectedAddressFind = useMemo(
+  //   () => addresses.find((a) => a.address === selectedAddress) ?? null,
+  //   [addresses, selectedAddress]
+  // );
 
   const handleContinue = async () => {
     const draft = {
       takeaway: isTakeAwayChecked,
       products: cartProducts,
       delivery_mode: mode,
-      fries: cartProducts.filter((p: any) => (p.fries?.length ?? 0) > 0).map((p: any) => p.fries).flat(),
+      fries: cartProducts
+        .filter((p: any) => (p.fries?.length ?? 0) > 0)
+        .map((p: any) => p.fries)
+        .flat(),
       address: selectedAddress || addressInput || null,
       price: totalPricingCart,
       deliveryPrice: deliveryPricing,
@@ -94,17 +114,21 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
       order_notes: instructions,
     };
 
-    if(!checkIsOpen()){
+    if (!checkIsOpen()) {
       toast.error("El tiempo de apertura de la tienda no es válido");
       return;
     }
+
+    if(cartProducts.length === 0){
+      toast.error("No hay productos en el carrito");
+      return;
+    } 
 
     if (isTakeAwayChecked) {
       // TakeAway: no necesita dirección
       saveCheckoutDraft(draft);
       router.push("/checkout");
-    
-    } else if (isDeliveryChecked) {
+    }else if (isDeliveryChecked) {
       // Delivery: necesita dirección válida
       if (selectedAddress || addressInput) {
         saveCheckoutDraft(draft);
@@ -112,12 +136,11 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
       } else {
         toast.error("Por favor, indique una dirección de entrega");
       }
-    
     } else {
       // Si no eligió ni delivery ni takeaway
       toast.error("Por favor, seleccione el modo de entrega");
     }
-  }
+  };
   return (
     <section
       className={`${inter.className} md:hidden block fixed overflow-y-scroll w-full h-[90vh] right-0 z-50 pt-5 top-0 text-white rounded-2xl bg-primary py-3 px-5`}>
@@ -202,34 +225,69 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
                       /> Retiro en el local
                   </li>
               </ul>
-             {mode === "delivery" && 
-             <>
-                <div className="flex flex-col gap-2">
-                  {addresses.map((address) => (
-                    <div key={address.id} className='flex justify-between items-center'>
-                      <div className='flex gap-3'>
-                      <Ubicacion fill={"white"}/>
-                      <div className='flex flex-col justify-center'>
-                        {/* ACA VAN LAS DIRECCIONES GUARDADAS DEL USUARIO */}
-                        <p>{address.street}</p>
-                        <small>{address.label}</small>
-                      </div>
-                      </div> 
-                        <input
-                        type="radio" 
-                        name="address"
-                        className='rounded-xl'
-                        checked={selectedAddressId === address.id}
-                        onChange={() => setSelectedAddressId(address.id)}
-                        />
-                  </div>
-                  ))}
-                </div>
-                <div className='border-dashed border-2 px-3 py-1 my-3'>
-                  {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
-                  <p>Agregar nueva direccion</p>
-                </div>
-                </>}
+             {mode === "delivery" && (
+                       <>
+                         <p className="text-start font-bold text-lg my-4">
+                           Seleccioná tu sucursal mas cercana
+                         </p>
+                         <select
+                           onChange={(e) => setSucursal(e.target.value)}
+                           className="w-full"
+                         >
+                           <option disabled>Seleccione una sucursal</option>
+                           <option className="text-black" value="Gerli">
+                             Gerli
+                           </option>
+                           <option className="text-black" value="Wilde">
+                             Wilde
+                           </option>
+                           <option className="text-black" value="Lanus">
+                             Lanus
+                           </option>
+                         </select>
+                         <div className="flex flex-col gap-2">
+                           {addresses?.length > 0 ? <p>ss</p> : 
+                           addresses.map((address: Address) => (
+                             <div
+                               key={address.address}
+                               className="flex justify-between items-center"
+                             >
+                               <div className="flex gap-3">
+                                 <Ubicacion fill={"white"} />
+                                 <div className="flex flex-col justify-center">
+                                   {/* ACA VAN LAS DIRECCIONES GUARDADAS DEL USUARIO */}
+                                   <p>{address.address}</p>
+                                   <small>{address.type}</small>
+                                 </div>
+                               </div>
+                               <input
+                                 type="radio"
+                                 name="address"
+                                 className="rounded-xl"
+                                 checked={selectedAddress === address.address}
+                                 onChange={() => setSelectedAddress(address.address)}
+                               />
+                             </div>
+                           ))
+                           } 
+                         </div>
+                         <p className="text-start font-bold text-lg my-4">
+                           Indicá la dirección de entrega
+                         </p>
+                         {!session && (
+                           <div className=" py-1 my-3">
+                             {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
+                             <input
+                               value={addressInput}
+                               onChange={handleAddressInput}
+                               placeholder="Indique su direccion"
+                               className="w-full rounded-xl py-1 px-2 text-black bg-white"
+                               type="text"
+                             />
+                           </div>
+                         )}
+                       </>
+                     )}
                 {mode === "pickup" &&
                 <div>
                   <p className='text-start font-bold text-lg my-4'>Seleccioná la sucursal de retiro</p>

@@ -1,6 +1,6 @@
 "use client";
 // import Aside from "@/app/components/Aside";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Order1 from "@/app/components/icons/Order-1";
 import Order2 from "@/app/components/icons/Order-2";
 import Order3 from "@/app/components/icons/Order-3";
@@ -8,13 +8,24 @@ import Order4 from "@/app/components/icons/Order-4";
 import Ubicacion from "@/app/components/icons/Ubicacion";
 import Moto from "@/app/components/icons/Moto";
 import { useCart } from "@/app/context/CartContext";
+import { useSession } from "@/app/context/SessionContext";
 // import { Orders } from "@/types";
 
 type OrderStatus = "confirmed" | "preparing" | "on_route" | "delivered";
 
 
+type PageProps = {
+  params: {
+    id: string;
+  };
+};
 
-export default function OrderIDPage() {
+
+export default function OrderIDPage({params}: PageProps) {
+  const {OrderById} = useSession();
+  const {id}  = params;
+  console.log(id);
+  
   const {cart} = useCart();
   // const prevStatus = useRef<OrderStatus | null>(null);
   console.log(cart);
@@ -40,7 +51,7 @@ export default function OrderIDPage() {
     ],
     []
   );
-const [order, setOrder] = useState<{ id: string; status: OrderStatus }>({
+const [order, setOrder] = useState<{ id: string; status: OrderStatus, }>({
   id: "demo",
   status: "confirmed",
 });
@@ -54,6 +65,28 @@ const STEP_BY_STATUS: Record<OrderStatus, number> = {
 const STATUS_BY_STEP: OrderStatus[] = ["confirmed","preparing","on_route","delivered"];
 const currentStep = STEP_BY_STATUS[order.status] ?? 0;
 console.log(currentStep);
+
+  useEffect(() => {
+    async function fetchOrder() {
+      try {
+        // Esperar un poco para que el webhook procese la orden
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        const res = await OrderById(id);
+
+        if (!res) {
+          return;
+        }
+        setOrder(res);
+      } catch (error) {
+        console.error("Error obteniendo orden:", error);
+      }
+    }
+
+      fetchOrder();
+
+    fetchOrder();
+  }, []);
 
 
 // useEffect(() => {

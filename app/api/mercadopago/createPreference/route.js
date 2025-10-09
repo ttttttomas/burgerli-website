@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 
+
 const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN; 
 const FRONT_URL = "https://imido-curliest-cole.ngrok-free.dev"
 
@@ -34,6 +35,7 @@ export async function POST(req) {
       })),
       metadata: {
         // Datos del cliente
+        order_id: order.id_order,
         name: order.name ?? null,
         email: order.email ?? null,
         phone: order.phone ?? null,
@@ -51,7 +53,7 @@ export async function POST(req) {
       },
       auto_return: "approved",
       back_urls: {
-        success: `${FRONT_URL}/success`,
+        success: `${FRONT_URL}/success/?order_id=${order.id_order}`,
         failure: `${FRONT_URL}/failure`,
         pending: `${FRONT_URL}/pending`,
       },

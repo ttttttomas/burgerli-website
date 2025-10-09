@@ -17,12 +17,10 @@ const middleware: NextMiddleware = (req: NextRequest) => {
   }
   
   if (!isProtectedPath(pathname)) {
-    console.log("no es una ruta protegida");
     
     return NextResponse.next();
   }
   if(authorizationCookie) {
-    console.log("Hay una cookie");
     return NextResponse.next();
   }
 

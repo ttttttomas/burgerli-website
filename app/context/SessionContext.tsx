@@ -13,6 +13,7 @@ type Ctx = {
   loading: boolean;
   userById: (id: string) => Promise<any>;
   logoutUser: () => Promise<void>;
+  OrderById: (id: any | string) => Promise<any>;
 };
 
 export const SessionContext = createContext<Ctx | null>(null);
@@ -29,7 +30,7 @@ export const SessionContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { login, register, getUserById, verifyCookie, logout } = useAuth();
+  const { login, register, getUserById, verifyCookie, logout ,getOrderById } = useAuth();
   const [session, setSession] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Iniciar en true para mostrar loading inicial
 
@@ -96,6 +97,8 @@ export const SessionContextProvider = ({
         };
         setSession(newSession);
         console.log("Sesión verificada:", newSession);
+        console.log("Asi queda la sesion del contexto: ", session);
+        
       } else {
         // Si no hay cookie válida, limpiar la sesión
         setSession(null);
@@ -141,6 +144,20 @@ export const SessionContextProvider = ({
     }
   };
 
+  const OrderById = async (id: string) => {
+    try {
+      const response = await getOrderById(id);
+      if (response?.status === 200) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error during search user:", error);
+      toast.error("Error inesperado. Intenta nuevamente.");
+      return null;
+    }
+  };
+
   // Verificar autenticación al montar el componente
   useEffect(() => {
     const initializeAuth = async () => {
@@ -160,6 +177,7 @@ export const SessionContextProvider = ({
         session,
         loading,
         userById,
+        OrderById,
         logoutUser
       }}
     >

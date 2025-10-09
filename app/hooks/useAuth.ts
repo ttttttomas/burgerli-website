@@ -53,10 +53,10 @@ export default function useAuth() {
       }
     }
   };
-  const getUserById = async (id: string) => {
+  const getUserById = async (id_user_client: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/getUserByID/${id}`,
+        `https://api-burgerli.iwebtecnology.com/api/get_users/${id_user_client}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -99,6 +99,24 @@ export default function useAuth() {
     catch (error) {console.error(error)}
   }
 
+  const getOrderById = async (id: string) => {
+    try {
+      const response = await axios.get(
+        `https://api-burgerli.iwebtecnology.com/api/getOrderById/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        },
+      );      
+      if (response.status === 200) {
+        return response;
+      }
+    }
+    catch (error) {console.error(error)}
+  }
+
   const logout = async () => {
     try {
       const response = await axios.get(
@@ -117,5 +135,5 @@ export default function useAuth() {
     catch (error) {console.error(error)}
   }
 
-  return {login, register, getUserById, verifyCookie, logout};
+  return {login, register, getUserById, verifyCookie, logout, getOrderById};
 }

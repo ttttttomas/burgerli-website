@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Inter, Pattaya } from "next/font/google";
 import CartResponsive from "../CartResponsive";
 import { useCart } from "@/app/context/CartContext";
-import { CartProduct } from "@/types";
+import { Address, CartProduct } from "@/types";
 
 import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
 import checkIsOpen from "@/app/lib/CheckShopOpen";
@@ -26,24 +26,19 @@ const pattaya = Pattaya({
 });
 
 export default function Cart() {
-  const { session } = useSession();
+  const { session, userById } = useSession();
   const router = useRouter();
   // MODAL
   const [open, setOpen] = useState(false);
   // DELIVERY STATES
-  const [addresses] = useState([
-    { id: "a1", label: "Casa", street: "Direccion falsa 1234" },
-    { id: "a2", label: "Trabajo", street: "Av. Siempre Viva 12" },
-  ]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
   const [addressInput, setAddressInput] = useState("");
   const [instructions, setInstructions] = useState("");
   const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
   const [sucursal, setSucursal] = useState<string>("Gerli");
   const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    null
-  );
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [deliveryPricing, setDeliveryPricing] = useState(5000);
   // TOTAL STATES
   const [salePricing] = useState(0);
@@ -61,12 +56,28 @@ export default function Cart() {
   };
 
   useEffect(() => {
+    const getUser = async () => {
+      const user = await userById(session!.user_id);
+      if (!user) return;
+      setAddresses(user?.addresses);
+    };
+    getUser();
+  }, []);
+  console.log("user", addresses);
+
+  useEffect(() => {
     if (mode === "pickup") {
       setDeliveryPricing(0);
     } else {
       setDeliveryPricing(5000);
     }
-  }, [mode, selectedAddressId]);
+  }, [mode, selectedAddress]);
+
+  useEffect(() => {
+    setTotalPricingCart(
+      totalPricing() + salePricing + deliveryPricing - salePricing
+    );
+  }, [deliveryPricing, totalPricing, salePricing]);
 
   const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMode(e.target.value as "delivery" | "pickup");
@@ -78,23 +89,20 @@ export default function Cart() {
 
   const subTotal = totalPricing();
 
-  const selectedAddress = useMemo(
-    () => addresses.find((a) => a.id === selectedAddressId) ?? null,
-    [addresses, selectedAddressId]
+  const selectedAddressFind = useMemo(
+    () => addresses.find((a) => a.address === selectedAddress) ?? null,
+    [addresses, selectedAddress]
   );
-
-  useEffect(() => {
-    setTotalPricingCart(
-      totalPricing() + salePricing + deliveryPricing - salePricing
-    );
-  }, [deliveryPricing, totalPricing, salePricing]);
 
   const handleContinue = async () => {
     const draft = {
       takeaway: isTakeAwayChecked,
       products: cartProducts,
       delivery_mode: mode,
-      fries: cartProducts.filter((p: any) => (p.fries?.length ?? 0) > 0).map((p: any) => p.fries).flat(),
+      fries: cartProducts
+        .filter((p: any) => (p.fries?.length ?? 0) > 0)
+        .map((p: any) => p.fries)
+        .flat(),
       address: selectedAddress || addressInput || null,
       price: totalPricingCart,
       deliveryPrice: deliveryPricing,
@@ -110,17 +118,21 @@ export default function Cart() {
       order_notes: instructions,
     };
 
-    if(!checkIsOpen()){
+    if (!checkIsOpen()) {
       toast.error("El tiempo de apertura de la tienda no es válido");
       return;
     }
+
+    if(cartProducts.length === 0){
+      toast.error("No hay productos en el carrito");
+      return;
+    } 
 
     if (isTakeAwayChecked) {
       // TakeAway: no necesita dirección
       saveCheckoutDraft(draft);
       router.push("/checkout");
-    
-    } else if (isDeliveryChecked) {
+    }else if (isDeliveryChecked) {
       // Delivery: necesita dirección válida
       if (selectedAddress || addressInput) {
         saveCheckoutDraft(draft);
@@ -128,7 +140,6 @@ export default function Cart() {
       } else {
         toast.error("Por favor, indique una dirección de entrega");
       }
-    
     } else {
       // Si no eligió ni delivery ni takeaway
       toast.error("Por favor, seleccione el modo de entrega");
@@ -266,29 +277,30 @@ export default function Cart() {
               </option>
             </select>
             <div className="flex flex-col gap-2">
-              {session?.user_id &&
-                addresses.map((address) => (
-                  <div
-                    key={address.id}
-                    className="flex justify-between items-center"
-                  >
-                    <div className="flex gap-3">
-                      <Ubicacion fill={"white"} />
-                      <div className="flex flex-col justify-center">
-                        {/* ACA VAN LAS DIRECCIONES GUARDADAS DEL USUARIO */}
-                        <p>{address.street}</p>
-                        <small>{address.label}</small>
-                      </div>
+              {addresses?.length > 0 ? <p>ss</p> : 
+              addresses.map((address: Address) => (
+                <div
+                  key={address.address}
+                  className="flex justify-between items-center"
+                >
+                  <div className="flex gap-3">
+                    <Ubicacion fill={"white"} />
+                    <div className="flex flex-col justify-center">
+                      {/* ACA VAN LAS DIRECCIONES GUARDADAS DEL USUARIO */}
+                      <p>{address.address}</p>
+                      <small>{address.type}</small>
                     </div>
-                    <input
-                      type="radio"
-                      name="address"
-                      className="rounded-xl"
-                      checked={selectedAddressId === address.id}
-                      onChange={() => setSelectedAddressId(address.id)}
-                    />
                   </div>
-                ))}
+                  <input
+                    type="radio"
+                    name="address"
+                    className="rounded-xl"
+                    checked={selectedAddress === address.address}
+                    onChange={() => setSelectedAddress(address.address)}
+                  />
+                </div>
+              ))
+              } 
             </div>
             <p className="text-start font-bold text-lg my-4">
               Indicá la dirección de entrega
@@ -296,7 +308,13 @@ export default function Cart() {
             {!session && (
               <div className=" py-1 my-3">
                 {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
-                <input value={addressInput} onChange={handleAddressInput} placeholder="Indique su direccion" className="w-full rounded-xl py-1 px-2 text-black bg-white" type="text" />
+                <input
+                  value={addressInput}
+                  onChange={handleAddressInput}
+                  placeholder="Indique su direccion"
+                  className="w-full rounded-xl py-1 px-2 text-black bg-white"
+                  type="text"
+                />
               </div>
             )}
           </>

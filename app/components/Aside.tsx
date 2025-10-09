@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function Aside() {
   return (
-    <aside className="min-w-60 h-screen hidden xl:block bg-primary text-white">
+    <aside className="min-w-60 hidden xl:block bg-primary text-white">
         <ul className='flex flex-col gap-5 p-4'>
             <Link href="/myaccount/favorites">Mis favoritos</Link>
             <Link href="/myaccount/order-history">Historial de pedidos</Link>

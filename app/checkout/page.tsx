@@ -22,10 +22,13 @@ const pattaya = Pattaya({
 
 export default function CheckoutPage() {
   const { session } = useSession();
+  const ORDER_KEY = "burgerli_order_id";
+  const id = crypto.randomUUID();
   const router = useRouter();
   const [draft, setDraft] = useState<any>(null);
   // const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<Orders>({
+    id_order: id,
     payment_method: "",
     delivery_mode: "",
     price: 0,
@@ -54,8 +57,12 @@ export default function CheckoutPage() {
 
   // useEffect para rellenar el estado order con los datos del draft cuando esté disponible
   useEffect(() => {
+    console.log("guardando id_order:", id);
+    localStorage.setItem(ORDER_KEY, id);
+    console.log("id_order guardado en localStorage:", id);
     if (draft) {
       setOrder({
+        id_order: id,
         payment_method: draft.payment_method || "efete",
         delivery_mode: draft.delivery_mode || null,
         price: draft.price || null,
@@ -131,10 +138,10 @@ export default function CheckoutPage() {
         });
         const data = await res.json();
         console.log(data);
-  
-        // if (data.init_point) {
-        //     router.push(data.init_point);
-        // }
+        
+        if (data.init_point) {
+            router.push(data.init_point);
+        }
       } catch (error) {
         console.error("Error al realizar el pedido:", error);
       }
@@ -158,7 +165,10 @@ export default function CheckoutPage() {
             )}
             {draft.delivery_mode === "pickup"
               ? "Retiro en el local"
-              : "Delivery"}
+              : <div className="flex flex-col justify-center">
+                      <p>Delivery</p>
+                      <small>Sucursal del pedido: {draft.local}</small>
+                </div>}
           </li>
           <li>
             <div className="flex justify-between pb-2 items-center">

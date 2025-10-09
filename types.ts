@@ -23,10 +23,6 @@ export type ProductType = {
   category: string; // category_id
   currency_id: string; // ES PARA MERCADO PAGO
 }
-// combo?: string;
-// promos?: string;
-// burgers?: string[];
-// user_client?: string[];
 
 export type SessionUser = {
   user_id: string;
@@ -56,21 +52,20 @@ export type Products = {
 
 
 export type Orders = {
+  id_order: string; // VIENEN CREADOS DESDE LA BASE DE DATOS
+  // created_at: string; // VIENEN CREADOS DESDE LA BASE DE DATOS
   payment_method: string;
   delivery_mode: string;
   price: number;
   status: string;
   order_notes?: string;
   local: string;
-  // fries?: string[];
-  // drinks?: string[];
   name: string;
   phone: number;
   email: string;
   address: string;
   coupon?: string;
   products: Products[];
-  // created_at: string;
 }
 
 export type Cart = {
@@ -84,16 +79,21 @@ export type Cart = {
   notes: string;
 };
 
+export type Address ={
+  address: string;
+  type: string;
+}
+
 export type UsersClient = {
     id: string;
-    username: string;
+    name: string;
     email: string;
     phone: string;
     password: string;
     locality: string;
     favorites: string[];
     piso_depto?: string;
-    directions: string[];
+    addresses: Address[];
 }
 
 export type Credentials = {

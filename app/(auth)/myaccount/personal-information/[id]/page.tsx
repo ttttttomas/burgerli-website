@@ -4,6 +4,7 @@ import { useSession } from "@/app/context/SessionContext";
 import { Address, UsersClient } from "@/types";
 import { Inter, Pattaya } from "next/font/google";
 import { useEffect, useState } from "react";
+import { use } from 'react'
 
 const inter = Inter({
   variable: "--font-inter",
@@ -16,11 +17,10 @@ const pattaya = Pattaya({
   subsets: ["latin"],
 });
 
-
-
-export default function PersonalInformationPage({params}: {params: {id: string}}) {
+export default function PersonalInformationPage({params}: {params: Promise<{ id: string }>
+}){
   const { userById } = useSession();
-  const { id } = params;
+  const { id } = use(params);
   const [user, setUser] = useState<UsersClient | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [addAddress, setAddAddress] = useState<boolean>(false);

@@ -1,27 +1,21 @@
 //@eslint-disable-next-line @next/next/no-img-element
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, use } from "react";
 import Order1 from "@/app/components/icons/Order-1";
 import Order2 from "@/app/components/icons/Order-2";
 import Order3 from "@/app/components/icons/Order-3";
 import Order4 from "@/app/components/icons/Order-4";
 import Ubicacion from "@/app/components/icons/Ubicacion";
+// import { type NextPage } from "next";
 import Moto from "@/app/components/icons/Moto";
-import { useCart } from "@/app/context/CartContext";
 import { useSession } from "@/app/context/SessionContext";
 import { useOrderWebSocket } from "@/app/hooks/useOrderWebSocket";
 import { Orders } from "@/types";
 
 type OrderStatus = "confirmed" | "in_preparation" | "on_the_way" | "delivered";
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
-
-export default function OrderIDPage({ params }: PageProps) {
-  const { id } = params;
+export default function OrderIDPage({ params }: { params: Promise<{ id: string }>;}) {
+  const { id } = use(params);
   const { OrderById } = useSession();
   const [order, setOrder] = useState<Orders | null>(null);
 
@@ -32,8 +26,6 @@ export default function OrderIDPage({ params }: PageProps) {
     local: wsLocal,
   } = useOrderWebSocket(id);
 
-  const { cart } = useCart();
-  console.log(cart);
 
   const steps = useMemo(
     () => [

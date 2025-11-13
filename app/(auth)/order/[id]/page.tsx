@@ -14,8 +14,8 @@ import { Orders } from "@/types";
 
 type OrderStatus = "confirmed" | "in_preparation" | "on_the_way" | "delivered";
 
-export default function OrderIDPage({ params }: { params: Promise<{ id: string }>;}) {
-  const { id } = use(params);
+// Componente cliente que recibe el id ya resuelto
+function OrderContent({ id }: { id: string }) {
   const { OrderById } = useSession();
   const [order, setOrder] = useState<Orders | null>(null);
 
@@ -297,4 +297,10 @@ export default function OrderIDPage({ params }: { params: Promise<{ id: string }
       </section>
     </main>
   );
+}
+
+// Componente wrapper que maneja la Promise de params
+export default function OrderIDPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  return <OrderContent id={id} />;
 }

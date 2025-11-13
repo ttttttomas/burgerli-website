@@ -92,7 +92,7 @@ export default function useAuth() {
   const getOrderById = async (id: string) => {
     try {
       const response = await axios.get(
-        `https://api-burgerli.iwebtecnology.com/api/getOrderById/${id}`,
+        `http://localhost:8000/getOrderById/${id}`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -1,6 +1,6 @@
+//@eslint-disable-next-line @next/next/no-img-element
 "use client";
-// import Aside from "@/app/components/Aside";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Order1 from "@/app/components/icons/Order-1";
 import Order2 from "@/app/components/icons/Order-2";
 import Order3 from "@/app/components/icons/Order-3";
@@ -9,27 +9,33 @@ import Ubicacion from "@/app/components/icons/Ubicacion";
 import Moto from "@/app/components/icons/Moto";
 import { useCart } from "@/app/context/CartContext";
 import { useSession } from "@/app/context/SessionContext";
-// import { Orders } from "@/types";
+import { useOrderWebSocket } from "@/app/hooks/useOrderWebSocket";
+import { Orders } from "@/types";
 
-type OrderStatus = "confirmed" | "preparing" | "on_route" | "delivered";
+type OrderStatus = "confirmed" | "in_preparation" | "on_the_way" | "delivered";
 
+type PageProps = {
+  params: {
+    id: string;
+  };
+};
 
-// type PageProps = {
-//   params: {
-//     id: string;
-//   };
-// };
+export default function OrderIDPage({ params }: PageProps) {
+  const { id } = params;
+  const { OrderById } = useSession();
+  const [order, setOrder] = useState<Orders | null>(null);
 
+  const {
+    status: wsStatus,
+    isConnected,
+    error: wsError,
+    local: wsLocal,
+  } = useOrderWebSocket(id);
 
-export default function OrderIDPage() {
-  const {OrderById} = useSession();
-
-  
-  const {cart} = useCart();
-  // const prevStatus = useRef<OrderStatus | null>(null);
+  const { cart } = useCart();
   console.log(cart);
-  
-   const steps = useMemo(
+
+  const steps = useMemo(
     () => [
       {
         label: "Pedido confirmado",
@@ -50,63 +56,89 @@ export default function OrderIDPage() {
     ],
     []
   );
-const [order, setOrder] = useState<{ id: string; status: OrderStatus, }>({
-  id: "demo",
-  status: "confirmed",
-});
 
-const STEP_BY_STATUS: Record<OrderStatus, number> = {
-  confirmed: 0,
-  preparing: 1,
-  on_route: 2,
-  delivered: 3,
-};
-const STATUS_BY_STEP: OrderStatus[] = ["confirmed","preparing","on_route","delivered"];
-const currentStep = STEP_BY_STATUS[order.status] ?? 0;
-console.log(currentStep);
+  const STEP_BY_STATUS: Record<OrderStatus, number> = useMemo(
+    () => ({
+      confirmed: 0,
+      in_preparation: 1,
+      on_the_way: 2,
+      delivered: 3,
+    }),
+    []
+  );
 
-  // useEffect(() => {
-  //   async function fetchOrder() {
-  //     try {
-  //       // Esperar un poco para que el webhook procese la orden
-  //       await new Promise((resolve) => setTimeout(resolve, 1000));
+  // Usar useMemo para que se recalcule cuando cambie wsStatus o order
+  const currentStep = useMemo(() => {
+    const status = wsStatus || order?.status;
+    const step = status ? STEP_BY_STATUS[status as OrderStatus] : 0;
+    console.log("🎯 Recalculando currentStep:", {
+      wsStatus,
+      orderStatus: order?.status,
+      step,
+    });
+    return step;
+  }, [wsStatus, order?.status, STEP_BY_STATUS]);
 
-  //       const res = await OrderById(id);
+  // Actualizar el estado de la orden cuando cambie el estado del WebSocket
+  useEffect(() => {
+    if (wsStatus) {
+      console.log("🔄 WebSocket Status actualizado:", wsStatus);
+      console.log("📊 Current Step que debería ser:", STEP_BY_STATUS[wsStatus]);
 
-  //       if (!res) {
-  //         return;
-  //       }
-  //       setOrder(res);
-  //     } catch (error) {
-  //       console.error("Error obteniendo orden:", error);
-  //     }
-  //   }
+      // Actualizar el estado de la orden con el nuevo status
+      setOrder((prevOrder) => {
+        if (prevOrder) {
+          return {
+            ...prevOrder,
+            status: wsStatus,
+          };
+        }
+        return prevOrder;
+      });
+    }
+  }, [wsStatus, STEP_BY_STATUS]);
 
-  //     fetchOrder();
+  useEffect(() => {
+    async function fetchOrder() {
+      try {
+        // Esperar un poco para que el webhook procese la orden
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  //   fetchOrder();
-  // }, []);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res: any = await OrderById(id);
 
+        // OrderById retorna los datos directamente
+        if (res && res.status) {
+          setOrder(res);
+        }
+      } catch (error) {
+        console.error("Error obteniendo orden:", error);
+      }
+    }
 
-// useEffect(() => {
-//     if (!order?.status) return;
-//     // Sólo actualiza si realmente cambió el status
-//     if (order.status !== prevStatus.current) {
-//       const idx = STEP_BY_STATUS[order.status] ?? 0;
-//       setCurrentStep(idx);
-//       prevStatus.current = order.status;
-//     }
-//   }, [order?.status]);
-// helpers para avanzar/retroceder o setear step
-const setStep = (idx: number) => {
-  const clamped = Math.max(0, Math.min(idx, STATUS_BY_STEP.length - 1));
-  setOrder(o => ({ ...o, status: STATUS_BY_STEP[clamped] }));
-};
-// 
+    fetchOrder();
+  }, [OrderById, id]);
 
   return (
     <main className="w-full flex bg-[#FCEDCC] antialiased">
       <section className="w-full flex flex-col items-center">
+        {/* Indicador de conexión WebSocket */}
+        <div className="w-full bg-primary text-white shadow-sm py-2 px-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                isConnected ? "bg-green-500" : "bg-red-500"
+              } animate-pulse`}
+            ></div>
+            <span className="text-sm">
+              {isConnected
+                ? "Seguimiento en tiempo real activo"
+                : "Reconectando..."}
+            </span>
+          </div>
+          {wsError && <span className="text-xs text-red-500">{wsError}</span>}
+        </div>
+
         <div className="flex justify-center gap-10 my-10 items-center">
           <img src="/order-1.png" alt="Order" className="w-32" />
           {/* CAMBIO DE ESTADO DE IMAGENES CUANDO EL PEDIDO ESTE ENTREGADO */}
@@ -114,27 +146,47 @@ const setStep = (idx: number) => {
 
           <div className="flex flex-col items-start justify-center">
             <h2 className="text-2xl font-semibold italic -z-0 text-gray-800">
-              Confirmado
+              {order?.status === "confirmed" && "Confirmado"}
+              {order?.status === "in_preparation" && "En Preparación"}
+              {order?.status === "on_the_way" && "En Camino"}
+              {order?.status === "delivered" && "Entregado"}
             </h2>
-            <p className="text-gray-600 text-start -z-0">29/03/2025</p>
+            <p className="text-gray-600 text-start -z-0">
+              {new Date().toLocaleDateString()}
+            </p>
+            {wsLocal && (
+              <p className="text-sm text-gray-500 mt-1">Local: {wsLocal}</p>
+            )}
           </div>
         </div>
 
-        <div className="relative w-full flex justify-between items-center">
+        <div className="relative w-full flex justify-between items-center px-4">
           {/* LINEA HORIZONTAL */}
           <div className="absolute top-6 left-0 right-0 h-1 bg-[#5B524B] opacity-70 z-0" />
+          {/* LINEA HORIZONTAL PROGRESIVA */}
+          <div
+            className="absolute top-6 left-0 h-1 bg-primary z-0 transition-all duration-700 ease-in-out"
+            style={{
+              width: `${(currentStep / (steps.length - 1)) * 100}%`,
+            }}
+          />
           {/* LINEA HORIZONTAL */}
           {steps.map((step, index) => {
             const isActive = index <= currentStep;
             const isCurrent = index === currentStep;
-             return (
-              <div key={step.label} className="flex flex-col items-center gap-2">
+            return (
+              <div
+                key={step.label}
+                className="flex flex-col items-center gap-2 z-10"
+              >
                 {/* Punto del timeline */}
                 <span
                   className={[
-                    "p-2 rounded-full flex items-center justify-center mb-1 transition-all",
-                    isActive ? "bg-primary w-12 h-12" : "bg-[#5B524B] w-10 h-10 opacity-70",
-                    isCurrent ? "ring-2 ring-black/20 current-step" : "",
+                    "p-2 rounded-full flex items-center justify-center mb-1 transition-all duration-500 ease-in-out transform",
+                    isActive
+                      ? "bg-primary w-12 h-12 scale-100"
+                      : "bg-[#5B524B] w-10 h-10 opacity-70 scale-90",
+                    isCurrent ? "ring-4 ring-primary/30 animate-pulse" : "",
                   ].join(" ")}
                 >
                   {step.icon}
@@ -143,7 +195,7 @@ const setStep = (idx: number) => {
                 {/* Label */}
                 <span
                   className={[
-                    "text-sm",
+                    "text-sm transition-all duration-300",
                     isActive ? "text-black font-semibold" : "text-gray-500",
                   ].join(" ")}
                 >
@@ -162,14 +214,16 @@ const setStep = (idx: number) => {
                   <Moto />
                   <p>Tipo de entrega</p>
                 </div>
-                <p>Delivery</p>
+                <p>
+                  {order?.delivery_mode === "delivery" ? "Delivery" : "Pickup"}
+                </p>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex ml-2 gap-3 items-center">
                   <Ubicacion fill="black" />
                   <p>Direccion</p>
                 </div>
-                <p>Calle falsa 123</p>
+                <p>{order?.address || "Sin dirección."}</p>
               </div>
             </ul>
             <hr className="border-[1px] my-5" />
@@ -214,12 +268,12 @@ const setStep = (idx: number) => {
               <li className="flex items-center justify-between gap-3">
                 <div className="flex gap-3 items-center">
                   <Moto />
-                  <p>Efectivo</p>
+                  <p>{order?.payment_method}</p>
                 </div>
-                <p>$30.000</p>
+                <p>${order?.price.toLocaleString()}</p>
               </li>
             </ul>
-            <hr className="border-[1px] my-5" />
+            {/* <hr className="border-[1px] my-5" />
             <h6 className="font-bold text-xl">Mi pago</h6>
             <ul className="my-5 flex flex-col gap-3">
               <li className="flex items-center justify-between gap-3">
@@ -240,11 +294,11 @@ const setStep = (idx: number) => {
                 </div>
                 <p>-$5.000</p>
               </li>
-            </ul>
+            </ul> */}
             <hr className="border-[1px] my-5" />
             <div className="flex w-full justify-between items-center">
-            <b>Total</b>
-            <b>$30.000</b>
+              <b>Total</b>
+              <b>${order?.price.toLocaleString()}</b>
             </div>
           </div>
         </section>

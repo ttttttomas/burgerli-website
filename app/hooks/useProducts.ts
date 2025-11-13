@@ -1,4 +1,3 @@
-import { Orders } from "@/types";
 import axios from "axios";
 
 export default function useAuth() {
@@ -29,7 +28,7 @@ export default function useAuth() {
 
   const createOrder = async (order: any) => {
     const response = await fetch(
-      "https://api-burgerli.iwebtecnology.com/api/createOrder",
+      "http://localhost:8000/createOrder",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

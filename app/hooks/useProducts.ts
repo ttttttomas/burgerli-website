@@ -28,7 +28,7 @@ export default function useAuth() {
 
   const createOrder = async (order: any) => {
     const response = await fetch(
-      "http://localhost:8000/createOrder",
+      "https://api-burgerli.iwebtecnology.com/api/createOrder",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

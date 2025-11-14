@@ -30,12 +30,12 @@ export function useOrderWebSocket(orderId: string): UseOrderWebSocketReturn {
   const connect = useCallback(async () => {
     try {
       // Determinar la URL del WebSocket según el entorno
-      const ws = new WebSocket(`ws://localhost:8000/ws/orders/${orderId}`);
+      const ws = new WebSocket(`wss://api-burgerli.iwebtecnology.com/api/ws/orders/${orderId}`);
 
 
       ws.onopen = () => {
         console.log('[WebSocket] Conexión establecida para orden:', orderId);
-        console.log('[WebSocket] URL:', `ws://localhost:8000/ws/orders/${orderId}`);
+        console.log('[WebSocket] URL:', `wss://api-burgerli.iwebtecnology.com/api/ws/orders/${orderId}`);
         setIsConnected(true);
         setError(null);
         reconnectAttemptsRef.current = 0;

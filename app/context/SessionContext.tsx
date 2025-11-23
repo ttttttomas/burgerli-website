@@ -6,9 +6,19 @@ import useAuth from "@/app/hooks/useAuth";
 
 type LoginResult = { id: string };
 
+type RegisterData = {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  addresses: string[];
+  locality: string;
+  notes: string;
+};
+
 type Ctx = {
   loginUser: (username: string, password: string) => Promise<LoginResult>;
-  registerUser: (data: any) => Promise<void>;
+  registerUser: (data: RegisterData) => Promise<void>;
   session: SessionUser | null;
   loading: boolean;
   userById: (id: string) => Promise<void>;
@@ -39,56 +49,68 @@ export const SessionContextProvider = ({
     setLoading(true);
     try {
       const res = await login({ email, password });
-      // if (res.status !== 200) throw new Error("Credenciales inválidas");
+      
+      if (!res || !res.data) {
+        throw new Error("Error en la respuesta del servidor");
+      }
 
       const api = res.data;
-      const name = String(api.name ?? api.name);
-      const id = String(api.user_id ?? api.id);
-      const emailUser = String(api.email ?? api.email);
-      const phone = String(api.phone ?? api.phone);
-      if (!id) throw new Error("Falta user_id en la respuesta");
+      console.log("🔐 Login exitoso:", api);
+      
+      // Extraer datos con fallbacks seguros
+      const name = api.name || api.username || "Usuario";
+      const id = api.user_id || api.ID || api.user_id_user_client;
+      const emailUser = api.email || email;
+      const phone = api.phone || "";
+      
+      if (!id) {
+        throw new Error("Error al iniciar sesión, intente de nuevo.");
+      }
 
-      const newSession = {
-        user_id_user_client: id,
-        username: name,
-        email: emailUser,
-        phone: phone,
+      const newSession: SessionUser = {
+        user_id_user_client: String(id),
+        username: String(name),
+        email: String(emailUser),
+        phone: String(phone),
       };
 
       // Actualizar la sesión inmediatamente
       setSession(newSession);
-      console.log("session cuando se hace login: ", newSession);
+      console.log("✅ Sesión creada exitosamente:", newSession);
 
-      // Pequeña pausa para asegurar que el estado se actualice
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Esperar un momento para asegurar que el estado se propague
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
-      return { id };
+      return { id: String(id) };
+    } catch (error: any) {
+      console.error("❌ Error en loginUser:", error);
+      setSession(null);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const registerUser = async (data: any) => {
+  const registerUser = async (data: RegisterData) => {
     setLoading(true);
 
     try {
       const res = await register(data);
-      console.log(res);
+      console.log("📝 Registro exitoso:", res);
 
-      // if (!res || res.status !== 200) {
-      //   throw new Error("Error en el registro");
-      // }
+      if (!res) {
+        throw new Error("Error en el registro");
+      }
 
-      // const { id } = res?.data;
-      // if (id) {
-      //   const newSession = {
-      //     user_id: String(id),
-      //     username: username
-      //   };
-      //   setSession(newSession);
-      // }
-    } catch (error) {
-      console.error("Error al registrar usuario:", error);
+       toast.success("¡Registro exitoso! Bienvenido a Burgerli. Ingresa a tu cuenta.");
+
+      // Esperar un momento para asegurar que el estado se propague
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      return res;
+    } catch (error: any) {
+      console.error("❌ Error al registrar usuario:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -102,21 +124,34 @@ export const SessionContextProvider = ({
       if (response && response.status === 200 && response.data) {
         const userData = response.data;
 
-        const newSession = {
-          user_id_user_client: String(userData.user_id),
-          username: String(userData.username),
-          email: String(userData.email),
-          phone: String(userData.phone),
+        // Extraer datos con fallbacks seguros
+        const name = userData.username || userData.name || "Usuario";
+        const id = userData.user_id || userData.id || userData.user_id_user_client;
+        const email = userData.email || "";
+        const phone = userData.phone || "";
+
+        if (!id) {
+          console.warn("⚠️ No se encontró user_id en la verificación de cookie");
+          setSession(null);
+          return;
+        }
+
+        const newSession: SessionUser = {
+          user_id_user_client: String(id),
+          username: String(name),
+          email: String(email),
+          phone: String(phone),
         };
+        
         setSession(newSession);
-        console.log("Sesión verificada:", newSession);
-        console.log("Asi queda la sesion del contexto: ", session);
+        console.log("✅ Sesión verificada:", newSession);
       } else {
         // Si no hay cookie válida, limpiar la sesión
         setSession(null);
+        console.log("ℹ️ No hay sesión activa");
       }
     } catch (error) {
-      console.error("Error verificando cookie:", error);
+      console.error("❌ Error verificando cookie:", error);
       setSession(null);
     }
   };
@@ -138,16 +173,28 @@ export const SessionContextProvider = ({
   const logoutUser = async () => {
     setLoading(true);
     try {
-      const response = await logout();
-
-      // Limpiar la sesión independientemente de la respuesta del servidor
-      setSession(null);
-
-      if (response?.status === 200) {
-        toast.success("Sesión cerrada correctamente");
+      // 1. Llamar al endpoint del backend para borrar la cookie del servidor
+      await logout();
+      
+      // 2. Llamar al endpoint de Next.js para borrar cookies del lado del cliente
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include',
+        });
+      } catch (e) {
+        console.warn("⚠️ No se pudo llamar al endpoint de logout de Next.js");
       }
+      
+      // 3. Limpiar la sesión del contexto
+      setSession(null);
+      console.log("✅ Sesión cerrada correctamente");
+      toast.success("Sesión cerrada correctamente");
+      
+      // 4. Esperar un momento antes de continuar
+      await new Promise((resolve) => setTimeout(resolve, 150));
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.error("❌ Error during logout:", error);
       // Aún así limpiar la sesión local
       setSession(null);
       toast.error("Error al cerrar sesión, pero se limpió localmente.");

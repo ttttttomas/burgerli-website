@@ -1,52 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Almacenamiento temporal en memoria (en producción, usar Redis o DB)
-const tempOrders = new Map<string, { orderId: string; timestamp: number }>();
+// Map en memoria para guardar temporalmente payment_id -> order_id
+// Se limpia automáticamente después de 10 minutos
+const tempOrders = new Map<string, { order_id: string; timestamp: number }>();
 
-// Limpiar órdenes expiradas (más de 10 minutos)
-const cleanupExpiredOrders = () => {
+// Limpiar entradas antiguas cada 5 minutos
+setInterval(() => {
   const now = Date.now();
-  const TEN_MINUTES = 10 * 60 * 1000;
-
+  const TTL = 10 * 60 * 1000; // 10 minutos
+  
   for (const [paymentId, data] of tempOrders.entries()) {
-    if (now - data.timestamp > TEN_MINUTES) {
+    if (now - data.timestamp > TTL) {
       tempOrders.delete(paymentId);
+      console.log(`🗑️ Orden temporal expirada: payment_id=${paymentId}`);
     }
   }
-};
+}, 5 * 60 * 1000);
 
+// POST: Guardar relación payment_id -> order_id
 export async function POST(req: NextRequest) {
   try {
-    const { payment_id, order_id } = await req.json();
+    const body = await req.json();
+    const { payment_id, order_id } = body;
 
     if (!payment_id || !order_id) {
       return NextResponse.json(
-        { error: "payment_id and order_id are required" },
+        { error: "payment_id y order_id son requeridos" },
         { status: 400 }
       );
     }
 
-    // Limpiar órdenes expiradas antes de agregar nueva
-    cleanupExpiredOrders();
-
-    // Guardar la orden temporalmente
+    // Guardar en el Map con timestamp
     tempOrders.set(payment_id, {
-      orderId: order_id,
-      timestamp: Date.now()
+      order_id: String(order_id),
+      timestamp: Date.now(),
     });
 
-    console.log(`📋 Orden temporal guardada: payment_id=${payment_id}, order_id=${order_id}`);
+    console.log(`✅ Orden temporal guardada: payment_id=${payment_id}, order_id=${order_id}`);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ 
+      success: true, 
+      payment_id, 
+      order_id 
+    });
   } catch (error) {
-    console.error("Error guardando orden temporal:", error);
+    console.error("❌ Error guardando orden temporal:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Error interno del servidor" },
       { status: 500 }
     );
   }
 }
 
+// GET: Recuperar order_id usando payment_id
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -54,35 +60,37 @@ export async function GET(req: NextRequest) {
 
     if (!payment_id) {
       return NextResponse.json(
-        { error: "payment_id is required" },
+        { error: "payment_id es requerido" },
         { status: 400 }
       );
     }
 
-    // Limpiar órdenes expiradas
-    cleanupExpiredOrders();
+    const data = tempOrders.get(payment_id);
 
-    const orderData = tempOrders.get(payment_id);
-
-    if (!orderData) {
-      return NextResponse.json(
-        { order_id: null, message: "Order not found or expired" },
-        { status: 404 }
-      );
+    if (!data) {
+      console.log(`⏳ Orden temporal no encontrada aún: payment_id=${payment_id}`);
+      return NextResponse.json({ 
+        order_id: null,
+        message: "Orden aún no procesada" 
+      });
     }
 
-    console.log(`📋 Orden temporal encontrada: payment_id=${payment_id}, order_id=${orderData.orderId}`);
+    console.log(`✅ Orden temporal recuperada: payment_id=${payment_id}, order_id=${data.order_id}`);
 
-    return NextResponse.json({ order_id: orderData.orderId });
+    return NextResponse.json({ 
+      order_id: data.order_id,
+      timestamp: data.timestamp 
+    });
   } catch (error) {
-    console.error("Error obteniendo orden temporal:", error);
+    console.error("❌ Error recuperando orden temporal:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Error interno del servidor" },
       { status: 500 }
     );
   }
 }
 
+// DELETE: Limpiar una orden temporal específica (opcional)
 export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -90,21 +98,25 @@ export async function DELETE(req: NextRequest) {
 
     if (!payment_id) {
       return NextResponse.json(
-        { error: "payment_id is required" },
+        { error: "payment_id es requerido" },
         { status: 400 }
       );
     }
 
     const deleted = tempOrders.delete(payment_id);
 
-    return NextResponse.json({
+    if (deleted) {
+      console.log(`🗑️ Orden temporal eliminada: payment_id=${payment_id}`);
+    }
+
+    return NextResponse.json({ 
       success: deleted,
-      message: deleted ? "Order removed" : "Order not found"
+      message: deleted ? "Orden eliminada" : "Orden no encontrada" 
     });
   } catch (error) {
-    console.error("Error eliminando orden temporal:", error);
+    console.error("❌ Error eliminando orden temporal:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Error interno del servidor" },
       { status: 500 }
     );
   }

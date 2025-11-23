@@ -9,7 +9,7 @@ import {useSession} from '@/app/context/SessionContext'
 
 
 export default function Header() {
-    const { session,loading, logoutUser } = useSession()
+    const { session, loading, logoutUser } = useSession()
     const [mobile, setMobile] = useState(false)
     const [menu, setMenu] = useState(false)
     const pathname = usePathname()
@@ -23,8 +23,14 @@ export default function Header() {
         setMenu(false);
         await logoutUser();
         router.push('/');
-        window.location.reload();
+        // Forzar recarga para limpiar todo el estado
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 100);
     }
+    
+    // Obtener el nombre de usuario de forma segura
+    const username = session?.username || 'Usuario';
     
 
   return (
@@ -52,39 +58,89 @@ export default function Header() {
                     <Link href="#bebidas" className='hidden md:block cursor-pointer'>Bebidas</Link>
                     <Link href="#sucursales" className='hidden md:block cursor-pointer'>Sucursales</Link>
                 </ul>}
-                {session && !loading && 
-                <section>
-                    <div className="flex gap-5 items-center">
-                        <Logo width={40}/>
-                        <span>{session.username}</span>
-                        <button onClick={handleClick} className={menu ? 'rotate-180 cursor-pointer transition-all' : 'cursor-pointer transition-all'}>
-                        <ArrowDown />
-                        </button>
+                {/* Mostrar loading mientras verifica la sesión */}
+                {loading && (
+                    <div className='flex items-center justify-center gap-2'>
+                        <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-black'></div>
+                        <p className='text-sm hidden md:block'>Cargando...</p>
                     </div>
-                </section>}
-                {!session && !loading &&
+                )}
+                
+                {/* Mostrar menú de usuario si hay sesión */}
+                {!loading && session && (
+                    <section className="relative">
+                        <div className="flex gap-3 md:gap-5 items-center">
+                            <Logo width={40}/>
+                            <span className="hidden md:block font-medium">{username}</span>
+                            <span className="md:hidden font-medium text-sm truncate max-w-[100px]">{username}</span>
+                            <button 
+                                onClick={handleClick} 
+                                className={`transition-transform duration-200 ${menu ? 'rotate-180' : ''}`}
+                                aria-label="Abrir menú de usuario"
+                            >
+                                <ArrowDown />
+                            </button>
+                        </div>
+                    </section>
+                )}
+                
+                {/* Mostrar botón de login si no hay sesión */}
+                {!loading && !session && (
                     <section>
-                     <Link href='/login' className='bg-yellow-200 cursor-pointer px-6 py-[8px] shadow-gray-700 shadow-md rounded-xl font-semibold'>Iniciar sesion</Link>
-                </section>}
-                {loading  && !session && <div className='flex items-center justify-center gap-2'>
-                    <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-black'></div>
-                    <p className='text-sm'>Cargando...</p>
-                </div>}
+                        <Link 
+                            href='/login' 
+                            className='bg-yellow-200 cursor-pointer px-4 md:px-6 py-2 md:py-[8px] shadow-gray-700 shadow-md rounded-xl font-semibold text-sm md:text-base hover:bg-yellow-300 transition-colors'
+                        >
+                            Iniciar sesión
+                        </Link>
+                    </section>
+                )}
                 <div className='md:hidden cursor-pointer' onClick={handleMobile}>
                     <MenuMobile />
                 </div>
             </section>
-            {menu && 
-            <div className='absolute right-0 rounded-bl-xl z-20 top-[86px] bg-red-500'>
-                <ul className='flex gap-1 flex-col justify-between items-start py-2 pl-3 pr-5 bg-amber-950 text-white'>
-                    <Link onClick={handleShow} href="/my-account/favorites">Mis favoritos</Link>
-                    <Link onClick={handleShow} href="/my-account/order-history">Historial de compras</Link>
-                    <Link onClick={handleShow} href={`/myaccount/personal-information/${session?.user_id_user_client}`}>Informacion personal</Link>
-                </ul>
-                <button onClick={handleLogout} className='text-center pl-3 cursor-pointer text-white hover:text-gray-300 transition-colors'>
-                    Cerrar sesion
-                </button>
-            </div>}
+            {/* Menú desplegable de usuario */}
+            {menu && session && (
+                <div className='absolute right-5 md:right-10 rounded-lg z-30 top-[70px] md:top-[86px] shadow-xl overflow-hidden'>
+                    <ul className='flex gap-1 flex-col justify-between items-start py-3 px-4 bg-amber-950 text-white min-w-[200px]'>
+                        <li className="w-full">
+                            <Link 
+                                onClick={handleShow} 
+                                href="/my-account/favorites"
+                                className="block py-2 px-2 hover:bg-amber-900 rounded transition-colors"
+                            >
+                                Mis favoritos
+                            </Link>
+                        </li>
+                        <li className="w-full">
+                            <Link 
+                                onClick={handleShow} 
+                                href="/my-account/order-history"
+                                className="block py-2 px-2 hover:bg-amber-900 rounded transition-colors"
+                            >
+                                Historial de compras
+                            </Link>
+                        </li>
+                        <li className="w-full">
+                            <Link 
+                                onClick={handleShow} 
+                                href={`/myaccount/personal-information/${session.user_id_user_client}`}
+                                className="block py-2 px-2 hover:bg-amber-900 rounded transition-colors"
+                            >
+                                Información personal
+                            </Link>
+                        </li>
+                        <li className="w-full border-t border-amber-800 mt-2 pt-2">
+                            <button 
+                                onClick={handleLogout} 
+                                className='w-full text-left py-2 px-2 hover:bg-red-900 rounded transition-colors text-red-200 hover:text-white'
+                            >
+                                Cerrar sesión
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            )}
         </header>
     )
 }

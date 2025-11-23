@@ -1,8 +1,9 @@
 // /app/api/mercadopago/create-order/route.ts
 import { NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import {getBranchTokenByLocal, getWebhookUrl} from "../config";
 
-const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
+// const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 const FRONT_URL = "https://imido-curliest-cole.ngrok-free.dev"; // CAMBIAR A DOMIINIO REAL
 
 export async function POST(req) {
@@ -11,15 +12,38 @@ export async function POST(req) {
     const items = Array.isArray(body?.items) ? body.items : [];
     const order = body?.order;
 
+    console.log("🛒 [CreatePreference] Iniciando creación de preferencia");
+    console.log("🛒 [CreatePreference] Local:", order?.local);
+    console.log("🛒 [CreatePreference] Items:", items.length);
+
     if (!items.length || items.some((it) => it?.unit_price == null)) {
+      console.error("❌ [CreatePreference] Error: items inválidos");
       return NextResponse.json(
         { error: true, message: "unit_price needed" },
         { status: 400 },
       );
     }
 
-    const client = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN });
+    // Acá definimos la sucursal / local
+    const local = order?.local;
+    
+    if (!local) {
+      console.error("❌ [CreatePreference] Error: local no especificado");
+      return NextResponse.json(
+        { error: true, message: "local es requerido" },
+        { status: 400 },
+      );
+    }
+
+    // token correcto según el local
+    console.log("🔑 [CreatePreference] Obteniendo token para local:", local);
+    const accessToken = getBranchTokenByLocal(local);
+
+    const client = new MercadoPagoConfig({accessToken});
     const preference = new Preference(client);
+
+    const webhookUrl = getWebhookUrl(FRONT_URL, local);
+    console.log("🔔 [CreatePreference] Webhook URL:", webhookUrl);
 
     const mpBody = {
       items: items.map((it) => ({
@@ -55,15 +79,18 @@ export async function POST(req) {
         failure: `${FRONT_URL}/failure`,
         pending: `${FRONT_URL}/pending`,
       },
-      notification_url:
-        "https://imido-curliest-cole.ngrok-free.dev/api/mercadopago/webhook",
+      notification_url: webhookUrl,
     };
 
+    console.log("📤 [CreatePreference] Creando preferencia en MercadoPago...");
     const pref = await preference.create({ body: mpBody });
+    
+    console.log("✅ [CreatePreference] Preferencia creada exitosamente");
+    console.log("🆔 [CreatePreference] Preference ID:", pref.id);
 
     return NextResponse.json(pref);
   } catch (error) {
-    console.error("MP create preference error:", error);
+    console.error("❌ [CreatePreference] Error creando preferencia:", error);
     return NextResponse.json(
       { error: true, message: error?.message ?? "Error" },
       { status: 500 },

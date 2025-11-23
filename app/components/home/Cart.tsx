@@ -266,13 +266,13 @@ export default function Cart() {
               className="w-full border rounded-md border-white p-1"
             >
               <option disabled>Seleccione una sucursal</option>
-              <option className="text-black" value="Gerli">
+              <option className="text-black" value="gerli">
                 Gerli
               </option>
-              <option className="text-black" value="Wilde">
+              <option className="text-black" value="wilde">
                 Wilde
               </option>
-              <option className="text-black" value="Lanus">
+              <option className="text-black" value="lanus">
                 Lanus
               </option>
             </select>

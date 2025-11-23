@@ -19,6 +19,7 @@ export type ProductType = {
   description: string;
   quantity: number;
   price: number;
+  size: string;
   image: string;
   category: string; // category_id
   currency_id: string; // ES PARA MERCADO PAGO
@@ -53,7 +54,7 @@ export type Products = {
 };
 
 export type Orders = {
-  // id_order: string;
+  id_order?: string;
   // created_at: string; // VIENEN CREADOS DESDE LA BASE DE DATOS
   payment_method: string;
   delivery_mode: string;

@@ -20,35 +20,9 @@ function Content() {
   const router = useRouter();
   const paymentId = sp.get("payment_id");
   const status = sp.get("status");
-  const { OrderById } = useSession();
-  const [order, setOrder] = useState<Orders>();
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [products, setProducts] = useState([]);
   const [orderId, setOrderId] = useState<string | null>(null);
-
-  function parseBrokenJsonArray(arr: string[]) {
-    // 1️⃣ Limpiar posibles llaves sobrantes al inicio o final de los fragmentos
-    const cleaned = arr.map((str) =>
-      str
-        .replace(/^{/, "") // elimina { al inicio
-        .replace(/}$/, "") // elimina } al final
-        .trim(),
-    );
-
-    // 2️⃣ Unir los fragmentos en una cadena JSON válida
-    const jsonString = `{${cleaned.join(",")}}`;
-
-    // 3️⃣ Intentar parsear el JSON a objeto
-    try {
-      return JSON.parse(jsonString);
-    } catch (error) {
-      console.log(error);
-      console.error("❌ Error al convertir a JSON:");
-      console.error("Cadena generada:", jsonString);
-      return null;
-    }
-  }
 
   useEffect(() => {
     async function fetchOrderId() {

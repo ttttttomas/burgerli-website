@@ -20,7 +20,6 @@ const inter = Inter({
 export default function LoginPage() {
   const router = useRouter();
   const { loginUser, loading } = useSession();
-  // const { session, isLoading, updateSession } = useSession();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,25 +29,36 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(email, password);
+    
+    if (!email || !password) {
+      setError("Por favor completa todos los campos");
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
+    
     try {
-      await loginUser(email, password);
-      router.push(`/`);
-      router.refresh();
+      const result = await loginUser(email, password);
+      
+      if (result && result.id) {
+        
+        // Redirigir a la página principal
+        router.push('/');
+        
+        // Forzar recarga para asegurar que todo el estado se actualice
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 100);
+      }
     } catch (err: any) {
-      new Error(
-        err.message || "Ha ocurrido un error intentando iniciar sesión",
-      );
-      setError(err.message || "Ha ocurrido un error intentando ");
+      setError(err.message || "Credenciales inválidas. Por favor intenta nuevamente.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Mostrar loading si está verificando la sesión
+  // Si está verificando la sesión, mostrar loading
   if (loading) {
     return (
       <main
@@ -56,7 +66,7 @@ export default function LoginPage() {
       >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#b36912] mx-auto"></div>
-          <p className="mt-4 text-[#4b2f1e]">Verificando sesión...</p>
+          <p className="mt-4 text-[#4b2f1e] font-medium">Verificando sesión...</p>
         </div>
       </main>
     );
@@ -147,40 +157,33 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
-            {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
-            <button className="mt-3 text-sm underline underline-offset-2 opacity-90 hover:opacity-100">
+            
+            {/* Error message */}
+            {error && (
+              <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-sm text-red-200">{error}</p>
+              </div>
+            )}
+            
+            <button type="button" className="mt-3 text-sm underline underline-offset-2 opacity-90 hover:opacity-100">
               ¿Olvidaste tu contraseña?
             </button>
 
             {/* Submit */}
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !email || !password}
               className="mt-6 w-full rounded-xl py-3 font-semibold bg-[#b36912] text-black hover:bg-[#a35f0f] active:scale-[.99] transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#b36912]"
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
-                  Iniciando sesión...
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black"></div>
+                  <span>Iniciando sesión...</span>
                 </div>
               ) : (
                 "Ingresar"
               )}
             </button>
-
-            {/* Divider */}
-            {/* <div className="flex items-center gap-4 my-8">
-              <div className="h-px flex-1 bg-white/30" />
-              <span className="text-sm">O ingresa con:</span>
-              <div className="h-px flex-1 bg-white/30" />
-            </div> */}
-
-            {/* Social buttons */}
-            {/* <div className="flex items-center justify-center gap-6">
-              <SocialBtn type="google" />
-              <SocialBtn type="facebook" />
-              <SocialBtn type="instagram" />
-            </div> */}
 
             {/* Register */}
             <p className="mt-10 text-center text-sm">

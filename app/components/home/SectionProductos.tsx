@@ -56,10 +56,9 @@ export default function Productos() {
         />
       </div>
       <ul className="text-black flex flex-wrap gap-5 justify-center xl:justify-between mt-10 mb-16">
-        {/* {burgers.map((burger: Burgers) => (
+        {burgers.map((burger: Burgers) => (
           <ModalProducts key={burger.id_burger} product={burger} />
         ))}
-        <ModalProducts product={product} /> */}
         <ModalProducts product={product} />
       </ul>
       <div

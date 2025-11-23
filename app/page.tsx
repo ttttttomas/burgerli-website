@@ -3,11 +3,13 @@ import SectionProductos from './components/home/SectionProductos'
 import Cart from './components/home/Cart'
 import Sucursales from './components/home/Sucursales'
 import Zonas from './components/home/Zonas';
+import DeliveryZoneModal from './components/home/DeliveryZoneModal';
 
 export default function Home() {
 
   return (
     <main className='w-full'>
+      <DeliveryZoneModal />
       <section id="carrusel">
           <Carrusel />
       </section>

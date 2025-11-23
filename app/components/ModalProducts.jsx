@@ -16,7 +16,7 @@ const ModalProducts = ({product}) => {
   const friesList = ["Cheddar","Cheddar y Panceta","Papas Burgerli"];
   
 
-  const sizePrices = { Simple: 0, Doble: 200, Triple: 300 };
+  const sizePrices = { Simple: 0, Doble: 2000, Triple: 3000 };
   const extraPrice = 100; 
 
 
@@ -108,7 +108,8 @@ const ModalProducts = ({product}) => {
 
                 <div className="bg-[#FCEDCC] py-5 overflow">
                   <img
-                    src={selectedProduct.main_image}
+                  src="/bg_burgers.jpg"
+                    // src={selectedProduct.main_image}
                     alt={selectedProduct.name}
                     className="h-96 mx-auto rounded-xl object-cover"
                   />

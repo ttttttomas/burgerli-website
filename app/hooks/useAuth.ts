@@ -10,7 +10,9 @@ type Register = {
   password: string;
   email: string;
   phone: string;
-  address: string
+  addresses: string[];
+  locality: string;
+  notes: string;
 }
 
 
@@ -27,29 +29,29 @@ export default function useAuth() {
       // }
        // MAPEÁ SIEMPRE A UN NOMBRE CONSISTENTE
   const api = res.data;               
-  const id = String(api.user_id ?? api.id);  
+  const id = String(api.user_id ?? api.id_user_client);  
   if (!id) throw new Error("Falta user_id en la respuesta");
 
       return res;
   };
   
   const register = async (data : Register) => {
-    try {
-      const res = await fetch("https://api-burgerli.iwebtecnology.com/api/create_user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),                      
-      });
-    
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        console.error("Error 422 detail:", err); // mira aquí el detalle exacto
-        throw new Error(`HTTP ${res.status}`);
-      }
-      return res.json();
-    } catch (error) {
-      console.log(error);
+    const res = await fetch("http://localhost:8000/registerUserClients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),                      
+    });
+  
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      console.error("❌ Error en registro:", err);
+      
+      // El backend devuelve { detail: "mensaje de error" }
+      const errorMessage = err.detail || `Error ${res.status}`;
+      throw new Error(errorMessage);
     }
+    
+    return res.json();
   };
 
   const getUserById = async (id_user_client: string) => {

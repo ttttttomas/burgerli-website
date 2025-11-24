@@ -107,9 +107,13 @@ export default function CheckoutPage() {
     );
 
   const handleClick = async () => {
-    console.log("order a enviar:", order);
+    console.log("💳 [Checkout] Iniciando pago con MercadoPago");
+    console.log("💳 [Checkout] Order data:", order);
+    
     if (order.name && order.email && order.phone) {
       try {
+        // Solo crear la preferencia de MercadoPago
+        // La orden se creará en el webhook cuando el pago sea aprobado
         const res = await fetch("/api/mercadopago/createPreference", {
           method: "POST",
           headers: {
@@ -130,13 +134,20 @@ export default function CheckoutPage() {
           }),
         });
         const data = await res.json();
-        console.log(data);
+        console.log("✅ [Checkout] Preferencia creada:", data);
 
         if (data.init_point) {
+          console.log("🔄 [Checkout] Redirigiendo a MercadoPago...");
+          // Limpiar el draft antes de redirigir
+          localStorage.removeItem("checkoutDraft:v1");
           router.push(data.init_point);
+        } else {
+          console.error("❌ [Checkout] No se recibió init_point");
+          toast.error("Error al crear la preferencia de pago");
         }
       } catch (error) {
-        console.error("Error al realizar el pedido:", error);
+        console.error("❌ [Checkout] Error al crear preferencia:", error);
+        toast.error("Error al procesar el pago. Intenta nuevamente.");
       }
     } else {
       toast.error("Por favor, rellene todos los campos obligatorios");

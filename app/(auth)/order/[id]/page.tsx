@@ -174,7 +174,10 @@ function OrderContent({ id }: { id: string }) {
         </div>
 
         <div className="flex justify-center gap-4 md:gap-10 my-6 md:my-10 items-center px-4">
-          <img src="/order-1.png" alt="Order" className="w-20 md:w-32" />
+          {order?.status === "confirmed" && <img src="/order-1.png" alt="Order" className="w-20 md:w-32" />}
+          {order?.status === "in_preparation" && <img src="/order-1.png" alt="Order" className="w-20 md:w-32" />}
+          {order?.status === "on_the_way" && <img src="/order-3.png" alt="Order" className="w-20 md:w-32" />}
+          {order?.status === "delivered" && <img src="/order-2.png" alt="Order" className="w-20 md:w-32" />}
           {/* CAMBIO DE ESTADO DE IMAGENES CUANDO EL PEDIDO ESTE ENTREGADO */}
           {/* <img src="/order-2.png" alt="Order" className="w-20 md:w-32" /> */}
 
@@ -296,7 +299,7 @@ function OrderContent({ id }: { id: string }) {
               <li className="flex items-center justify-between gap-2 md:gap-3">
                 <div className="flex gap-2 md:gap-3 items-center">
                   <Tarjeta />
-                  <p className="text-sm md:text-base">{order?.payment_method === "mercadopago" ? "Mercado Pago" : "Efectivo"}</p>
+                  <p className="text-sm md:text-base">{order?.payment_method === "account_money" ? "Mercado Pago" : "Efectivo"}</p>
                 </div>
                 <p className="text-sm md:text-base font-medium">${order?.price.toLocaleString()}</p>
               </li>

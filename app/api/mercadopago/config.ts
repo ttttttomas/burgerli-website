@@ -1,9 +1,8 @@
 
 type LocalId = "gerli" | "lanus" | "avellaneda"; 
-
 const BRANCHES: Record<LocalId, { token: string }> = {
-  "gerli": { token: process.env.MP_TOKEN_GERLI! },
-  "lanus": { token: process.env.MP_ACCESS_TOKEN! },
+  "gerli": { token: process.env.MP_ACCESS_TOKEN! },
+  "lanus": { token: process.env.MP_TOKEN_LANUS! },
   "avellaneda": { token: process.env.MP_TOKEN_AVELLANEDA! },
 };
 

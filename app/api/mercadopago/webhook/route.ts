@@ -279,12 +279,12 @@ async function createOrderFromPayment(
     );
     console.log(
       "🌐 [CreateOrder] URL API externa:",
-      `https://api-burgerli.iwebtecnology.com/api/createOrder`
+      `http://localhost:8000/createOrder`
     );
 
     // Llamar a la API externa para crear la orden
     const response = await fetch(
-      `https://api-burgerli.iwebtecnology.com/api/createOrder`,
+      `http://localhost:8000/createOrder`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

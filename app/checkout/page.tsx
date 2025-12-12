@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   // const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<Orders>({
     payment_method: "",
+    id_user_client: session?.user_id_user_client || "",
     delivery_mode: "",
     price: 0,
     status: "Confirmado",
@@ -47,6 +48,7 @@ export default function CheckoutPage() {
         name: session.username || "",
         email: session.email || "",
         phone: session.phone || "",
+        id_user_client: session.user_id_user_client || "",
       }));
       console.log("orden actualizada", session);
     }
@@ -57,6 +59,7 @@ export default function CheckoutPage() {
     if (draft) {
       setOrder({
         // id_order: id,
+        id_user_client: session?.user_id_user_client || "",
         payment_method: draft.payment_method || "efete",
         delivery_mode: draft.delivery_mode,
         price: draft.price,
@@ -71,7 +74,7 @@ export default function CheckoutPage() {
         products: draft.products,
       });
     }
-  }, [draft]);
+  }, [draft, session]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOrder({ ...order, [e.target.name]: e.target.value });
@@ -168,6 +171,7 @@ export default function CheckoutPage() {
     try {
       const newOrder = {
         payment_method: "Efectivo",
+        id_user_client: session?.user_id_user_client || "",
         delivery_mode: order.delivery_mode || draft.delivery_mode,
         price: order.price || draft.price,
         status: "Confirmado",

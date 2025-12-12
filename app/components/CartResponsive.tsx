@@ -2,7 +2,7 @@
 import Ubicacion from "./icons/Ubicacion";
 
 import Cupon from "./Cupon";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Inter, Pattaya } from "next/font/google";
 import { useCart } from "@/app/context/CartContext";
 import { Address, CartProduct } from "@/types";
@@ -28,7 +28,6 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
   const { session, userById } = useSession();
   const router = useRouter();
   // MODAL
-  const [open, setOpen] = useState(false);
   // DELIVERY STATES
   const [addresses, setAddresses] = useState<[]>([]);
   const [addressInput, setAddressInput] = useState("");
@@ -57,8 +56,12 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
   useEffect(() => {
     const getUser = async () => {
       if (!session) return;
+      console.log(session);
+
       const user = (await userById(session.user_id_user_client)) as any;
-      setAddresses(user?.[0]?.addresses ?? []);
+      console.log(user);
+
+      setAddresses(user?.[0].addresses);
     };
     getUser();
   }, [userById, session]);
@@ -250,51 +253,46 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
               Lanus
             </option>
           </select>
-          <div className="flex flex-col gap-2">
-            {addresses?.length > 0 ? (
-              <p>ss</p>
-            ) : (
-              addresses.map((address: Address) => (
-                <div
-                  key={address.address}
-                  className="flex justify-between items-center"
-                >
-                  <div className="flex gap-3">
-                    <Ubicacion fill={"white"} />
-                    <div className="flex flex-col justify-center">
-                      {/* ACA VAN LAS DIRECCIONES GUARDADAS DEL USUARIO */}
-                      <p>{address.address}</p>
-                      <small>{address.type}</small>
+            <div className="flex flex-col gap-5">
+              {addresses?.length === 0 && session ? (
+                <p>No tienes direcciones guardadas en tu perfil.</p>
+              ) : (
+                addresses.map((address) => (
+                  <div
+                    key={address}
+                    className="flex py-8 justify-between items-center"
+                  >
+                    <div className="flex gap-3">
+                      <Ubicacion fill={"white"} />
+                      <div className="flex flex-col justify-center">
+                        <p>{address}</p>
+                      </div>
                     </div>
+                    <input
+                      type="radio"
+                      name="address"
+                      className="rounded-xl"
+                      checked={selectedAddress === address}
+                      onChange={() => setSelectedAddress(address)}
+                    />
                   </div>
-                  <input
-                    type="radio"
-                    name="address"
-                    className="rounded-xl"
-                    checked={selectedAddress === address.address}
-                    onChange={() => setSelectedAddress(address.address)}
-                  />
-                </div>
-              ))
-            )}
-          </div>
-          <p className="text-start font-bold text-lg my-4">
-            Indicá la dirección de entrega
-          </p>
-          {!session && (
-            <div className=" py-1 my-3">
-              {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
-              <input
-                value={addressInput}
-                onChange={handleAddressInput}
-                placeholder="Indique su direccion"
-                className="w-full rounded-xl py-1 px-2 text-black bg-white"
-                type="text"
-              />
+                ))
+              )}
             </div>
-          )}
-        </>
-      )}
+            {!session && (
+              <div className=" py-1 my-3">
+                {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
+                <input
+                  value={addressInput}
+                  onChange={handleAddressInput}
+                  placeholder="Indique su direccion"
+                  className="w-full rounded-xl py-1 px-2 text-black bg-white"
+                  type="text"
+                />
+              </div>
+            )}
+          </>
+        )}
       {mode === "pickup" && (
         <div>
           <p className="text-start font-bold text-lg my-4">

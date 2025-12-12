@@ -75,7 +75,7 @@ export default function Header() {
                             <span className="md:hidden font-medium text-sm truncate max-w-[100px]">{username}</span>
                             <button 
                                 onClick={handleClick} 
-                                className={`transition-transform duration-200 ${menu ? 'rotate-180' : ''}`}
+                                className={`transition-transform duration-300 cursor-pointer ${menu ? 'rotate-180' : ''}`}
                                 aria-label="Abrir menú de usuario"
                             >
                                 <ArrowDown />
@@ -103,19 +103,13 @@ export default function Header() {
             {menu && session && (
                 <div className='absolute right-5 md:right-10 rounded-lg z-30 top-[70px] md:top-[86px] shadow-xl overflow-hidden'>
                     <ul className='flex gap-1 flex-col justify-between items-start py-3 px-4 bg-amber-950 text-white min-w-[200px]'>
-                        <li className="w-full">
-                            <Link 
-                                onClick={handleShow} 
-                                href="/my-account/favorites"
-                                className="block py-2 px-2 hover:bg-amber-900 rounded transition-colors"
-                            >
+                        <li className="w-full block py-2 px-2  text-gray-400 rounded transition-colors">
                                 Mis favoritos
-                            </Link>
                         </li>
                         <li className="w-full">
                             <Link 
                                 onClick={handleShow} 
-                                href="/my-account/order-history"
+                                href="/myaccount/order-history"
                                 className="block py-2 px-2 hover:bg-amber-900 rounded transition-colors"
                             >
                                 Historial de compras

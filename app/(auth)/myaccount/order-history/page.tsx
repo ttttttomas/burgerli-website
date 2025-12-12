@@ -16,7 +16,7 @@ export default function OrderHistoryPage() {
   const [orders, setOrders] = useState<Orders[]>([])
 
   const filteredData = (data: Orders[]) => {
-    return data.filter((item) => item.status === "confirmed");
+    return data.filter((item) => item.status === "delivered");
   };
 
   useEffect(() => {
@@ -44,11 +44,9 @@ export default function OrderHistoryPage() {
   
 
   return (
-    <section className={`w-full px-10 py-5 ${inter.className}`}>
+    <section className={`w-full h-[70vh] px-10 py-5 ${inter.className}`}>
         <div className="flex gap-5 flex-wrap justify-start">
-        {orders?.map((order) => (
-          <OrderCard key={order.id_order} />
-        ))}
+        {orders?.map((order) => <OrderCard key={order.id_order} order={order} />)}
         </div>
     </section>
 

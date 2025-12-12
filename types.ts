@@ -55,6 +55,7 @@ export type Products = {
 
 export type Orders = {
   id_order?: string;
+  id_user_client?: string;
   // created_at: string; // VIENEN CREADOS DESDE LA BASE DE DATOS
   payment_method: string;
   delivery_mode: string;
@@ -96,7 +97,7 @@ export type UsersClient = {
   password: string;
   locality: string;
   favorites?: string[];
-  addresses: string[] | string;
+  addresses: string[] ;
   notes?: string;
 };
 

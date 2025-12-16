@@ -4,7 +4,7 @@ export default function useAuth() {
   const getBurgers = async () => {
     try {
       const response = await axios.get(
-        "https://api-burgerli.iwebtecnology.com/api/burgers",
+        "https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/burgers",
       );
       if (!response) {
         return null;
@@ -52,7 +52,7 @@ export default function useAuth() {
 
   const createOrder = async (order: any) => {
     const response = await fetch(
-      "http://localhost:8000/createOrder",
+      "https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/createOrder",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,7 +74,7 @@ export default function useAuth() {
   const getOrder = async (id: string) => {
     try {
       const response = await axios.get(
-        `https://api-burgerli.iwebtecnology.com/api/orders/${id}`,
+        `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/orders/${id}`,
         {
           headers: {
             "Content-Type": "application/json",

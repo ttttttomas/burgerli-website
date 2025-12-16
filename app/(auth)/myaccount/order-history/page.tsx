@@ -23,7 +23,7 @@ export default function OrderHistoryPage() {
   const userId = session?.user_id_user_client
     if (userId) {
       try {
-        fetch(`http://localhost:8000/getOrders`)
+        fetch(`https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/getOrders`)
         .then((res) => res.json())
         .then((data) => {
           console.log("data", data);

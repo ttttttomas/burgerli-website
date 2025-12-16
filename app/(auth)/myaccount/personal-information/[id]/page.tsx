@@ -59,7 +59,7 @@ export default function PersonalInformationPage({
   const updateUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("userData", userData);
-    fetch(`http://localhost:8000/mod-user/${id}`, {
+    fetch(`https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/mod-user/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -80,7 +80,7 @@ export default function PersonalInformationPage({
 
   const addressSubmit = () => {
     setAddAddress(false);
-    fetch(`http://localhost:8000/mod-user/${id}`, {
+    fetch(`https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/mod-user/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -102,7 +102,7 @@ export default function PersonalInformationPage({
   };
 
   const deleteAddress = (ad: string) => {
-    fetch(`http://localhost:8000/mod-user/${id}`, {
+    fetch(`https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/mod-user/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

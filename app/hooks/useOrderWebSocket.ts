@@ -32,7 +32,7 @@ export function useOrderWebSocket(orderId: string): UseOrderWebSocketReturn {
       // Determinar la URL del WebSocket según el entorno
       // const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_BASE_URL
 
-      const ws = new WebSocket(`wss://https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/ws/orders/${orderId}`);
+      const ws = new WebSocket(`wss://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/ws/orders/${orderId}`);
 
       // const ws = new WebSocket(
       //   `wss://api-burgerli.iwebtecnology.com/api/ws/orders/${orderId}`

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getBranchTokenByLocal } from "../config";
 
 // URL de la API externa - usar variable de entorno
-// const EXTERNAL_API_URL = process.env.EXTERNAL_API_URL || "http://localhost:8000";
+// const EXTERNAL_API_URL = process.env.EXTERNAL_API_URL || "https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api";
 
 // Map para evitar procesar el mismo pago múltiples veces
 // MercadoPago envía múltiples notificaciones (payment + merchant_order)
@@ -186,7 +186,7 @@ async function handlePayment(paymentId: string, token: string, local: string) {
 
         const tempResponse = await fetch(
           `${
-            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+            process.env.NEXT_PUBLIC_APP_URL || "https://burgerli.com.ar"
           }/api/orders/temp`,
           {
             method: "POST",
@@ -273,18 +273,9 @@ async function createOrderFromPayment(
         : [],
     };
 
-    console.log(
-      "📤 [CreateOrder] Datos a enviar:",
-      JSON.stringify(orderData, null, 2)
-    );
-    console.log(
-      "🌐 [CreateOrder] URL API externa:",
-      `http://localhost:8000/createOrder`
-    );
-
     // Llamar a la API externa para crear la orden
     const response = await fetch(
-      `http://localhost:8000/createOrder`,
+      `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/createOrder`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -5,7 +5,7 @@ import Cupon from "./Cupon";
 import { useEffect, useState } from "react";
 import { Inter, Pattaya } from "next/font/google";
 import { useCart } from "@/app/context/CartContext";
-import { Address, CartProduct } from "@/types";
+import { CartProduct } from "@/types";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -37,7 +37,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
   const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const [deliveryPricing, setDeliveryPricing] = useState(5000);
+  const [deliveryPricing, setDeliveryPricing] = useState(1000);
   // TOTAL STATES
   const [salePricing] = useState(0);
   const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
@@ -162,9 +162,9 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
           <li key={product.price} className="flex justify-between items-start">
             <div className="flex flex-col items-start gap-1">
               <p className="font-bold">{product.name}</p>
-              <small>Sin: {product.sin.join(", ")}</small>
+              {product.sin && <small>Sin: {product.sin.join(", ")}</small>}
               <small>Tamaño: {product.size}</small>
-              <small>Papas: {product.fries}</small>
+              {product.fries && <small>Papas: {product.fries}</small>}
               <button
                 onClick={() => removeFromCart(product)}
                 className="underline cursor-pointer text-sm"

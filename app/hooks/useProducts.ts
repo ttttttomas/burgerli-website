@@ -16,6 +16,32 @@ export default function useAuth() {
       console.log(error);
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 400) {
+          console.error("Not fries found");
+        } else {
+          console.error(error);
+        }
+      } else {
+        console.error("An unexpected error occurred");
+      }
+    }
+  };
+  const getFries = async () => {
+    try {
+      const response = await axios.get(
+        "https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/fries",
+      );
+      if (!response) {
+        return null;
+      }
+      if (response.status === 200) {
+        console.log(response.data);
+        return response.data;
+        
+      }
+    } catch (error) {
+      console.log(error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 400) {
           console.error("Not burgers found");
         } else {
           console.error(error);
@@ -25,6 +51,7 @@ export default function useAuth() {
       }
     }
   };
+
   // const getDrinks = async () => {
   //   try {
   //     const response = await axios.get(
@@ -98,5 +125,5 @@ export default function useAuth() {
       }
     }
   };
-  return { getBurgers, getOrder, createOrder };
+  return { getBurgers, getOrder, getFries, createOrder };
 }

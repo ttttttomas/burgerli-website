@@ -129,7 +129,7 @@ export default function CheckoutPage() {
                 id: "burgerli-order",
                 title: "Compra en Burgerli",
                 quantity: 1,
-                unit_price: draft.price,
+                unit_price: Number(draft.price),
                 currency_id: "ARS",
                 description: "Sin descripción",
               },

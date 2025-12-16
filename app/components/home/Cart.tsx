@@ -39,7 +39,7 @@ export default function Cart() {
   const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const [deliveryPricing, setDeliveryPricing] = useState(5000);
+  const [deliveryPricing, setDeliveryPricing] = useState(1000);
   // TOTAL STATES
   const [salePricing] = useState(0);
   const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
@@ -182,9 +182,9 @@ export default function Cart() {
                 <div className="flex flex-col items-start gap-1">
                   <p className="font-bold">{product.name}</p>
                   {/* <small>Extras: {product.extras.join(", ")}</small> */}
-                  <small>Sin: {product.sin.join(", ")}</small>
+                  {product.sin && <small>Sin: {product.sin.join(", ")}</small>}
                   <small>Tamaño: {product.size}</small>
-                  <small>Papas: {product.fries}</small>
+                  {product.fries && <small>Papas: {product.fries}</small>}
                   <button
                     onClick={() => removeFromCart(product)}
                     className="underline cursor-pointer text-sm"

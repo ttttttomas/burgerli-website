@@ -1,4 +1,7 @@
 export type Burgers = {
+  description_list?: string[];
+  id_drink?: string;
+  id_fries?: string;
   id_burger: string;
   name: string;
   size: string;

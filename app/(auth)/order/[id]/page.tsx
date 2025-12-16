@@ -258,11 +258,33 @@ function OrderContent({ id }: { id: string }) {
                       className="flex flex-row gap-3 md:gap-5 w-full justify-between items-center border-b pb-3 md:border-none md:pb-0"
                     >
                       <div className="flex gap-2 md:gap-3 items-center flex-1">
+                      {product?.name === "Big G" && (
                         <img
+                          src="/burgers/BigG.png"
                           className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
-                          src="/bg_burgers.jpg"
                           alt={product?.name || "Producto"}
                         />
+                      )}
+                      {product?.name === "Clasica" && (
+                        <img
+                          src="/burgers/Clasica.png"
+                          className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
+                          alt={product?.name || "Producto"}
+                        />
+                      )}
+                      {product?.name === "BBQ Crunchy" && (
+                        <img
+                          src="/burgers/BBQ.png"
+                          className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
+                          alt={product?.name || "Producto"}
+                        />
+                      )}{product?.name === "Bacon T" && (
+                        <img
+                          src="/burgers/BaconT.png"
+                          className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
+                          alt={product?.name || "Producto"}
+                        />
+                      )}
                         <div className="flex flex-col gap-1 md:gap-3 justify-between h-full flex-1 min-w-0">
                           <p className="font-bold text-sm md:text-xl truncate">
                             {product?.name || "Producto"}

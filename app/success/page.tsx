@@ -2,7 +2,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "../context/SessionContext";
-import { Orders } from "@/types";
 
 export const dynamic = "force-dynamic"; // evita SSG
 

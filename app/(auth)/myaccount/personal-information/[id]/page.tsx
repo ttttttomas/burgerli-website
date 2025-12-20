@@ -25,7 +25,6 @@ export default function PersonalInformationPage({
 }) {
   const { userById } = useSession();
   const { id } = use(params);
-  console.log(id);
   
   
   const [user, setUser] = useState<UsersClient | null>(null);

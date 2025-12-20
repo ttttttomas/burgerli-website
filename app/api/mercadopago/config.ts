@@ -1,9 +1,9 @@
 
-type LocalId = "gerli" | "lanus" | "avellaneda"; 
+type LocalId = "gerli" | "lanus" | "wilde"; 
 const BRANCHES: Record<LocalId, { token: string }> = {
   "gerli": { token: process.env.MP_ACCESS_TOKEN! },
   "lanus": { token: process.env.MP_TOKEN_LANUS! },
-  "avellaneda": { token: process.env.MP_TOKEN_AVELLANEDA! },
+  "wilde": { token: process.env.MP_TOKEN_WILDE! },
 };
 
 export function getBranchTokenByLocal(local: unknown): string {

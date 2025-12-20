@@ -16,14 +16,14 @@ export default function Sucursales() {
                 </Link>
             </li>
             <li className="flex flex-col items-center gap-2">
-            <p className={`${pattaya.className} text-center text-xl`}>Wilde</p>
-                <small className="underline font-semibold">• Casacubierta 918</small>
+            <p className={`${pattaya.className} text-center text-xl`}>Gerli</p>
+                <small className="underline font-semibold">• Casacuberta 918</small>
                 <Link target="_blank" href='https://maps.app.goo.gl/KdrzW82jAfJnS7yPA'>
                     <img src="/casacuberta.png" alt="Local 2" />
                 </Link>
             </li>
             <li className="flex flex-col items-center gap-2">
-            <p className={`${pattaya.className} text-center text-xl`}>Gerli</p>
+            <p className={`${pattaya.className} text-center text-xl`}>Wilde</p>
                 <small className="underline font-semibold">• Onsari 417</small>
                 <Link target="_blank" href='https://maps.app.goo.gl/7fbvJMNv6N7nUhCB6'>
                     <img src="/onsari.png" alt="Local 3" />

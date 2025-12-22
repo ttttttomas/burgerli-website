@@ -187,7 +187,7 @@ p-3
       {product.id_dips && (
          <>
          <img
-           src={product.images[0]}
+           src={product.images?.[0]}
            alt="Foto dip"
            className="h-48 w-full object-cover bg-[#FCEDCC]"
          />

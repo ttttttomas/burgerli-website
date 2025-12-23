@@ -269,9 +269,11 @@ export default function Cart() {
               <option className="text-black" value="gerli">
                 Gerli
               </option>
+              {/*
               <option className="text-black" value="wilde">
                 Wilde
               </option>
+              */}
               <option className="text-black" value="lanus">
                 Lanus
               </option>
@@ -332,9 +334,11 @@ export default function Cart() {
               <option className="text-black" value="Gerli">
                 Gerli
               </option>
+              {/*
               <option className="text-black" value="Wilde">
                 Wilde
               </option>
+              */}
               <option className="text-black" value="Lanus">
                 Lanus
               </option>

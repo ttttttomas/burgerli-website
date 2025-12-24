@@ -4,31 +4,31 @@ type HorariosDia = RangoHorario[] | null; // null = cerrado
 const horarios: Record<number, HorariosDia> = {
   0: [
     { apertura: "12:10", cierre: "15:30" },
-    { apertura: "20:10", cierre: "23:50" },
+    { apertura: "20:10", cierre: "21:50" },
   ],
   1: [
     { apertura: "12:10", cierre: "15:30" },
-    { apertura: "20:10", cierre: "23:50" },
+    { apertura: "20:10", cierre: "21:50" },
   ],
   2: [
     { apertura: "12:10", cierre: "15:30" },
-    { apertura: "20:10", cierre: "23:50" },
+    { apertura: "20:10", cierre: "21:50" },
   ],
   3: [
     { apertura: "12:10", cierre: "15:30" },
-    { apertura: "20:10", cierre: "23:50" },
+    { apertura: "20:10", cierre: "21:50" },
   ],
   4: [
     { apertura: "12:10", cierre: "15:30" },
-    { apertura: "20:10", cierre: "23:50" },
+    { apertura: "20:10", cierre: "21:50" },
   ],
   5: [
     { apertura: "12:10", cierre: "15:30" },
-    { apertura: "20:10", cierre: "23:50" },
+    { apertura: "20:10", cierre: "21:50" },
   ],
   6: [
     { apertura: "12:10", cierre: "15:30" },
-    { apertura: "20:10", cierre: "23:50" },
+    { apertura: "20:10", cierre: "21:50" },
   ],
 };
 

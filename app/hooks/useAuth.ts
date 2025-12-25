@@ -10,7 +10,7 @@ type Register = {
   password: string;
   email: string;
   phone: string;
-  addresses: string[];
+  address: string[];
   locality: string;
   notes: string;
 }

@@ -86,10 +86,10 @@ export default function RegisterPage() {
     if (!validatePhone(data.phone)) {
       return "Por favor ingresa un teléfono válido (ej: 11-2345-6789)";
     }
-    if (!data.addresses[0] || !data.addresses[0].trim()) {
+    if (!data.address[0] || !data.address[0].trim()) {
       return "Por favor ingresa tu dirección";
     }
-    if (data.addresses[0].trim().length < 5) {
+    if (data.address[0].trim().length < 5) {
       return "La dirección debe tener al menos 5 caracteres";
     }
     return null;
@@ -109,12 +109,12 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      // Limpiar addresses (eliminar vacíos)
-      const cleanedAddresses = data.address.filter(addr => addr.trim() !== "");
+      // Limpiar address (eliminar vacíos)
+      const cleanedaddress = data.address.filter(addr => addr.trim() !== "");
       
       const registerData = {
         ...data,
-        address: cleanedAddresses,
+        address: cleanedaddress,
         notes: data.notes || "", // Asegurar que notes no sea undefined
       };
       console.log(registerData);

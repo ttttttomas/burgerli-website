@@ -183,7 +183,7 @@ export const SessionContextProvider = ({
           credentials: 'include',
         });
       } catch (e) {
-        console.warn("⚠️ No se pudo llamar al endpoint de logout de Next.js");
+        console.warn("⚠️ No se pudo llamar al endpoint de logout de Next.js", e);
       }
       
       // 3. Limpiar la sesión del contexto

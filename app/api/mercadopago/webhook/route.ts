@@ -257,6 +257,7 @@ async function createOrderFromPayment(
       payment_method: paymentData.payment_method_id ?? "mercadopago",
       delivery_mode: metadata.delivery_mode ?? "delivery",
       price: Number(metadata.price ?? paymentData.transaction_amount),
+      user_client_id: metadata.user_client_id ?? null,
       status: "Confirmado",
       order_notes: metadata.order_notes ?? "",
       local: metadata.local ?? local,

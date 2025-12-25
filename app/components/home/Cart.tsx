@@ -13,6 +13,7 @@ import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
 import checkIsOpen from "@/app/lib/CheckShopOpen";
 import { useSession } from "@/app/context/SessionContext";
 import { toast } from "sonner";
+import  useProducts  from "@/app/hooks/useProducts";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,11 +26,19 @@ const pattaya = Pattaya({
   subsets: ["latin"],
 });
 
+interface Local {
+  id_local: string;
+  is_open: number;
+  name: string;
+  locals: string[];
+}
+
 export default function Cart() {
   const { session, userById } = useSession();
   const router = useRouter();
   // MODAL
   const [open, setOpen] = useState(false);
+  const {getLocals} = useProducts();
   // DELIVERY STATES
   const [addresses, setAddresses] = useState<[]>([]);
   const [addressInput, setAddressInput] = useState("");
@@ -40,6 +49,8 @@ export default function Cart() {
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [deliveryPricing, setDeliveryPricing] = useState(1000);
+  const [locals, setLocals] = useState<Local[] | null>(null);
+
   // TOTAL STATES
   const [salePricing] = useState(0);
   const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
@@ -55,13 +66,24 @@ export default function Cart() {
     setAddressInput(e.target.value);
   };
 
+
+
+  useEffect(() => { 
+      const getLocalsData = async () => {
+    const data = await getLocals();
+    const dataFiltered = data.locals.filter((local: Local) => local.is_open === 1);
+    setLocals(dataFiltered);
+  };
+    getLocalsData();
+    
+  }, []);
+  
+  
   useEffect(() => {
     const getUser = async () => {
       if (!session) return;
-      console.log(session);
 
       const user = (await userById(session.user_id_user_client)) as any;
-      console.log(user);
 
       setAddresses(user?.[0].addresses);
     };
@@ -92,6 +114,7 @@ export default function Cart() {
   //   () => addresses.find((a) => a.address === selectedAddress) ?? null,
   //   [addresses, selectedAddress]
   // );
+
 
   const handleContinue = async () => {
     const draft = {
@@ -264,18 +287,15 @@ export default function Cart() {
               onChange={(e) => setSucursal(e.target.value)}
               className="w-full my-4 border rounded-lg border-white p-1"
             >
-              <option disabled>Seleccione una sucursal</option>
-              <option className="text-black" value="gerli">
-                Gerli
-              </option>
-              {/*
-              <option className="text-black" value="wilde">
-                Wilde
-              </option>
-             */}
-              <option className="text-black" value="lanus">
-                Lanus
-              </option>
+              {locals?.map((local: Local) => (
+                <option
+                  key={local.id_local}
+                  className="text-black"
+                  value={local.name}
+                > 
+                  {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
+                </option>
+              ))}
             </select>
             <p className="text-start font-bold text-lg my-4">
               Indicá la dirección de entrega
@@ -341,18 +361,15 @@ export default function Cart() {
               onChange={(e) => setSucursal(e.target.value)}
               className="w-full"
             >
-              <option disabled>Seleccione una sucursal</option>
-              <option className="text-black" value="Gerli">
-                Gerli
-              </option>
-              {/*
-              <option className="text-black" value="Wilde">
-                Wilde
-              </option>
-             */}
-              <option className="text-black" value="Lanus">
-                Lanus
-              </option>
+              {locals?.map((local: Local) => (
+                <option
+                  key={local.id_local}
+                  className="text-black"
+                  value={local.name}
+                > 
+                  {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
+                </option>
+              ))}
             </select>
           </div>
         )}

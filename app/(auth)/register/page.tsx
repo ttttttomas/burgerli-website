@@ -23,7 +23,7 @@ type RegisterData = {
   email: string;
   password: string;
   phone: string;
-  addresses: string[];
+  address: string[];
   locality: string;
   notes: string;
 };
@@ -35,12 +35,12 @@ export default function RegisterPage() {
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<RegisterData>({
-    id_user_client: "a",
+    id_user_client: "",
     name: "",
     email: "",
     password: "",
     phone: "",
-    addresses: [""],
+    address: [],
     locality: "Lanús",
     notes: "",
   });
@@ -110,14 +110,15 @@ export default function RegisterPage() {
 
     try {
       // Limpiar addresses (eliminar vacíos)
-      const cleanedAddresses = data.addresses.filter(addr => addr.trim() !== "");
+      const cleanedAddresses = data.address.filter(addr => addr.trim() !== "");
       
       const registerData = {
         ...data,
-        addresses: cleanedAddresses,
+        address: cleanedAddresses,
         notes: data.notes || "", // Asegurar que notes no sea undefined
       };
-
+      console.log(registerData);
+      
       // Registrar usuario
       await registerUser(registerData);
       
@@ -126,7 +127,7 @@ export default function RegisterPage() {
       router.push('/login');
     
     } catch (err: unknown) {
-      console.error("❌ Error en registro:", err);
+      console.error("Error en registro:", err);
       
       const error = err as Error;
       
@@ -168,7 +169,7 @@ export default function RegisterPage() {
     data.email.trim() && 
     data.password && 
     data.phone.trim() && 
-    data.addresses[0]?.trim();
+    data.address[0]?.trim();
 
   return (
     <main
@@ -303,8 +304,8 @@ export default function RegisterPage() {
             <div className="flex items-center gap-2 bg-transparent border-b border-white/50 focus-within:border-white transition">
               <Home className="w-4 h-4 opacity-80" />
               <input
-                value={data.addresses[0] || ""}
-                onChange={(e) => setData({ ...data, addresses: [e.target.value] })}
+                value={data.address[0] || ""}
+                onChange={(e) => setData({ ...data, address: [e.target.value] })}
                 type="text"
                 placeholder="Calle, número, piso, depto"
                 className="w-full bg-transparent outline-none py-3 placeholder:text-white/70"

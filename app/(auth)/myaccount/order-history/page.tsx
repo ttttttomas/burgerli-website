@@ -15,8 +15,10 @@ export default function OrderHistoryPage() {
   const [loading, setLoading] = useState(true)
   const [orders, setOrders] = useState<Orders[]>([])
 
+// item.status === "delivered" && 
+
   const filteredData = (data: Orders[]) => {
-    return data.filter((item) => item.status === "delivered");
+    return data.filter((item) => item.id_user_client === session?.user_id_user_client);
   };
 
   useEffect(() => {
@@ -26,7 +28,6 @@ export default function OrderHistoryPage() {
         fetch(`https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/getOrders`)
         .then((res) => res.json())
         .then((data) => {
-          console.log("data", data);
           setOrders(filteredData(data));
           setLoading(false);
         });
@@ -37,16 +38,17 @@ export default function OrderHistoryPage() {
   }, [session]);
   
   if (loading) {
-    return <div className="mr-8 ml-80 flex flex-col justify-start gap-5 text-black">Loading...</div>;
-  }
-
-  console.log("🚀 Orders:", orders);
-  
+    return <div className="md:mr-8 md:ml-80 flex flex-col justify-start gap-5 text-black">Loading...</div>;
+  }  
 
   return (
     <section className={`w-full h-[70vh] px-10 py-5 ${inter.className}`}>
         <div className="flex gap-5 flex-wrap justify-start">
-        {orders?.map((order) => <OrderCard key={order.id_order} order={order} />)}
+        {orders.length === 0 ? (
+          <p className="text-black">No se encontraron órdenes para este usuario.</p>
+        ) : ( 
+         orders?.map((order) => <OrderCard key={order.id_order} order={order} />)
+        )}
         </div>
     </section>
 

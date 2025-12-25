@@ -61,6 +61,7 @@ export async function POST(req) {
         name: order.name ?? null,
         email: order.email ?? null,
         phone: order.phone ?? null,
+        user_client_id: order.id_user_client ?? null,
 
         // Datos de entrega
         delivery_mode: order.delivery_mode ?? null,

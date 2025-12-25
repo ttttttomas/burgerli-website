@@ -13,6 +13,7 @@ import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
 import { toast } from "sonner";
 import checkIsOpen from "../lib/CheckShopOpen";
 import { useSession } from "../context/SessionContext";
+import  useProducts  from "@/app/hooks/useProducts";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,73 +25,98 @@ const pattaya = Pattaya({
   variable: "--font-pattaya",
   subsets: ["latin"],
 });
+
+interface Local {
+  id_local: string;
+  is_open: number;
+  name: string;
+  locals: string[];
+}
 export default function CartResponsive({ closed }: { closed: () => void }) {
-  const { session, userById } = useSession();
-  const router = useRouter();
-  // MODAL
-  // DELIVERY STATES
-  const [addresses, setAddresses] = useState<[]>([]);
-  const [addressInput, setAddressInput] = useState("");
-  const [instructions, setInstructions] = useState("");
-  const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
-  const [sucursal, setSucursal] = useState<string>("Gerli");
-  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
-  const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
-  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const [deliveryPricing, setDeliveryPricing] = useState(1000);
-  // TOTAL STATES
-  const [salePricing] = useState(0);
-  const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
-  const {
-    cartProducts,
-    removeFromCart,
-    addQuantity,
-    removeQuantity,
-    totalPricing,
-  } = useCart();
-
-  const handleAddressInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddressInput(e.target.value);
-  };
-
-  useEffect(() => {
-    const getUser = async () => {
-      if (!session) return;
-      console.log(session);
-
-      const user = (await userById(session.user_id_user_client)) as any;
-      console.log(user);
-
-      setAddresses(user?.[0].addresses);
+   const { session, userById } = useSession();
+    const router = useRouter();
+    // MODAL
+    const [open, setOpen] = useState(false);
+    const {getLocals} = useProducts();
+    // DELIVERY STATES
+    const [addresses, setAddresses] = useState<[]>([]);
+    const [addressInput, setAddressInput] = useState("");
+    const [instructions, setInstructions] = useState("");
+    const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
+    const [sucursal, setSucursal] = useState<string>("Gerli");
+    const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
+    const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
+    const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+    const [deliveryPricing, setDeliveryPricing] = useState(1000);
+    const [locals, setLocals] = useState<Local[] | null>(null);
+  
+    // TOTAL STATES
+    const [salePricing] = useState(0);
+    const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
+    const {
+      cartProducts,
+      removeFromCart,
+      addQuantity,
+      removeQuantity,
+      totalPricing,
+    } = useCart();
+  
+    const handleAddressInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setAddressInput(e.target.value);
     };
-    getUser();
-  }, [userById, session]);
-  console.log("Direccines: ", addresses);
-
-  useEffect(() => {
-    if (mode === "pickup") {
-      setDeliveryPricing(0);
-    } else {
-      setDeliveryPricing(1000);
-    }
-  }, [mode, selectedAddress]);
-
-  useEffect(() => {
-    setTotalPricingCart(
-      totalPricing() + salePricing + deliveryPricing - salePricing
-    );
-  }, [deliveryPricing, totalPricing, salePricing]);
-
-  const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMode(e.target.value as "delivery" | "pickup");
-  };
-
-  const subTotal = totalPricing();
-
-  // const selectedAddressFind = useMemo(
-  //   () => addresses.find((a) => a.address === selectedAddress) ?? null,
-  //   [addresses, selectedAddress]
-  // );
+  
+  
+  
+    useEffect(() => { 
+        const getLocalsData = async () => {
+      const data = await getLocals();
+      const dataFiltered = data.locals.filter((local: Local) => local.is_open === 1);
+      setLocals(dataFiltered);
+    };
+      getLocalsData();
+      
+    }, []);
+    
+    
+    useEffect(() => {
+      const getUser = async () => {
+        if (!session) return;
+        console.log(session);
+  
+        const user = (await userById(session.user_id_user_client)) as any;
+        console.log(user);
+  
+        setAddresses(user?.[0].addresses);
+      };
+      getUser();
+    }, [userById, session]);
+  
+    useEffect(() => {
+      if (mode === "pickup") {
+        setDeliveryPricing(0);
+      } else {
+        setDeliveryPricing(1000);
+      }
+    }, [mode, selectedAddress]);
+  
+    useEffect(() => {
+      setTotalPricingCart(
+        totalPricing() + salePricing + deliveryPricing - salePricing
+      );
+    }, [deliveryPricing, totalPricing, salePricing]);
+  
+    const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setMode(e.target.value as "delivery" | "pickup");
+    };
+  
+    const subTotal = totalPricing();
+  
+    // const selectedAddressFind = useMemo(
+    //   () => addresses.find((a) => a.address === selectedAddress) ?? null,
+    //   [addresses, selectedAddress]
+    // );
+  
+    
 
   const handleContinue = async () => {
     const draft = {
@@ -242,18 +268,15 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
             onChange={(e) => setSucursal(e.target.value)}
             className="w-full my-4 border rounded-lg border-white p-1"
           >
-            <option disabled>Seleccione una sucursal</option>
-            <option className="text-black" value="Gerli">
-              Gerli
-            </option>
-            {/*
-            <option className="text-black" value="Wilde">
-              Wilde
-            </option>
-            */}
-            <option className="text-black" value="Lanus">
-              Lanus
-            </option>
+            {locals?.map((local: Local) => (
+                <option
+                  key={local.id_local}
+                  className="text-black"
+                  value={local.name}
+                > 
+                  {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
+                </option>
+              ))}
           </select>
           <div className="flex flex-col gap-5">
             {addresses?.length === 0 && session ? (
@@ -316,18 +339,15 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
             onChange={(e) => setSucursal(e.target.value)}
             className="w-full"
           >
-            <option disabled>Seleccione una sucursal</option>
-            <option className="text-black" value="Gerli">
-              Gerli
-            </option>
-            {/*
-            <option className="text-black" value="Wilde">
-              Wilde
-            </option>
-            */}
-            <option className="text-black" value="Lanus">
-              Lanus
-            </option>
+            {locals?.map((local: Local) => (
+                <option
+                  key={local.id_local}
+                  className="text-black"
+                  value={local.name}
+                > 
+                  {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
+                </option>
+              ))}
           </select>
         </div>
       )}

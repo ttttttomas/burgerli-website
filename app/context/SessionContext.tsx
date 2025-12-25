@@ -11,7 +11,7 @@ type RegisterData = {
   email: string;
   password: string;
   phone: string;
-  addresses: string[];
+  address: string[];
   locality: string;
   notes: string;
 };

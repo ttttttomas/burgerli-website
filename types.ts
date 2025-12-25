@@ -104,7 +104,7 @@ export type UsersClient = {
   password: string;
   locality: string;
   favorites?: string[];
-  addresses: string[] ;
+  address: string[] ;
   notes?: string;
 };
 

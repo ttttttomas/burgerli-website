@@ -171,7 +171,7 @@ export default function CheckoutPage() {
     try {
       const newOrder = {
         payment_method: "Efectivo",
-        id_user_client: session?.user_id_user_client || "",
+        user_client_id: session?.user_id_user_client || null,
         delivery_mode: order.delivery_mode || draft.delivery_mode,
         price: order.price || draft.price,
         status: "Confirmado",
@@ -188,7 +188,9 @@ export default function CheckoutPage() {
           JSON.stringify(p),
         ),
       };
+      console.log(newOrder);
       
+
       const createdOrder = await createOrder(newOrder);
       // Limpiar el draft del localStorage
       localStorage.removeItem("checkoutDraft:v1");

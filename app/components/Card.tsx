@@ -25,7 +25,6 @@ function getSmallestAvailableSize(sizeArray?: string | string[]): string | null 
     sizes = sizeArray;
   }
   
-  console.log('Sizes disponibles:', sizes);
   
   // Buscar el tamaño más pequeño disponible en el orden: Simple -> Doble -> Triple
   if (sizes.includes("Simple")) return "Simple";
@@ -39,11 +38,6 @@ function getSmallestAvailableSize(sizeArray?: string | string[]): string | null 
 export default function Card({ product, onClick }: CardProps) {
   // Obtener el tamaño más pequeño disponible
   const smallestSize = getSmallestAvailableSize(product.size);
-  
-  console.log('Producto:', product.name);
-  console.log('Precio base:', product.price);
-  console.log('Tamaño más pequeño:', smallestSize);
-  console.log('Precio del tamaño:', smallestSize ? sizePrices[smallestSize] : 0);
   
   // Calcular el precio: precio base + precio del tamaño más pequeño disponible
   const basePrice = Number(product.price) + (smallestSize ? (sizePrices[smallestSize] ?? 0) : 0);

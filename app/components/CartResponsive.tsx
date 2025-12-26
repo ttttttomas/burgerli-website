@@ -264,8 +264,8 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
             onChange={(e) => setSucursal(e.target.value)}
             className="w-full"
           >
-            {locals?.length > 0 ? (
-              locals?.map((local: Local) => (
+            {locals && locals.length > 0 ? (
+              locals.map((local: Local) => (
                 <option
                   key={local.id_local}
                   className="text-black"
@@ -339,8 +339,8 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
               onChange={(e) => setSucursal(e.target.value)}
               className="w-full"
             >
-              {locals?.length > 0 ?
-              locals?.map((local: Local) => (
+              {locals && locals.length > 0 ?
+              locals.map((local: Local) => (
                 <option
                   key={local.id_local}
                   className="text-black"

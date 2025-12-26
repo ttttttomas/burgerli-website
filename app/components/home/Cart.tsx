@@ -285,9 +285,10 @@ export default function Cart() {
             </p>
             <select
               onChange={(e) => setSucursal(e.target.value)}
-              className="w-full my-4 border rounded-lg border-white p-1"
+              className="w-full"
             >
-              {locals?.map((local: Local) => (
+              {locals?.length > 0 ?
+              locals?.map((local: Local) => (
                 <option
                   key={local.id_local}
                   className="text-black"
@@ -295,7 +296,7 @@ export default function Cart() {
                 > 
                   {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
                 </option>
-              ))}
+              )) : <option>No hay sucursales abiertas</option>}
             </select>
             <p className="text-start font-bold text-lg my-4">
               Indicá la dirección de entrega
@@ -361,7 +362,8 @@ export default function Cart() {
               onChange={(e) => setSucursal(e.target.value)}
               className="w-full"
             >
-              {locals?.map((local: Local) => (
+              {locals?.length > 0 ?
+              locals?.map((local: Local) => (
                 <option
                   key={local.id_local}
                   className="text-black"
@@ -369,7 +371,7 @@ export default function Cart() {
                 > 
                   {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
                 </option>
-              ))}
+              )) : <option>No hay sucursales abiertas</option>}
             </select>
           </div>
         )}

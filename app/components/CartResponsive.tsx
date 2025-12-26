@@ -13,7 +13,7 @@ import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
 import { toast } from "sonner";
 import checkIsOpen from "../lib/CheckShopOpen";
 import { useSession } from "../context/SessionContext";
-import  useProducts  from "@/app/hooks/useProducts";
+import useProducts from "@/app/hooks/useProducts";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -33,90 +33,86 @@ interface Local {
   locals: string[];
 }
 export default function CartResponsive({ closed }: { closed: () => void }) {
-   const { session, userById } = useSession();
-    const router = useRouter();
-    // MODAL
-    const [open, setOpen] = useState(false);
-    const {getLocals} = useProducts();
-    // DELIVERY STATES
-    const [addresses, setAddresses] = useState<[]>([]);
-    const [addressInput, setAddressInput] = useState("");
-    const [instructions, setInstructions] = useState("");
-    const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
-    const [sucursal, setSucursal] = useState<string>("Gerli");
-    const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
-    const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
-    const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-    const [deliveryPricing, setDeliveryPricing] = useState(1000);
-    const [locals, setLocals] = useState<Local[] | null>(null);
-  
-    // TOTAL STATES
-    const [salePricing] = useState(0);
-    const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
-    const {
-      cartProducts,
-      removeFromCart,
-      addQuantity,
-      removeQuantity,
-      totalPricing,
-    } = useCart();
-  
-    const handleAddressInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAddressInput(e.target.value);
-    };
-  
-  
-  
-    useEffect(() => { 
-        const getLocalsData = async () => {
+  const { session, userById } = useSession();
+  const router = useRouter();
+  // MODAL
+  const [open, setOpen] = useState(false);
+  const { getLocals } = useProducts();
+  // DELIVERY STATES
+  const [addresses, setAddresses] = useState<[]>([]);
+  const [addressInput, setAddressInput] = useState("");
+  const [instructions, setInstructions] = useState("");
+  const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
+  const [sucursal, setSucursal] = useState<string>("Gerli");
+  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
+  const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const [deliveryPricing, setDeliveryPricing] = useState(1000);
+  const [locals, setLocals] = useState<Local[] | null>(null);
+
+  // TOTAL STATES
+  const [salePricing] = useState(0);
+  const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
+  const {
+    cartProducts,
+    removeFromCart,
+    addQuantity,
+    removeQuantity,
+    totalPricing,
+  } = useCart();
+
+  const handleAddressInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddressInput(e.target.value);
+  };
+
+  useEffect(() => {
+    const getLocalsData = async () => {
       const data = await getLocals();
-      const dataFiltered = data.locals.filter((local: Local) => local.is_open === 1);
+      const dataFiltered = data.locals.filter(
+        (local: Local) => local.is_open === 1
+      );
       setLocals(dataFiltered);
     };
-      getLocalsData();
-      
-    }, []);
-    
-    
-    useEffect(() => {
-      const getUser = async () => {
-        if (!session) return;
-        console.log(session);
-  
-        const user = (await userById(session.user_id_user_client)) as any;
-        console.log(user);
-  
-        setAddresses(user?.[0].addresses);
-      };
-      getUser();
-    }, [userById, session]);
-  
-    useEffect(() => {
-      if (mode === "pickup") {
-        setDeliveryPricing(0);
-      } else {
-        setDeliveryPricing(1000);
-      }
-    }, [mode, selectedAddress]);
-  
-    useEffect(() => {
-      setTotalPricingCart(
-        totalPricing() + salePricing + deliveryPricing - salePricing
-      );
-    }, [deliveryPricing, totalPricing, salePricing]);
-  
-    const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setMode(e.target.value as "delivery" | "pickup");
+    getLocalsData();
+  }, []);
+
+  useEffect(() => {
+    const getUser = async () => {
+      if (!session) return;
+      console.log(session);
+
+      const user = (await userById(session.user_id_user_client)) as any;
+      console.log(user);
+
+      setAddresses(user?.[0].addresses);
     };
-  
-    const subTotal = totalPricing();
-  
-    // const selectedAddressFind = useMemo(
-    //   () => addresses.find((a) => a.address === selectedAddress) ?? null,
-    //   [addresses, selectedAddress]
-    // );
-  
-    
+    getUser();
+  }, [userById, session]);
+
+  useEffect(() => {
+    if (mode === "pickup") {
+      setDeliveryPricing(0);
+    } else {
+      setDeliveryPricing(1000);
+    }
+  }, [mode, selectedAddress]);
+
+  useEffect(() => {
+    setTotalPricingCart(
+      totalPricing() + salePricing + deliveryPricing - salePricing
+    );
+  }, [deliveryPricing, totalPricing, salePricing]);
+
+  const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMode(e.target.value as "delivery" | "pickup");
+  };
+
+  const subTotal = totalPricing();
+
+  // const selectedAddressFind = useMemo(
+  //   () => addresses.find((a) => a.address === selectedAddress) ?? null,
+  //   [addresses, selectedAddress]
+  // );
 
   const handleContinue = async () => {
     const draft = {
@@ -262,27 +258,31 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
       {mode === "delivery" && (
         <>
           <p className="text-start font-bold text-lg">
-          Seleccioná tu sucursal mas cercana <small>(Obligatorio)</small>
+            Seleccioná tu sucursal mas cercana <small>(Obligatorio)</small>
           </p>
           <select
             onChange={(e) => setSucursal(e.target.value)}
-            className="w-full my-4 border rounded-lg border-white p-1"
+            className="w-full"
           >
-            {locals?.map((local: Local) => (
+            {locals?.length > 0 ? (
+              locals?.map((local: Local) => (
                 <option
                   key={local.id_local}
                   className="text-black"
                   value={local.name}
-                > 
+                >
                   {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
                 </option>
-              ))}
+              ))
+            ) : (
+              <option>No hay sucursales abiertas</option>
+            )}
           </select>
           <div className="flex flex-col gap-5">
             {addresses?.length === 0 && session ? (
               <>
-                <p>No tienes direcciones guardadas en tu perfil.</p>
-                <div className=" py-1 my-3">
+                <p className="my-3">No tienes direcciones guardadas en tu perfil.</p>
+                <div>
                   {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
                   <input
                     value={addressInput}
@@ -336,10 +336,11 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
             Seleccioná la sucursal de retiro
           </p>
           <select
-            onChange={(e) => setSucursal(e.target.value)}
-            className="w-full"
-          >
-            {locals?.map((local: Local) => (
+              onChange={(e) => setSucursal(e.target.value)}
+              className="w-full"
+            >
+              {locals?.length > 0 ?
+              locals?.map((local: Local) => (
                 <option
                   key={local.id_local}
                   className="text-black"
@@ -347,8 +348,8 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
                 > 
                   {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
                 </option>
-              ))}
-          </select>
+              )) : <option>No hay sucursales abiertas</option>}
+            </select>
         </div>
       )}
       <hr />

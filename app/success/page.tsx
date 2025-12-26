@@ -52,17 +52,13 @@ function Content() {
         if (data.order_id) {
           setOrderId(data.order_id);
           console.log("Order ID encontrado:", data.order_id);
-
-          // Solo redirigir si hay sesión iniciada
-          if (session) {
             setTimeout(() => {
               router.push(`/order/${data.order_id}`);
             }, 3000);
-          }
         } else {
           console.log("Order ID no encontrado aún, reintentando...");
           // Reintentar después de 3 segundos si no se encuentra
-          setTimeout(fetchOrderId, 3000);
+          setTimeout(fetchOrderId, 2000);
         }
       } catch (error) {
         console.error("Error obteniendo order ID:", error);

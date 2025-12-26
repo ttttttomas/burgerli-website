@@ -112,6 +112,12 @@ export default function CheckoutPage() {
   const handleClick = async () => {
     console.log("💳 [Checkout] Iniciando pago con MercadoPago");
     console.log("💳 [Checkout] Order data:", order);
+
+        // Validar si hay sesión iniciada
+        if (!session) {
+          toast.error("Por favor, inicia sesión para pagar");
+          return;
+        }
     
     if (order.name && order.email && order.phone) {
       try {
@@ -156,9 +162,8 @@ export default function CheckoutPage() {
       toast.error("Por favor, rellene todos los campos obligatorios");
     }
   };
-
+  
   const handleCashPayment = async () => {
-    console.log("order a enviar:", order);
 
     // Validar que los campos obligatorios estén completos
     if (!order.name || !order.email || !order.phone) {
@@ -166,6 +171,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Validar si hay sesión iniciada
+    if (!session) {
+      toast.error("Por favor, inicia sesión para pagar");
+      return;
+    }
     setCashLoading(true);
 
     try {
@@ -198,15 +208,10 @@ export default function CheckoutPage() {
       // Obtener el ID de la orden creada
       const orderId = createdOrder?.id_order || createdOrder?.id || createdOrder?.order_id;
       // Si hay sesión y tenemos un ID de orden, redirigir a la página de orden
-      if (session) {
         toast.success("Redirigiendo a seguimiento de envio...");
         setTimeout(() => {
           router.push(`/order/${orderId}`);
-        }, 3000);
-      } else {
-        // Si no hay sesión, redirigir a la página de confirmación en efectivo
-        router.push("/cash-success");
-      }
+        }, 2000);
     } catch (error) {
       console.error("Error al crear orden:", error);
       toast.error("Error al crear la orden. Intenta nuevamente.");

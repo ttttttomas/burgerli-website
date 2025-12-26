@@ -114,10 +114,9 @@ export default function RegisterPage() {
       
       const registerData = {
         ...data,
-        address: cleanedaddress,
+        addresses: cleanedaddress,
         notes: data.notes || "", // Asegurar que notes no sea undefined
       };
-      console.log(registerData);
       
       // Registrar usuario
       await registerUser(registerData);

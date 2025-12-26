@@ -20,8 +20,8 @@ export default function useAuth() {
 
   const login = async ({ email, password }: Auth) => {
       const res = await axios.post(
-      // `http://localhost:8000/token-user-client`
-        `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/token-user-client`
+      `http://localhost:8000/token-user-client`
+        // `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/token-user-client`
         , { email, password }, {
         withCredentials: true,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -79,8 +79,8 @@ export default function useAuth() {
   const verifyCookie = async () => {
     try {
       const response = await axios.get(
-      // `http://localhost:8000/verify-cookie`,
-        `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/verify-cookie`,
+      `http://localhost:8000/verify-cookie`,
+        // `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/verify-cookie`,
         {
           headers: {
             "Content-Type": "application/json",

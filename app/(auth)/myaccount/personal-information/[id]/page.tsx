@@ -48,6 +48,9 @@ export default function PersonalInformationPage({
     getUser();
   }, [id]);
 
+  console.log(user);
+  
+
   if (loading)
     return (
       <div className="h-screen flex justify-center items-center mx-auto">
@@ -66,7 +69,7 @@ export default function PersonalInformationPage({
         email: userData.email || user?.email,
         phone: userData.phone || user?.phone,
         locality: user?.locality,
-        address: user?.address,
+        addresses: user?.address,
         notes: user?.notes,
         password: user?.password,
       }),
@@ -87,7 +90,7 @@ export default function PersonalInformationPage({
         email: user?.email,
         phone: user?.phone,
         //  Agregar nueva direccion
-        address: [...(user?.address ?? []), newAddress],
+        addresses: [...(user?.address ?? []), newAddress],
         notes: user?.notes,
         password: user?.password,
         locality: user?.locality,
@@ -108,7 +111,7 @@ export default function PersonalInformationPage({
         name: user?.name,
         email: user?.email,
         phone: user?.phone,
-        address: user?.address?.filter((a) => a !== ad),
+        addresses: user?.address?.filter((a) => a !== ad),
         notes: user?.notes,
         password: user?.password,
         locality: user?.locality,
@@ -174,10 +177,10 @@ export default function PersonalInformationPage({
           Mis direcciones
         </h2>
         <ul className="flex flex-col gap-10 w-full px-10">
-          {user?.address?.length === 0 ? (
+          {user?.addresses?.length === 0 ? (
             <p>No tenes direcciones guardadas aún.</p>
           ) : (
-            (user?.address as string[])?.map((ad) => (
+            (user?.addresses as string[])?.map((ad) => (
               <li key={user?.id_user_client}>
                 <div className="flex justify-between pb-2 items-center">
                   <div className="flex gap-3">

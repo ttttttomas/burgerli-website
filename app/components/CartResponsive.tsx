@@ -47,7 +47,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
   const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const [deliveryPricing, setDeliveryPricing] = useState(1000);
+  const [deliveryPricing, setDeliveryPricing] = useState(500);
   const [locals, setLocals] = useState<Local[] | null>(null);
 
   // TOTAL STATES
@@ -93,7 +93,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
     if (mode === "pickup") {
       setDeliveryPricing(0);
     } else {
-      setDeliveryPricing(1000);
+      setDeliveryPricing(500);
     }
   }, [mode, selectedAddress]);
 

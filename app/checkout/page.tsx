@@ -110,6 +110,9 @@ export default function CheckoutPage() {
     );
 
   const handleClick = async () => {
+    const subtotal = draft.price
+    const comision = subtotal * 0.08
+    const total = subtotal + comision
     console.log("💳 [Checkout] Iniciando pago con MercadoPago");
     console.log("💳 [Checkout] Order data:", order);
 
@@ -135,7 +138,7 @@ export default function CheckoutPage() {
                 id: "burgerli-order",
                 title: "Compra en Burgerli",
                 quantity: 1,
-                unit_price: Number(draft.price),
+                unit_price: Number(total),
                 currency_id: "ARS",
                 description: "Sin descripción",
               },

@@ -329,18 +329,6 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
               ))
             )}
           </div>
-          {!session && (
-            <div className=" py-1 my-3">
-              {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
-              <input
-                value={addressInput}
-                onChange={handleAddressInput}
-                placeholder="Indique su direccion"
-                className="w-full rounded-xl py-1 px-2 text-black bg-white"
-                type="text"
-              />
-            </div>
-          )}
         </>
       )}
       {mode === "pickup" && (

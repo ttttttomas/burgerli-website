@@ -43,7 +43,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
   const [addressInput, setAddressInput] = useState("");
   const [instructions, setInstructions] = useState("");
   const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
-  const [sucursal, setSucursal] = useState<string>("Gerli");
+  const [sucursal, setSucursal] = useState<string>("");
   const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
@@ -138,6 +138,11 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
       order_notes: instructions,
     };
 
+    if (!sucursal) {
+      toast.error("Seleccione su sucursal CERCANA para poder continuar");
+      return;
+    }
+
     if (!checkIsOpen()) {
       toast.error("El tiempo de apertura de la tienda no es válido");
       return;
@@ -226,34 +231,34 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
       <Cupon />
       <hr />
       <ul className="flex my-3 justify-between items-center">
-        <li>
-          <input
-            name="pedido"
-            type="radio"
-            value="delivery"
-            checked={mode === "delivery"}
-            onChange={handleModeChange}
-            onClick={() => {
-              setIsTakeAwayChecked(false);
-              setIsDeliveryChecked(true);
-            }}
-          />{" "}
-          Delivery
-        </li>
-        <li>
-          <input
-            name="pedido"
-            type="radio"
-            value="pickup"
-            checked={mode === "pickup"}
-            onChange={handleModeChange}
-            onClick={() => {
-              setIsDeliveryChecked(false);
-              setIsTakeAwayChecked(true);
-            }}
-          />{" "}
-          Retiro en el local
-        </li>
+      <li className="flex gap-2">
+            <input
+              name="pedido"
+              type="radio"
+              value="delivery"
+              checked={mode === "delivery"}
+              onChange={handleModeChange}
+              onClick={() => {
+                setIsTakeAwayChecked(false);
+                setIsDeliveryChecked(true);
+              }}
+            />{" "}
+            <p className="text-lg">Delivery</p>
+          </li>
+          <li className="flex gap-2">
+            <input
+              name="pedido"
+              type="radio"
+              value="pickup"
+              checked={mode === "pickup"}
+              onChange={handleModeChange}
+              onClick={() => {
+                setIsDeliveryChecked(false);
+                setIsTakeAwayChecked(true);
+              }}
+            />{" "}
+            <p className="text-lg">Retiro en el local</p>
+          </li>
       </ul>
       {mode === "delivery" && (
         <>
@@ -261,27 +266,35 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
             Seleccioná tu sucursal mas cercana <small>(Obligatorio)</small>
           </p>
           <select
-            onChange={(e) => setSucursal(e.target.value)}
-            className="w-full"
-          >
-            {locals && locals.length > 0 ? (
-              locals.map((local: Local) => (
-                <option
-                  key={local.id_local}
-                  className="text-black"
-                  value={local.name}
-                >
-                  {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
-                </option>
-              ))
-            ) : (
-              <option>No hay sucursales abiertas</option>
-            )}
-          </select>
+              value={sucursal}
+              onChange={(e) => setSucursal(e.target.value)}
+              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl"
+            >
+              <option value="" disabled>
+                Seleccionar sucursal
+              </option>
+              {locals && locals.length > 0 ? (
+                locals.map((local: Local) => (
+                  <option
+                    key={local.id_local}
+                    className="text-black"
+                    value={local.name}
+                  >
+                    {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                No hay sucursales abiertas
+              </option>
+              )}
+            </select>
           <div className="flex flex-col gap-5">
-            {addresses?.length === 0 && session ? (
+            {!addresses?.length ? (
               <>
-                <p className="my-3">No tienes direcciones guardadas en tu perfil.</p>
+                <p className="my-3">
+                  No tienes direcciones guardadas en tu perfil.
+                </p>
                 <div>
                   {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
                   <input
@@ -336,20 +349,29 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
             Seleccioná la sucursal de retiro
           </p>
           <select
+              value={sucursal}
               onChange={(e) => setSucursal(e.target.value)}
-              className="w-full"
+              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl"
             >
-              {locals && locals.length > 0 ?
+            <option value="" disabled>
+              Seleccionar sucursal
+            </option>
+            {locals && locals.length > 0 ? (
               locals.map((local: Local) => (
                 <option
                   key={local.id_local}
                   className="text-black"
                   value={local.name}
-                > 
+                >
                   {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
                 </option>
-              )) : <option>No hay sucursales abiertas</option>}
-            </select>
+              ))
+            ) : (
+              <option value="" disabled>
+              No hay sucursales abiertas
+            </option>
+            )}
+          </select>
         </div>
       )}
       <hr />

@@ -13,7 +13,7 @@ import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
 import checkIsOpen from "@/app/lib/CheckShopOpen";
 import { useSession } from "@/app/context/SessionContext";
 import { toast } from "sonner";
-import  useProducts  from "@/app/hooks/useProducts";
+import useProducts from "@/app/hooks/useProducts";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -38,13 +38,13 @@ export default function Cart() {
   const router = useRouter();
   // MODAL
   const [open, setOpen] = useState(false);
-  const {getLocals} = useProducts();
+  const { getLocals } = useProducts();
   // DELIVERY STATES
   const [addresses, setAddresses] = useState<[]>([]);
   const [addressInput, setAddressInput] = useState("");
   const [instructions, setInstructions] = useState("");
   const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
-  const [sucursal, setSucursal] = useState<string>("Gerli");
+  const [sucursal, setSucursal] = useState<string>("");
   const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
   const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
@@ -66,19 +66,17 @@ export default function Cart() {
     setAddressInput(e.target.value);
   };
 
-
-
-  useEffect(() => { 
-      const getLocalsData = async () => {
-    const data = await getLocals();
-    const dataFiltered = data.locals.filter((local: Local) => local.is_open === 1);
-    setLocals(dataFiltered);
-  };
+  useEffect(() => {
+    const getLocalsData = async () => {
+      const data = await getLocals();
+      const dataFiltered = data.locals.filter(
+        (local: Local) => local.is_open === 1
+      );
+      setLocals(dataFiltered);
+    };
     getLocalsData();
-    
   }, []);
-  
-  
+
   useEffect(() => {
     const getUser = async () => {
       if (!session) return;
@@ -115,7 +113,6 @@ export default function Cart() {
   //   [addresses, selectedAddress]
   // );
 
-
   const handleContinue = async () => {
     const draft = {
       takeaway: isTakeAwayChecked,
@@ -139,6 +136,11 @@ export default function Cart() {
       local: sucursal,
       order_notes: instructions,
     };
+
+    if (!sucursal) {
+      toast.error("Seleccione su sucursal CERCANA para poder continuar");
+      return;
+    }
 
     if (!checkIsOpen()) {
       toast.error("El tiempo de apertura de la tienda no es válido");
@@ -249,7 +251,7 @@ export default function Cart() {
         <Cupon />
         <hr />
         <ul className="flex my-3 justify-between items-center">
-          <li>
+          <li className="flex gap-2">
             <input
               name="pedido"
               type="radio"
@@ -261,9 +263,9 @@ export default function Cart() {
                 setIsDeliveryChecked(true);
               }}
             />{" "}
-            Delivery
+            <p className="text-lg">Delivery</p>
           </li>
-          <li>
+          <li className="flex gap-2">
             <input
               name="pedido"
               type="radio"
@@ -275,7 +277,7 @@ export default function Cart() {
                 setIsTakeAwayChecked(true);
               }}
             />{" "}
-            Retiro en el local
+            <p className="text-lg">Retiro en el local</p>
           </li>
         </ul>
         {mode === "delivery" && (
@@ -284,25 +286,34 @@ export default function Cart() {
               Seleccioná tu sucursal mas cercana <small>(Obligatorio)</small>
             </p>
             <select
+              value={sucursal}
               onChange={(e) => setSucursal(e.target.value)}
-              className="w-full"
+              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl"
             >
-              {locals && locals.length > 0 ?
-              locals.map((local: Local) => (
-                <option
-                  key={local.id_local}
-                  className="text-black"
-                  value={local.name}
-                > 
-                  {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
-                </option>
-              )) : <option>No hay sucursales abiertas</option>}
+              <option value="" disabled>
+                Seleccionar sucursal
+              </option>
+              {locals && locals.length > 0 ? (
+                locals.map((local: Local) => (
+                  <option
+                    key={local.id_local}
+                    className="text-black"
+                    value={local.name}
+                  >
+                    {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                No hay sucursales abiertas
+              </option>
+              )}
             </select>
             <p className="text-start font-bold text-lg my-4">
               Indicá la dirección de entrega
             </p>
             <div className="flex flex-col gap-2">
-              {addresses?.length === 0 && session ? (
+              {!addresses?.length ? (
                 <>
                   <p>No tienes direcciones guardadas en tu perfil.</p>
                   <div className=" py-1 my-3">
@@ -359,19 +370,28 @@ export default function Cart() {
               Seleccioná la sucursal de retiro
             </p>
             <select
+              value={sucursal}
               onChange={(e) => setSucursal(e.target.value)}
-              className="w-full"
+              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl"
             >
-              {locals && locals.length > 0 ?
-              locals.map((local: Local) => (
-                <option
-                  key={local.id_local}
-                  className="text-black"
-                  value={local.name}
-                > 
-                  {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
-                </option>
-              )) : <option>No hay sucursales abiertas</option>}
+              <option value="" disabled>
+                Seleccionar sucursal
+              </option>
+              {locals && locals.length > 0 ? (
+                locals.map((local: Local) => (
+                  <option
+                    key={local.id_local}
+                    className="text-black"
+                    value={local.name}
+                  >
+                    {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                No hay sucursales abiertas
+              </option>
+              )}
             </select>
           </div>
         )}

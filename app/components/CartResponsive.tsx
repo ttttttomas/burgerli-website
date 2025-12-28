@@ -376,6 +376,13 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
           <p>Delivery</p>
           <span>${deliveryPricing.toLocaleString("es-AR")}</span>
         </li>
+        <li className="flex items-center justify-between">
+            <div className="flex flex-col items-start">
+              <p>Costo de servicio web</p>
+              <small>(Solo con MercadoPago)</small>
+            </div>
+            <span>8%</span>
+          </li>
         <li className="flex justify-between mt-10 text-xl mb-5 font-bold text-tertiary">
           <h4>Total</h4>
           {totalPricingCart === null ? (

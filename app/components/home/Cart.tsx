@@ -313,7 +313,7 @@ export default function Cart() {
               Indicá la dirección de entrega
             </p>
             <div className="flex flex-col gap-2">
-              {!addresses?.length ? (
+              {!addresses?.length  && session ?(
                 <>
                   <p>No tienes direcciones guardadas en tu perfil.</p>
                   <div className=" py-1 my-3">
@@ -348,6 +348,18 @@ export default function Cart() {
                     />
                   </div>
                 ))
+              )}
+              {!session && (
+                <div className=" py-1 my-3">
+                  {/* INPUT PARA AGREGAR NUEVA DIRECCION TEMPORARIA  */}
+                  <input
+                    value={addressInput}
+                    onChange={handleAddressInput}
+                    placeholder="Indique su direccion"
+                    className="w-full rounded-xl py-1 px-2 text-black bg-white"
+                    type="text"
+                  />
+                </div>
               )}
             </div>
           </>
@@ -396,6 +408,13 @@ export default function Cart() {
           <li className="flex justify-between">
             <p>Delivery</p>
             <span>${deliveryPricing.toLocaleString("es-AR")}</span>
+          </li>
+          <li className="flex items-center justify-between">
+            <div className="flex items-end gap-2">
+              <p>Costo de servicio web</p>
+              <small>(Solo con MercadoPago)</small>
+            </div>
+            <span>8%</span>
           </li>
           <li className="flex justify-between mt-10 text-xl mb-5 font-bold text-tertiary">
             <h4>Total</h4>

@@ -47,6 +47,7 @@ export type CartProduct = {
   size: string;
   sin: string[];
   fries: string;
+  selectedOptions?: string[];
 };
 
 export type Products = {

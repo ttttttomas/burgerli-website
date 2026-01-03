@@ -192,6 +192,9 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
               {product.sin && <small>Sin: {product.sin.join(", ")}</small>}
               {product.size && <small>Tamaño: {product.size}</small>}
               {product.fries && <small>Papas: {product.fries}</small>}
+              {product.selectedOptions && product.selectedOptions.length > 0 && (
+                <small>Opciones: {product.selectedOptions.join(", ")}</small>
+              )}
               <button
                 onClick={() => removeFromCart(product)}
                 className="underline cursor-pointer text-sm"

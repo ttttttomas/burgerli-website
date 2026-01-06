@@ -262,7 +262,7 @@ p-3
       {product.id_promos && (
          <>
          <img
-           src={product.images?.[0]}
+           src={product.image}
            alt="Foto dip"
            className={`h-48 w-full object-cover bg-[#FCEDCC] ${isOutOfStock ? 'grayscale' : ''}`}
          />

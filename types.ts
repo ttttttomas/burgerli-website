@@ -10,6 +10,7 @@ export type Burgers = {
   size: string;
   fries: string;
   price: number;
+  image?:string
   price_list?: number[];
   stock: number;
   description: string;

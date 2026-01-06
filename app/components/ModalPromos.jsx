@@ -121,7 +121,7 @@ const ModalPromos = ({ product }) => {
                   <img
                     // src="/bg_burgers.jpg"
                     src={
-                      selectedProduct.main_image || selectedProduct.images[0]
+                      selectedProduct.image || selectedProduct.images[0]
                     }
                     alt={selectedProduct.name}
                     className="h-96 mx-auto rounded-xl object-cover"

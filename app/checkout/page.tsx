@@ -108,63 +108,6 @@ export default function CheckoutPage() {
         <p className="font-bold text-2xl">Cargando…</p>
       </main>
     );
-
-  const handleClick = async () => {
-    const subtotal = draft.price
-    const comision = subtotal * 0.08
-    const total = subtotal + comision
-    console.log("💳 [Checkout] Iniciando pago con MercadoPago");
-    console.log("💳 [Checkout] Order data:", order);
-
-        // Validar si hay sesión iniciada
-        if (!session) {
-          toast.error("Por favor, inicia sesión para pagar");
-          return;
-        }
-    
-    if (order.name && order.email && order.phone) {
-      try {
-        // Solo crear la preferencia de MercadoPago
-        // La orden se creará en el webhook cuando el pago sea aprobado
-        const res = await fetch("/api/mercadopago/createPreference", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            order: order,
-            items: [
-              {
-                id: "burgerli-order",
-                title: "Compra en Burgerli",
-                quantity: 1,
-                unit_price: Number(total),
-                currency_id: "ARS",
-                description: "Sin descripción",
-              },
-            ],
-          }),
-        });
-        const data = await res.json();
-        console.log("✅ [Checkout] Preferencia creada:", data);
-
-        if (data.init_point) {
-          console.log("🔄 [Checkout] Redirigiendo a MercadoPago...");
-          // Limpiar el draft antes de redirigir
-          localStorage.removeItem("checkoutDraft:v1");
-          router.push(data.init_point);
-        } else {
-          console.error("❌ [Checkout] No se recibió init_point");
-          toast.error("Error al crear la preferencia de pago");
-        }
-      } catch (error) {
-        console.error("❌ [Checkout] Error al crear preferencia:", error);
-        toast.error("Error al procesar el pago. Intenta nuevamente.");
-      }
-    } else {
-      toast.error("Por favor, rellene todos los campos obligatorios");
-    }
-  };
   
   const handleCashPayment = async () => {
 
@@ -329,13 +272,6 @@ export default function CheckoutPage() {
           </li>
         </ul>
         <div className="flex flex-col mx-auto items-center justify-center gap-8">
-          <div onClick={handleClick}>
-            <img
-              src="mercadopago.png"
-              className="mx-auto cursor-pointer"
-              alt="Image Efectivo"
-            />
-          </div>
           <div onClick={handleCashPayment}>
             {cashLoading ? (
               <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg">

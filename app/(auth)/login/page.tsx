@@ -165,9 +165,9 @@ export default function LoginPage() {
               </div>
             )}
             
-            <button type="button" className="mt-3 text-sm underline underline-offset-2 opacity-90 hover:opacity-100">
+            {/* <button type="button" className="mt-3 text-sm underline underline-offset-2 opacity-90 hover:opacity-100">
               ¿Olvidaste tu contraseña?
-            </button>
+            </button> */}
 
             {/* Submit */}
             <button

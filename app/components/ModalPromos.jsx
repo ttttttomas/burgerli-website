@@ -139,7 +139,7 @@ const ModalPromos = ({ product }) => {
 
                 {/* Opciones de la promo (description_list) */}
                 {selectedProduct.description_list &&
-                  selectedProduct.name === "2x1 Hamburguesas Simples" &&
+                  selectedProduct.name === "2x1 Hamburguesas Simpless" &&
                   selectedProduct.description_list.length > 0 && (
                     <div className="mb-6 px-6 flex flex-col gap-2">
                       <h3 className="text-lg mt-2 text-tertiary text-tert font-semibold">

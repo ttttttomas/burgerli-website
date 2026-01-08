@@ -5,7 +5,7 @@ import {getBranchTokenByLocal, getWebhookUrl} from "../config";
 
 // const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 const FRONT_URL = "https://burgerli.com.ar"; // CAMBIAR A DOMIINIO REAL
-
+// const FRONT_URL = "https://imido-curliest-cole.ngrok-free.dev"
 export async function POST(req) {
   try {
     const body = await req.json().catch(() => ({}));

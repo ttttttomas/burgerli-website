@@ -329,14 +329,14 @@ export default function CheckoutPage() {
           </li>
         </ul>
         <div className="flex flex-col mx-auto items-center justify-center gap-8">
-          <div onClick={handleCashPayment}>
-          <div onClick={handleClick}>
+        <div onClick={handleClick}>
             <img
               src="mercadopago.png"
               className="mx-auto cursor-pointer"
               alt="Image Efectivo"
             />
           </div>
+          <div onClick={handleCashPayment}>
             {cashLoading ? (
               <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>

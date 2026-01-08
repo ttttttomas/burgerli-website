@@ -46,14 +46,15 @@ export default function Productos() {
   //   id_burger: "1",
   //   name: "Producto de prueba",
   //   price: 1,
-  //   size: "XL",
   //   fries: "Normal",
   //   extras: ["Extra 1", "Extra 2"],
   //   sin: ["Sin 1", "Sin 2"],
   //   description: "Producto de prueba",
   //   main_image: "https://i.imgur.com/v7q9p5j.jpg",
   //   ingredients_list: ["Ingrediente 1", "Ingrediente 2"],
-  //   size_list: ["XL", "L", "M", "S"],
+  //   ingredients: ["Ingrediente 1", "Ingrediente 2"],
+
+  //   size: ["XL", "L", "M", "S"],
   //   stock: true,
   // };
 

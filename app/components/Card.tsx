@@ -299,8 +299,7 @@ p-3
        group-hover:translate-y-0
      "
              >
-               {product.description_list?.[0]
-                 ? product.description_list[0]
+               {product.description ? product.description
                  : null}
              </div>
            </div>

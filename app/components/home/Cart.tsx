@@ -178,8 +178,7 @@ export default function Cart() {
               onClick={() => {
                 setOpen(true);
               }}
-              className="pointer-events-auto cursor-pointer w-full bg-[#c77a1a] text-black rounded-2xl shadow-2xl px-4 py-4 flex items-center justify-between text-base font-semibold"
-            >
+              className="pointer-events-auto cursor-pointer w-full bg-[#c77a1a] text-black rounded-2xl shadow-2xl px-4 py-4 flex items-center justify-between text-base font-semibold">
               <span className="flex items-center gap-3">
                 Ver pedido ({cartProducts.length})
               </span>
@@ -193,29 +192,29 @@ export default function Cart() {
       {open && <CartResponsive closed={() => setOpen(false)} />}
 
       <section
-        className={`${inter.className} w-[450px] md:block hidden pt-28 h-min cart text-white rounded-2xl bg-primary py-3 px-5`}
-      >
+        className={`${inter.className} w-[450px] md:block hidden pt-28 h-min cart text-white rounded-2xl bg-primary py-3 px-5`}>
         <h2 className={`${pattaya.className} text-2xl`}>Mi pedido</h2>
         <ul className="flex mt-6 flex-col gap-2">
           {cartProducts.length > 0 ? (
             cartProducts.map((product: CartProduct) => (
               <li
                 key={product.price}
-                className="flex justify-between items-start"
-              >
+                className="flex justify-between items-start">
                 <div className="flex flex-col items-start gap-1">
                   <p className="font-bold">{product.name}</p>
                   {/* <small>Extras: {product.extras.join(", ")}</small> */}
                   {product.sin && <small>Sin: {product.sin.join(", ")}</small>}
                   {product.size && <small>Tamaño: {product.size}</small>}
                   {product.fries && <small>Papas: {product.fries}</small>}
-                  {product.selectedOptions && product.selectedOptions.length > 0 && (
-                    <small>Opciones: {product.selectedOptions.join(", ")}</small>
-                  )}
+                  {product.selectedOptions &&
+                    product.selectedOptions.length > 0 && (
+                      <small>
+                        Opciones: {product.selectedOptions.join(", ")}
+                      </small>
+                    )}
                   <button
                     onClick={() => removeFromCart(product)}
-                    className="underline cursor-pointer text-sm"
-                  >
+                    className="underline cursor-pointer text-sm">
                     Eliminar
                   </button>
                 </div>
@@ -226,8 +225,7 @@ export default function Cart() {
                   <div className="flex gap-4 border rounded-xl justify-between px-2">
                     <button
                       onClick={() => removeQuantity(product)}
-                      className="cursor-pointer"
-                    >
+                      className="cursor-pointer">
                       {" "}
                       -{" "}
                     </button>
@@ -236,8 +234,7 @@ export default function Cart() {
                     </span>
                     <button
                       onClick={() => addQuantity(product)}
-                      className="cursor-pointer"
-                    >
+                      className="cursor-pointer">
                       {" "}
                       +{" "}
                     </button>
@@ -291,8 +288,7 @@ export default function Cart() {
             <select
               value={sucursal}
               onChange={(e) => setSucursal(e.target.value)}
-              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl"
-            >
+              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl">
               <option value="" disabled>
                 Seleccionar sucursal
               </option>
@@ -301,22 +297,21 @@ export default function Cart() {
                   <option
                     key={local.id_local}
                     className="text-black"
-                    value={local.name}
-                  >
+                    value={local.name}>
                     {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
                   </option>
                 ))
               ) : (
                 <option value="" disabled>
-                No hay sucursales abiertas
-              </option>
+                  No hay sucursales abiertas
+                </option>
               )}
             </select>
             <p className="text-start font-bold text-lg my-4">
               Indicá la dirección de entrega
             </p>
             <div className="flex flex-col gap-2">
-              {!addresses?.length  && session ?(
+              {!addresses?.length && session ? (
                 <>
                   <p>No tienes direcciones guardadas en tu perfil.</p>
                   <div className=" py-1 my-3">
@@ -334,8 +329,7 @@ export default function Cart() {
                 addresses.map((address) => (
                   <div
                     key={address}
-                    className="flex pb-5 justify-between items-center"
-                  >
+                    className="flex pb-5 justify-between items-center">
                     <div className="flex gap-3">
                       <Ubicacion fill={"white"} />
                       <div className="flex flex-col justify-center">
@@ -375,8 +369,7 @@ export default function Cart() {
             <select
               value={sucursal}
               onChange={(e) => setSucursal(e.target.value)}
-              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl"
-            >
+              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl">
               <option value="" disabled>
                 Seleccionar sucursal
               </option>
@@ -385,15 +378,14 @@ export default function Cart() {
                   <option
                     key={local.id_local}
                     className="text-black"
-                    value={local.name}
-                  >
+                    value={local.name}>
                     {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
                   </option>
                 ))
               ) : (
                 <option value="" disabled>
-                No hay sucursales abiertas
-              </option>
+                  No hay sucursales abiertas
+                </option>
               )}
             </select>
           </div>
@@ -431,12 +423,10 @@ export default function Cart() {
           <hr />
           <textarea
             onChange={(e) => setInstructions(e.target.value)}
-            className="bg-white rounded-xl px-3 py-1 text-black font-semibold my-5 w-full h-52"
-          ></textarea>
+            className="bg-white rounded-xl px-3 py-1 text-black font-semibold my-5 w-full h-52"></textarea>
           <button
             onClick={handleContinue}
-            className="bg-tertiary w-full py-2 cursor-pointer rounded-xl text-black font-bold text-lg"
-          >
+            className="bg-tertiary w-full py-2 cursor-pointer rounded-xl text-black font-bold text-lg">
             Continuar
           </button>
         </ul>

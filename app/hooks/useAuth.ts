@@ -17,19 +17,16 @@ type Register = {
 
 
 export default function useAuth() {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
   const login = async ({ email, password }: Auth) => {
       const res = await axios.post(
-      // `http://localhost:8000/token-user-client`
-        `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/token-user-client`
-        , { email, password }, {
+        `${API_BASE_URL}/token-user-client`,
+        { email, password }, {
         withCredentials: true,
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         validateStatus: s => s < 500,
       });
-      // if (res.data === null) {
-      //   throw new Error("Credenciales inválidas");
-      // }
        // MAPEÁ SIEMPRE A UN NOMBRE CONSISTENTE
   const api = res.data;               
   const id = String(api.user_id ?? api.id_user_client);  
@@ -79,8 +76,7 @@ export default function useAuth() {
   const verifyCookie = async () => {
     try {
       const response = await axios.get(
-      // `http://localhost:8000/verify-cookie`,
-        `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/verify-cookie`,
+        `${API_BASE_URL}/verify-cookie`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -65,7 +65,7 @@ function OrderContent({ id }: { id: string }) {
         icon: <Order4 />,
       },
     ],
-    []
+    [],
   );
 
   const STEP_BY_STATUS: Record<OrderStatus, number> = useMemo(
@@ -76,7 +76,7 @@ function OrderContent({ id }: { id: string }) {
       delivered: 3,
       cancelled: 4,
     }),
-    []
+    [],
   );
 
   // Usar useMemo para que se recalcule cuando cambie wsStatus o order
@@ -153,8 +153,7 @@ function OrderContent({ id }: { id: string }) {
           <div className="w-full bg-primary text-white shadow-sm py-2 px-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div
-                className={`w-2 h-2 rounded-full bg-red-500 animate-pulse`}
-              ></div>
+                className={`w-2 h-2 rounded-full bg-red-500 animate-pulse`}></div>
               <span className="text-sm">
                 Seguimiento en tiempo real desconectado
               </span>
@@ -198,15 +197,13 @@ function OrderContent({ id }: { id: string }) {
               return (
                 <div
                   key={step.label}
-                  className="flex flex-col items-center gap-2 z-10"
-                >
+                  className="flex flex-col items-center gap-2 z-10">
                   {/* Punto del timeline */}
                   <span
                     className={[
                       "p-2 rounded-full flex items-center justify-center mb-1 transition-all duration-500 ease-in-out transform bg-[#5B524B] w-10 h-10 opacity-70 scale-90",
                       isCurrent ? "ring-4 ring-primary/30 animate-pulse" : "",
-                    ].join(" ")}
-                  >
+                    ].join(" ")}>
                     {step.icon}
                   </span>
 
@@ -215,8 +212,7 @@ function OrderContent({ id }: { id: string }) {
                     className={[
                       "text-xs md:text-sm transition-all duration-300 text-center",
                       isActive ? "text-black font-semibold" : "text-gray-500",
-                    ].join(" ")}
-                  >
+                    ].join(" ")}>
                     {step.label}
                   </span>
                 </div>
@@ -235,7 +231,7 @@ function OrderContent({ id }: { id: string }) {
                   <p className="text-sm md:text-base font-medium">
                     {order?.delivery_mode === "delivery"
                       ? "Delivery"
-                      : "Pickup"}
+                      : "Retiro en local"}
                   </p>
                 </li>
                 <li className="flex items-center justify-between gap-2 md:gap-3">
@@ -255,36 +251,36 @@ function OrderContent({ id }: { id: string }) {
                   products.map((product, index) => (
                     <li
                       key={product?.id || index}
-                      className="flex flex-row gap-3 md:gap-5 w-full justify-between items-center border-b pb-3 md:border-none md:pb-0"
-                    >
+                      className="flex flex-row gap-3 md:gap-5 w-full justify-between items-center border-b pb-3 md:border-none md:pb-0">
                       <div className="flex gap-2 md:gap-3 items-center flex-1">
-                      {product?.name === "Big G" && (
-                        <img
-                          src="/burgers/BigG.png"
-                          className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
-                          alt={product?.name || "Producto"}
-                        />
-                      )}
-                      {product?.name === "Clasica" && (
-                        <img
-                          src="/burgers/Clasica.png"
-                          className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
-                          alt={product?.name || "Producto"}
-                        />
-                      )}
-                      {product?.name === "BBQ Crunchy" && (
-                        <img
-                          src="/burgers/BBQ.png"
-                          className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
-                          alt={product?.name || "Producto"}
-                        />
-                      )}{product?.name === "Bacon T" && (
-                        <img
-                          src="/burgers/BaconT.png"
-                          className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
-                          alt={product?.name || "Producto"}
-                        />
-                      )}
+                        {product?.name === "Big G" && (
+                          <img
+                            src="/burgers/BigG.png"
+                            className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
+                            alt={product?.name || "Producto"}
+                          />
+                        )}
+                        {product?.name === "Clasica" && (
+                          <img
+                            src="/burgers/Clasica.png"
+                            className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
+                            alt={product?.name || "Producto"}
+                          />
+                        )}
+                        {product?.name === "BBQ Crunchy" && (
+                          <img
+                            src="/burgers/BBQ.png"
+                            className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
+                            alt={product?.name || "Producto"}
+                          />
+                        )}
+                        {product?.name === "Bacon T" && (
+                          <img
+                            src="/burgers/BaconT.png"
+                            className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
+                            alt={product?.name || "Producto"}
+                          />
+                        )}
                         <div className="flex flex-col gap-1 md:gap-3 justify-between h-full flex-1 min-w-0">
                           <p className="font-bold text-sm md:text-xl truncate">
                             {product?.name || "Producto"}
@@ -374,8 +370,7 @@ function OrderContent({ id }: { id: string }) {
             <div
               className={`w-2 h-2 rounded-full ${
                 isConnected ? "bg-green-500" : "bg-red-500"
-              } animate-pulse`}
-            ></div>
+              } animate-pulse`}></div>
             <span className="text-sm">
               {isConnected
                 ? "Seguimiento en tiempo real activo"
@@ -439,8 +434,7 @@ function OrderContent({ id }: { id: string }) {
             return (
               <div
                 key={step.label}
-                className="flex flex-col items-center gap-2 z-10"
-              >
+                className="flex flex-col items-center gap-2 z-10">
                 {/* Punto del timeline */}
                 <span
                   className={[
@@ -449,8 +443,7 @@ function OrderContent({ id }: { id: string }) {
                       ? "bg-primary w-12 h-12 scale-100"
                       : "bg-[#5B524B] w-10 h-10 opacity-70 scale-90",
                     isCurrent ? "ring-4 ring-primary/30 animate-pulse" : "",
-                  ].join(" ")}
-                >
+                  ].join(" ")}>
                   {step.icon}
                 </span>
 
@@ -459,8 +452,7 @@ function OrderContent({ id }: { id: string }) {
                   className={[
                     "text-xs md:text-sm transition-all duration-300 text-center",
                     isActive ? "text-black font-semibold" : "text-gray-500",
-                  ].join(" ")}
-                >
+                  ].join(" ")}>
                   {step.label}
                 </span>
               </div>
@@ -477,7 +469,9 @@ function OrderContent({ id }: { id: string }) {
                   <p className="text-sm md:text-base">Tipo de entrega</p>
                 </div>
                 <p className="text-sm md:text-base font-medium">
-                  {order?.delivery_mode === "delivery" ? "Delivery" : "Pickup"}
+                  {order?.delivery_mode === "delivery"
+                    ? "Delivery"
+                    : "Retiro en local"}
                 </p>
               </li>
               <li className="flex items-center justify-between gap-2 md:gap-3">
@@ -497,8 +491,7 @@ function OrderContent({ id }: { id: string }) {
                 products.map((product, index) => (
                   <li
                     key={product?.id || index}
-                    className="flex flex-row gap-3 md:gap-5 w-full justify-between items-center border-b pb-3 md:border-none md:pb-0"
-                  >
+                    className="flex flex-row gap-3 md:gap-5 w-full justify-between items-center border-b pb-3 md:border-none md:pb-0">
                     <div className="flex gap-2 md:gap-3 items-center flex-1">
                       {product?.name === "Big G" && (
                         <img
@@ -520,7 +513,8 @@ function OrderContent({ id }: { id: string }) {
                           className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"
                           alt={product?.name || "Producto"}
                         />
-                      )}{product?.name === "Bacon T" && (
+                      )}
+                      {product?.name === "Bacon T" && (
                         <img
                           src="/burgers/BaconT.png"
                           className="w-20 h-20 md:w-40 md:h-30 rounded-xl object-cover flex-shrink-0"

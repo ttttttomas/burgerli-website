@@ -191,6 +191,7 @@ async function handlePayment(paymentId: string, token: string, local: string) {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify(tempOrderData),
           }
         );
@@ -280,6 +281,7 @@ async function createOrderFromPayment(
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(orderData),
       }
     );

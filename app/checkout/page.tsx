@@ -41,38 +41,39 @@ export default function CheckoutPage() {
     products: [],
   });
 
-  useEffect(() => {
-    if (session) {
-      setOrder((prev: any) => ({
-        ...prev,
-        name: session.username || "",
-        email: session.email || "",
-        phone: session.phone || "",
-        id_user_client: session.user_id_user_client || "",
-      }));
-      console.log("orden actualizada", session);
-    }
-  }, [session]);
+  // useEffect eliminado para evitar conflictos de estado
 
   // useEffect para rellenar el estado order con los datos del draft cuando esté disponible
   useEffect(() => {
     if (draft) {
-      setOrder({
-        // id_order: id,
-        id_user_client: session?.user_id_user_client || "",
+      setOrder((prev) => ({
+        ...prev,
+        // Mantener otros campos del draft
         payment_method: draft.payment_method || "efete",
         delivery_mode: draft.delivery_mode,
         price: draft.price,
         status: "Confirmado",
         order_notes: draft.order_notes || null,
         local: draft.local,
-        name: draft.name,
-        phone: draft.phone,
-        email: draft.email,
+        // Lógica explicita para autocompletado
+        name:
+          draft.name && draft.name.trim() !== ""
+            ? draft.name
+            : session?.username || "",
+        phone:
+          draft.phone && draft.phone !== 0
+            ? draft.phone
+            : session?.phone
+              ? Number(session.phone)
+              : 0,
+        email:
+          draft.email && draft.email.trim() !== ""
+            ? draft.email
+            : session?.email || "",
         address: draft.address || null,
         coupon: draft.coupon || null,
         products: draft.products,
-      });
+      }));
     }
   }, [draft, session]);
 
@@ -108,20 +109,20 @@ export default function CheckoutPage() {
         <p className="font-bold text-2xl">Cargando…</p>
       </main>
     );
-  
+
   const handleClick = async () => {
-    const subtotal = draft.price
-    const comision = subtotal * 0.08
-    const total = subtotal + comision
+    const subtotal = draft.price;
+    const comision = subtotal * 0.08;
+    const total = subtotal + comision;
     console.log("💳 [Checkout] Iniciando pago con MercadoPago");
     console.log("💳 [Checkout] Order data:", order);
 
-        // Validar si hay sesión iniciada
-        if (!session) {
-          toast.error("Por favor, inicia sesión para pagar");
-          return;
-        }
-    
+    // Validar si hay sesión iniciada
+    if (!session) {
+      toast.error("Por favor, inicia sesión para pagar");
+      return;
+    }
+
     if (order.name && order.email && order.phone) {
       try {
         // Solo crear la preferencia de MercadoPago
@@ -167,7 +168,6 @@ export default function CheckoutPage() {
   };
 
   const handleCashPayment = async () => {
-
     // Validar que los campos obligatorios estén completos
     if (!order.name || !order.email || !order.phone) {
       toast.error("Por favor, rellene todos los campos obligatorios");
@@ -202,19 +202,19 @@ export default function CheckoutPage() {
         ),
       };
       console.log(newOrder);
-      
 
       const createdOrder = await createOrder(newOrder);
       // Limpiar el draft del localStorage
       localStorage.removeItem("checkoutDraft:v1");
       toast.success("¡Orden creada exitosamente!");
       // Obtener el ID de la orden creada
-      const orderId = createdOrder?.id_order || createdOrder?.id || createdOrder?.order_id;
+      const orderId =
+        createdOrder?.id_order || createdOrder?.id || createdOrder?.order_id;
       // Si hay sesión y tenemos un ID de orden, redirigir a la página de orden
-        toast.success("Redirigiendo a seguimiento de envio...");
-        setTimeout(() => {
-          router.push(`/order/${orderId}`);
-        }, 2000);
+      toast.success("Redirigiendo a seguimiento de envio...");
+      setTimeout(() => {
+        router.push(`/order/${orderId}`);
+      }, 2000);
     } catch (error) {
       console.error("Error al crear orden:", error);
       toast.error("Error al crear la orden. Intenta nuevamente.");
@@ -329,7 +329,7 @@ export default function CheckoutPage() {
           </li>
         </ul>
         <div className="flex flex-col mx-auto items-center justify-center gap-8">
-        <div onClick={handleClick}>
+          <div onClick={handleClick}>
             <img
               src="mercadopago.png"
               className="mx-auto cursor-pointer"

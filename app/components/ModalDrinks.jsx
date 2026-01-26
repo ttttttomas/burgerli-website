@@ -68,14 +68,12 @@ const ModalFries = ({ product }) => {
         <section className="fixed rounded-4xl inset-0 h-screen z-50 flex items-center justify-center p-4 modal-overlay">
           <div
             className="rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
+            onClick={(e) => e.stopPropagation()}>
             <div className="relative bg-primary">
               <div>
                 <button
                   onClick={closeModal}
-                  className="absolute top-4 cursor-pointer right-4 rounded-full text-black font-extrabold text-3xl transition-colors"
-                >
+                  className="absolute top-4 cursor-pointer right-4 rounded-full text-black font-extrabold text-3xl transition-colors">
                   X
                 </button>
 
@@ -88,10 +86,28 @@ const ModalFries = ({ product }) => {
                   />
                 </div>
 
-                <div className="px-6 py-2 bg-[#ffefdb]">
-                  <h2 className="text-2xl font-bold text-black mb-2">
-                    {selectedProduct.name}
-                  </h2>
+                <div className="px-6 py-2 flex flex-col gap-5 bg-[#ffefdb]">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-black mb-2">
+                      {selectedProduct.name}
+                    </h2>
+                    {selectedProduct.stock_by_local && (
+                      <div className="flex flex-col items-end gap-1">
+                        {Object.entries(selectedProduct.stock_by_local).map(
+                          ([location, available]) => (
+                            <p
+                              key={location}
+                              className={`text-sm font-semibold ${available ? "text-green-600" : "text-red-600"}`}>
+                              <span className="capitalize text-black">
+                                {location}:
+                              </span>{" "}
+                              {available ? "Disponible" : "Sin stock"}
+                            </p>
+                          ),
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <p className="text-black mb-6">
                     {selectedProduct.id_burger && selectedProduct.description}
                     {selectedProduct.id_fries &&
@@ -109,8 +125,7 @@ const ModalFries = ({ product }) => {
                     {selectedProduct.size_list.map((s) => (
                       <div
                         key={s}
-                        className="flex justify-between text-white font-light items-center w-full gap-2"
-                      >
+                        className="flex justify-between text-white font-light items-center w-full gap-2">
                         <p>{s}</p>
                         <input
                           type="radio"
@@ -127,12 +142,10 @@ const ModalFries = ({ product }) => {
                 {/* Botón de agregar y total */}
                 <div
                   onClick={handleAddToCart}
-                  className="bg-[#FCEDCC] px-5 py-3"
-                >
+                  className="bg-[#FCEDCC] px-5 py-3">
                   <div
                     // onClick={handleAddToCart()}
-                    className="bg-tertiary text-xl cursor-pointer flex text-black font-bold p-3 rounded-2xl justify-between items-center"
-                  >
+                    className="bg-tertiary text-xl cursor-pointer flex text-black font-bold p-3 rounded-2xl justify-between items-center">
                     <p className="">Agregar al pedido</p>
                     <p className="rounded-lg font-bold">
                       Total: ${finalPrice.toLocaleString("es-AR")}

@@ -70,7 +70,7 @@ const ModalPromos = ({ product }) => {
         // Para checkboxes (múltiples opciones)
         if (selectedOptions.length !== maxSelectable) {
           alert(
-            `Por favor, selecciona exactamente ${maxSelectable} opciones para esta promo`
+            `Por favor, selecciona exactamente ${maxSelectable} opciones para esta promo`,
           );
           return;
         }
@@ -85,12 +85,14 @@ const ModalPromos = ({ product }) => {
         selectedOptions.length > 0
           ? selectedOptions
           : selectOption
-          ? [selectOption]
-          : undefined,
+            ? [selectOption]
+            : undefined,
     });
 
     closeModal();
   };
+
+  console.log(selectedProduct);
 
   return (
     <section>
@@ -131,10 +133,28 @@ const ModalPromos = ({ product }) => {
                   />
                 </div>
 
-                <div className="px-6 py-2 bg-[#ffefdb]">
-                  <h2 className="text-2xl font-bold text-black mb-2">
-                    {selectedProduct.name}
-                  </h2>
+                <div className="px-6 flex flex-col gap-5 py-2 bg-[#ffefdb]">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-black mb-2">
+                      {selectedProduct.name}
+                    </h2>
+                    {selectedProduct.stock_by_local && (
+                      <div className="flex flex-col items-end gap-1">
+                        {Object.entries(selectedProduct.stock_by_local).map(
+                          ([location, available]) => (
+                            <p
+                              key={location}
+                              className={`text-sm font-semibold ${available ? "text-green-600" : "text-red-600"}`}>
+                              <span className="capitalize text-black">
+                                {location}:
+                              </span>{" "}
+                              {available ? "Disponible" : "Sin stock"}
+                            </p>
+                          ),
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <p className="text-black mb-6">
                     {selectedProduct.description}
                   </p>
@@ -182,7 +202,7 @@ const ModalPromos = ({ product }) => {
                                   handleOptionToggle(
                                     option,
                                     e.target.checked,
-                                    selectedProduct.options
+                                    selectedProduct.options,
                                   )
                                 }
                                 disabled={

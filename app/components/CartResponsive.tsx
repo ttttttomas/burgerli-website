@@ -1,5 +1,7 @@
 "use client";
 import Ubicacion from "./icons/Ubicacion";
+import Moto from "./icons/Moto";
+import Shop from "./icons/Shop";
 
 import Cupon from "./Cupon";
 import { useEffect, useState } from "react";
@@ -44,8 +46,8 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
   const [instructions, setInstructions] = useState("");
   const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
   const [sucursal, setSucursal] = useState<string>("");
-  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
-  const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
+  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(false);
+  const [mode, setMode] = useState<"pickup" | "delivery" | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [deliveryPricing, setDeliveryPricing] = useState(500);
   const [locals, setLocals] = useState<Local[] | null>(null);
@@ -69,7 +71,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
     const getLocalsData = async () => {
       const data = await getLocals();
       const dataFiltered = data.locals.filter(
-        (local: Local) => local.is_open === 1
+        (local: Local) => local.is_open === 1,
       );
       setLocals(dataFiltered);
     };
@@ -90,7 +92,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
   }, [userById, session]);
 
   useEffect(() => {
-    if (mode === "pickup") {
+    if (mode === "pickup" || mode === null) {
       setDeliveryPricing(0);
     } else {
       setDeliveryPricing(500);
@@ -99,7 +101,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
 
   useEffect(() => {
     setTotalPricingCart(
-      totalPricing() + salePricing + deliveryPricing - salePricing
+      totalPricing() + salePricing + deliveryPricing - salePricing,
     );
   }, [deliveryPricing, totalPricing, salePricing]);
 
@@ -138,6 +140,11 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
       order_notes: instructions,
     };
 
+    if (!mode) {
+      toast.error("Seleccione un modo de entrega");
+      return;
+    }
+
     if (!sucursal) {
       toast.error("Seleccione su sucursal CERCANA para poder continuar");
       return;
@@ -172,15 +179,13 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
   };
   return (
     <section
-      className={`${inter.className} md:hidden block fixed overflow-y-scroll w-full h-[90vh] right-0 z-50 pt-5 top-0 text-white rounded-2xl bg-primary py-3 px-5`}
-    >
+      className={`${inter.className} md:hidden block fixed overflow-y-scroll w-full h-[90vh] right-0 z-50 pt-5 top-0 text-white rounded-2xl bg-primary py-3 px-5`}>
       <div>
         <h2 className={`${pattaya.className} text-2xl`}>Mi pedido</h2>
         <button
           onClick={closed}
           className="absolute cursor-pointer right-3 top-2 p-2 rounded-full bg-black/20"
-          aria-label="Cerrar"
-        >
+          aria-label="Cerrar">
           <X className="w-6 h-6" />
         </button>
       </div>
@@ -192,13 +197,13 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
               {product.sin && <small>Sin: {product.sin.join(", ")}</small>}
               {product.size && <small>Tamaño: {product.size}</small>}
               {product.fries && <small>Papas: {product.fries}</small>}
-              {product.selectedOptions && product.selectedOptions.length > 0 && (
-                <small>Opciones: {product.selectedOptions.join(", ")}</small>
-              )}
+              {product.selectedOptions &&
+                product.selectedOptions.length > 0 && (
+                  <small>Opciones: {product.selectedOptions.join(", ")}</small>
+                )}
               <button
                 onClick={() => removeFromCart(product)}
-                className="underline cursor-pointer text-sm"
-              >
+                className="underline cursor-pointer text-sm">
                 Eliminar
               </button>
             </div>
@@ -209,8 +214,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
               <div className="flex gap-4 border rounded-xl justify-between px-2">
                 <button
                   onClick={() => removeQuantity(product)}
-                  className="cursor-pointer"
-                >
+                  className="cursor-pointer">
                   {" "}
                   -{" "}
                 </button>
@@ -219,8 +223,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
                 </span>
                 <button
                   onClick={() => addQuantity(product)}
-                  className="cursor-pointer"
-                >
+                  className="cursor-pointer">
                   {" "}
                   +{" "}
                 </button>
@@ -233,65 +236,79 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
       <h3 className="mt-4 font-semibold">Cupon de descuento</h3>
       <Cupon />
       <hr />
-      <ul className="flex my-3 justify-between items-center">
-      <li className="flex gap-2">
-            <input
-              name="pedido"
-              type="radio"
-              value="delivery"
-              checked={mode === "delivery"}
-              onChange={handleModeChange}
-              onClick={() => {
-                setIsTakeAwayChecked(false);
-                setIsDeliveryChecked(true);
-              }}
-            />{" "}
-            <p className="text-lg">Delivery</p>
-          </li>
-          <li className="flex gap-2">
-            <input
-              name="pedido"
-              type="radio"
-              value="pickup"
-              checked={mode === "pickup"}
-              onChange={handleModeChange}
-              onClick={() => {
-                setIsDeliveryChecked(false);
-                setIsTakeAwayChecked(true);
-              }}
-            />{" "}
-            <p className="text-lg">Retiro en el local</p>
-          </li>
-      </ul>
+      <div className="flex flex-col gap-4 my-4">
+        <p className="text-xl font-bold flex justify-center text-center">
+          ¿Qué vas a elegir?
+        </p>
+        <div className="flex gap-4">
+          <button
+            onClick={() => {
+              setMode("delivery");
+              setIsDeliveryChecked(true);
+              setIsTakeAwayChecked(false);
+            }}
+            className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+              mode === "delivery"
+                ? "bg-white border-white text-black"
+                : "bg-transparent border-white text-white active:bg-white/10"
+            }`}>
+            <span className="text-lg font-bold">Delivery</span>
+            <Moto
+              className={`w-8 h-8 ${mode === "delivery" ? "text-black" : "text-white"}`}
+            />
+          </button>
+          <button
+            onClick={() => {
+              setMode("pickup");
+              setIsDeliveryChecked(false);
+              setIsTakeAwayChecked(true);
+            }}
+            className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+              mode === "pickup"
+                ? "bg-white border-white text-black"
+                : "bg-transparent border-white text-white active:bg-white/10"
+            }`}>
+            <div className="text-center">
+              <span className="text-lg font-bold block leading-tight">
+                Retiro en
+              </span>
+              <span className="text-lg font-bold block leading-tight">
+                el local
+              </span>
+            </div>
+            <Shop
+              className={`w-8 h-8 ${mode === "pickup" ? "text-black" : "text-white"}`}
+            />
+          </button>
+        </div>
+      </div>
       {mode === "delivery" && (
         <>
           <p className="text-start font-bold text-lg">
             Seleccioná tu sucursal mas cercana <small>(Obligatorio)</small>
           </p>
           <select
-              value={sucursal}
-              onChange={(e) => setSucursal(e.target.value)}
-              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl"
-            >
+            value={sucursal}
+            onChange={(e) => setSucursal(e.target.value)}
+            className="w-full border-2 my-2 p-2 border-tertiary rounded-xl">
+            <option value="" disabled>
+              Seleccionar sucursal
+            </option>
+            {locals && locals.length > 0 ? (
+              locals.map((local: Local) => (
+                <option
+                  key={local.id_local}
+                  className="text-black"
+                  value={local.name}>
+                  {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
+                </option>
+              ))
+            ) : (
               <option value="" disabled>
-                Seleccionar sucursal
-              </option>
-              {locals && locals.length > 0 ? (
-                locals.map((local: Local) => (
-                  <option
-                    key={local.id_local}
-                    className="text-black"
-                    value={local.name}
-                  >
-                    {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>
                 No hay sucursales abiertas
               </option>
-              )}
-            </select>
+            )}
+          </select>
           <div className="flex flex-col gap-5">
             {!addresses?.length ? (
               <>
@@ -313,8 +330,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
               addresses.map((address) => (
                 <div
                   key={address}
-                  className="flex py-8 justify-between items-center"
-                >
+                  className="flex py-8 justify-between items-center">
                   <div className="flex gap-3">
                     <Ubicacion fill={"white"} />
                     <div className="flex flex-col justify-center">
@@ -340,10 +356,9 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
             Seleccioná la sucursal de retiro
           </p>
           <select
-              value={sucursal}
-              onChange={(e) => setSucursal(e.target.value)}
-              className="w-full border-2 my-2 p-2 border-tertiary rounded-xl"
-            >
+            value={sucursal}
+            onChange={(e) => setSucursal(e.target.value)}
+            className="w-full border-2 my-2 p-2 border-tertiary rounded-xl">
             <option value="" disabled>
               Seleccionar sucursal
             </option>
@@ -352,15 +367,14 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
                 <option
                   key={local.id_local}
                   className="text-black"
-                  value={local.name}
-                >
+                  value={local.name}>
                   {local.name.charAt(0).toUpperCase() + local.name.slice(1)}
                 </option>
               ))
             ) : (
               <option value="" disabled>
-              No hay sucursales abiertas
-            </option>
+                No hay sucursales abiertas
+              </option>
             )}
           </select>
         </div>
@@ -380,12 +394,12 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
           <span>${deliveryPricing.toLocaleString("es-AR")}</span>
         </li>
         <li className="flex items-center justify-between">
-            <div className="flex flex-col items-start">
-              <p>Costo de servicio web</p>
-              <small>(Solo con MercadoPago)</small>
-            </div>
-            <span>8%</span>
-          </li>
+          <div className="flex flex-col items-start">
+            <p>Costo de servicio web</p>
+            <small>(Solo con MercadoPago)</small>
+          </div>
+          <span>8%</span>
+        </li>
         <li className="flex justify-between mt-10 text-xl mb-5 font-bold text-tertiary">
           <h4>Total</h4>
           {totalPricingCart === null ? (
@@ -398,12 +412,10 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
         <hr />
         <textarea
           onChange={(e) => setInstructions(e.target.value)}
-          className="bg-white rounded-xl px-3 py-1 text-black font-semibold my-5 w-full h-52"
-        ></textarea>
+          className="bg-white rounded-xl px-3 py-1 text-black font-semibold my-5 w-full h-52"></textarea>
         <button
           onClick={handleContinue}
-          className="bg-tertiary w-full py-2 cursor-pointer rounded-xl text-black font-bold text-lg"
-        >
+          className="bg-tertiary w-full py-2 cursor-pointer rounded-xl text-black font-bold text-lg">
           Continuar
         </button>
       </ul>

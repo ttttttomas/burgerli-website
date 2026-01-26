@@ -17,7 +17,7 @@ type Register = {
 
 
 export default function useAuth() {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api';
 
   const login = async ({ email, password }: Auth) => {
       const res = await axios.post(

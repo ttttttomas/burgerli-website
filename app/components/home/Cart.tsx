@@ -1,5 +1,7 @@
 "use client";
 import Ubicacion from "../icons/Ubicacion";
+import Moto from "../icons/Moto";
+import Shop from "../icons/Shop";
 
 import { useRouter } from "next/navigation";
 import Cupon from "../Cupon";
@@ -45,8 +47,8 @@ export default function Cart() {
   const [instructions, setInstructions] = useState("");
   const [isDeliveryChecked, setIsDeliveryChecked] = useState(false);
   const [sucursal, setSucursal] = useState<string>("");
-  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(true);
-  const [mode, setMode] = useState<"pickup" | "delivery">("pickup");
+  const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(false);
+  const [mode, setMode] = useState<"pickup" | "delivery" | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [deliveryPricing, setDeliveryPricing] = useState(500);
   const [locals, setLocals] = useState<Local[] | null>(null);
@@ -70,7 +72,7 @@ export default function Cart() {
     const getLocalsData = async () => {
       const data = await getLocals();
       const dataFiltered = data.locals.filter(
-        (local: Local) => local.is_open === 1
+        (local: Local) => local.is_open === 1,
       );
       setLocals(dataFiltered);
     };
@@ -89,7 +91,7 @@ export default function Cart() {
   }, [userById, session]);
 
   useEffect(() => {
-    if (mode === "pickup") {
+    if (mode === "pickup" || mode === null) {
       setDeliveryPricing(0);
     } else {
       setDeliveryPricing(500);
@@ -98,7 +100,7 @@ export default function Cart() {
 
   useEffect(() => {
     setTotalPricingCart(
-      totalPricing() + salePricing + deliveryPricing - salePricing
+      totalPricing() + salePricing + deliveryPricing - salePricing,
     );
   }, [deliveryPricing, totalPricing, salePricing]);
 
@@ -137,6 +139,15 @@ export default function Cart() {
       order_notes: instructions,
     };
 
+    if (!mode) {
+      toast.error("Seleccione un modo de entrega");
+      return;
+    }
+
+    if (cartProducts.length === 0) {
+      toast.error("No hay productos en el carrito");
+      return;
+    }
     if (!sucursal) {
       toast.error("Seleccione su sucursal CERCANA para poder continuar");
       return;
@@ -144,11 +155,6 @@ export default function Cart() {
 
     if (!checkIsOpen()) {
       toast.error("El tiempo de apertura de la tienda no es válido");
-      return;
-    }
-
-    if (cartProducts.length === 0) {
-      toast.error("No hay productos en el carrito");
       return;
     }
 
@@ -203,7 +209,7 @@ export default function Cart() {
                 <div className="flex flex-col items-start gap-1">
                   <p className="font-bold">{product.name}</p>
                   {/* <small>Extras: {product.extras.join(", ")}</small> */}
-                  {product.sin && <small>Sin: {product.sin.join(", ")}</small>}
+                  {/* {product.sin && <small>Sin: {product.sin.join(", ")}</small>} */}
                   {product.size && <small>Tamaño: {product.size}</small>}
                   {product.fries && <small>Papas: {product.fries}</small>}
                   {product.selectedOptions &&
@@ -250,36 +256,52 @@ export default function Cart() {
         <h3 className="mt-4 font-semibold">Cupon de descuento</h3>
         <Cupon />
         <hr />
-        <ul className="flex my-3 justify-between items-center">
-          <li className="flex gap-2">
-            <input
-              name="pedido"
-              type="radio"
-              value="delivery"
-              checked={mode === "delivery"}
-              onChange={handleModeChange}
+        <div className="flex flex-col gap-4 my-4">
+          <p className="text-xl font-bold flex justify-center text-center">
+            ¿Qué vas a elegir?
+          </p>
+          <div className="flex gap-4">
+            <button
               onClick={() => {
-                setIsTakeAwayChecked(false);
+                setMode("delivery");
                 setIsDeliveryChecked(true);
+                setIsTakeAwayChecked(false);
               }}
-            />{" "}
-            <p className="text-lg">Delivery</p>
-          </li>
-          <li className="flex gap-2">
-            <input
-              name="pedido"
-              type="radio"
-              value="pickup"
-              checked={mode === "pickup"}
-              onChange={handleModeChange}
+              className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                mode === "delivery"
+                  ? "bg-white border-white text-black"
+                  : "bg-transparent border-white text-white hover:bg-white/10"
+              }`}>
+              <span className="text-lg font-bold">Delivery</span>
+              <Moto
+                className={`w-8 h-8 ${mode === "delivery" ? "text-black" : "text-white"}`}
+              />
+            </button>
+            <button
               onClick={() => {
+                setMode("pickup");
                 setIsDeliveryChecked(false);
                 setIsTakeAwayChecked(true);
               }}
-            />{" "}
-            <p className="text-lg">Retiro en el local</p>
-          </li>
-        </ul>
+              className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                mode === "pickup"
+                  ? "bg-white border-white text-black"
+                  : "bg-transparent border-white text-white hover:bg-white/10"
+              }`}>
+              <div className="text-center">
+                <span className="text-lg font-bold block leading-tight">
+                  Retiro en
+                </span>
+                <span className="text-lg font-bold block leading-tight">
+                  el local
+                </span>
+              </div>
+              <Shop
+                className={`w-8 h-8 ${mode === "pickup" ? "text-black" : "text-white"}`}
+              />
+            </button>
+          </div>
+        </div>
         {mode === "delivery" && (
           <>
             <p className="text-start font-bold text-lg">

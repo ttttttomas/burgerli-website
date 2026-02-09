@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import {
   Geist,
   Geist_Mono,
@@ -58,6 +59,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <Script
+          src="https://t.contentsquare.net/uxa/78c58af8b6052.js"
+          strategy="afterInteractive"
+        />
+      </head>
       <SessionContextProvider>
         <CartContextProvider>
           <body className={`${roboto.className} bg-[#FCEDCC] antialiased`}>

@@ -21,6 +21,7 @@ export default function useAuth() {
 
   const login = async ({ email, password }: Auth) => {
       const res = await axios.post(
+        // "http://localhost:8000/token-user-client",
         `${API_BASE_URL}/token-user-client`,
         { email, password }, {
         withCredentials: true,
@@ -76,6 +77,7 @@ export default function useAuth() {
   const verifyCookie = async () => {
     try {
       const response = await axios.get(
+        // "http://localhost:8000/verify-cookie",
         `${API_BASE_URL}/verify-cookie`,
         {
           headers: {

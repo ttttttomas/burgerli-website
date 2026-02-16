@@ -49,20 +49,21 @@ export const SessionContextProvider = ({
     setLoading(true);
     try {
       const res = await login({ email, password });
-      
+
       if (!res || !res.data) {
         throw new Error("Error en la respuesta del servidor");
       }
 
       const api = res.data;
       console.log("🔐 Login exitoso:", api);
-      
+
       // Extraer datos con fallbacks seguros
       const name = api.name || api.username || "Usuario";
       const id = api.user_id || api.ID || api.user_id_user_client;
       const emailUser = api.email || email;
       const phone = api.phone || "";
-      
+      const coupon = api.coupons || null;
+
       if (!id) {
         throw new Error("Error al iniciar sesión, intente de nuevo.");
       }
@@ -72,6 +73,7 @@ export const SessionContextProvider = ({
         username: String(name),
         email: String(emailUser),
         phone: String(phone),
+        coupons: coupon,
       };
 
       // Actualizar la sesión inmediatamente
@@ -102,7 +104,9 @@ export const SessionContextProvider = ({
         throw new Error("Error en el registro");
       }
 
-       toast.success("¡Registro exitoso! Bienvenido a Burgerli. Ingresa a tu cuenta.");
+      toast.success(
+        "¡Registro exitoso! Bienvenido a Burgerli. Ingresa a tu cuenta.",
+      );
 
       // Esperar un momento para asegurar que el estado se propague
       await new Promise((resolve) => setTimeout(resolve, 150));
@@ -126,12 +130,15 @@ export const SessionContextProvider = ({
 
         // Extraer datos con fallbacks seguros
         const name = userData.username || userData.name || "Usuario";
-        const id = userData.user_id || userData.id || userData.user_id_user_client;
+        const id =
+          userData.user_id || userData.id || userData.user_id_user_client;
         const email = userData.email || "";
         const phone = userData.phone || "";
-
+        const coupon = userData.coupons || null;
         if (!id) {
-          console.warn("⚠️ No se encontró user_id en la verificación de cookie");
+          console.warn(
+            "⚠️ No se encontró user_id en la verificación de cookie",
+          );
           setSession(null);
           return;
         }
@@ -141,8 +148,9 @@ export const SessionContextProvider = ({
           username: String(name),
           email: String(email),
           phone: String(phone),
+          coupons: coupon,
         };
-        
+
         setSession(newSession);
         console.log("✅ Sesión verificada:", newSession);
       } else {
@@ -175,22 +183,25 @@ export const SessionContextProvider = ({
     try {
       // 1. Llamar al endpoint del backend para borrar la cookie del servidor
       await logout();
-      
+
       // 2. Llamar al endpoint de Next.js para borrar cookies del lado del cliente
       try {
-        await fetch('/api/auth/logout', {
-          method: 'POST',
-          credentials: 'include',
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
         });
       } catch (e) {
-        console.warn("⚠️ No se pudo llamar al endpoint de logout de Next.js", e);
+        console.warn(
+          "⚠️ No se pudo llamar al endpoint de logout de Next.js",
+          e,
+        );
       }
-      
+
       // 3. Limpiar la sesión del contexto
       setSession(null);
       console.log("✅ Sesión cerrada correctamente");
       toast.success("Sesión cerrada correctamente");
-      
+
       // 4. Esperar un momento antes de continuar
       await new Promise((resolve) => setTimeout(resolve, 150));
     } catch (error) {
@@ -238,8 +249,7 @@ export const SessionContextProvider = ({
         userById,
         OrderById,
         logoutUser,
-      }}
-    >
+      }}>
       {children}
     </SessionContext.Provider>
   );

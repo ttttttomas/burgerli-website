@@ -5,11 +5,11 @@ import Shop from "../icons/Shop";
 
 import { useRouter } from "next/navigation";
 import Cupon from "../Cupon";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Inter, Pattaya } from "next/font/google";
 import CartResponsive from "../CartResponsive";
 import { useCart } from "@/app/context/CartContext";
-import { CartProduct } from "@/types";
+import { CartProduct, Coupons } from "@/types";
 
 import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
 import checkIsOpen from "@/app/lib/CheckShopOpen";
@@ -40,7 +40,7 @@ export default function Cart() {
   const router = useRouter();
   // MODAL
   const [open, setOpen] = useState(false);
-  const { getLocals } = useProducts();
+  const { getLocals, getCoupons } = useProducts();
   // DELIVERY STATES
   const [addresses, setAddresses] = useState<[]>([]);
   const [addressInput, setAddressInput] = useState("");
@@ -52,9 +52,9 @@ export default function Cart() {
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [deliveryPricing, setDeliveryPricing] = useState(500);
   const [locals, setLocals] = useState<Local[] | null>(null);
-
+  const [coupons, setCoupons] = useState<Coupons[] | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupons | null>(null);
   // TOTAL STATES
-  const [salePricing] = useState(0);
   const [totalPricingCart, setTotalPricingCart] = useState<number | null>(null);
   const {
     cartProducts,
@@ -84,11 +84,39 @@ export default function Cart() {
       if (!session) return;
 
       const user = (await userById(session.user_id_user_client)) as any;
-
+      const coupons = await getCoupons();
+      setCoupons(coupons);
       setAddresses(user?.[0].addresses);
     };
     getUser();
   }, [userById, session]);
+
+  // Calcula el descuento segun el tipo de cupon
+  const subTotal = totalPricing();
+  const couponDiscount = useMemo(() => {
+    if (!appliedCoupon || !appliedCoupon.amount) return 0;
+
+    // type null o "amount" => descuento de monto fijo
+    if (!appliedCoupon.type || appliedCoupon.type === "amount") {
+      console.log("Cupon de monto reconocido");
+      return appliedCoupon.amount;
+    }
+
+    // type "porcent" => descuento porcentual (con tope opcional)
+    if (appliedCoupon.type === "porcent") {
+      console.log("Cupon de porcentaje reconocido");
+      const discount = (subTotal * appliedCoupon.amount) / 100;
+      console.log("Descuento calculado", discount);
+      if (appliedCoupon.tope && appliedCoupon.tope > 0) {
+        console.log("Cupon con tope reconocido");
+        return Math.min(discount, appliedCoupon.tope);
+      }
+      console.log("Cupon sin tope reconocido");
+      return discount;
+    }
+
+    return 0;
+  }, [appliedCoupon, subTotal]);
 
   useEffect(() => {
     if (mode === "pickup" || mode === null) {
@@ -99,16 +127,12 @@ export default function Cart() {
   }, [mode, selectedAddress]);
 
   useEffect(() => {
-    setTotalPricingCart(
-      totalPricing() + salePricing + deliveryPricing - salePricing,
-    );
-  }, [deliveryPricing, totalPricing, salePricing]);
+    setTotalPricingCart(totalPricing() + deliveryPricing - couponDiscount);
+  }, [deliveryPricing, totalPricing, couponDiscount]);
 
   const handleModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMode(e.target.value as "delivery" | "pickup");
   };
-
-  const subTotal = totalPricing();
 
   // const selectedAddressFind = useMemo(
   //   () => addresses.find((a) => a.address === selectedAddress) ?? null,
@@ -127,14 +151,14 @@ export default function Cart() {
       address: selectedAddress || addressInput || null,
       price: totalPricingCart,
       deliveryPrice: deliveryPricing,
-      salePricing,
+      couponAmount: couponDiscount,
       subTotal,
       sin: cartProducts
         .filter((p: any) => (p.sin?.length ?? 0) > 0)
         .map((p: any) => p.sin)
         .flat(),
-      // extras: cartProducts.filter((p: any) => (p.extras?.length ?? 0) > 0).map((p: any) => p.extras).flat(),
-      // cupon: cupon,
+      coupon: appliedCoupon?.name ?? null,
+      coupon_amount: couponDiscount ?? null,
       local: sucursal,
       order_notes: instructions,
     };
@@ -254,7 +278,11 @@ export default function Cart() {
           {cartProducts.length > 0 && <hr className="font-bold" />}
         </ul>
         <h3 className="mt-4 font-semibold">Cupon de descuento</h3>
-        <Cupon />
+        <Cupon
+          coupons={coupons}
+          setAppliedCoupon={setAppliedCoupon}
+          products={cartProducts}
+        />
         <hr />
         <div className="flex flex-col gap-4 my-4">
           <p className="text-xl font-bold flex justify-center text-center">
@@ -419,8 +447,13 @@ export default function Cart() {
             <span>${totalPricing().toLocaleString("es-AR")}</span>
           </li>
           <li className="flex justify-between">
-            <p>Descuento</p>
-            <span>${salePricing.toLocaleString("es-AR")}</span>
+            <p>
+              Descuento
+              {appliedCoupon?.type === "porcent"
+                ? ` (${appliedCoupon.amount}%)`
+                : ""}
+            </p>
+            <span>${couponDiscount.toLocaleString("es-AR")}</span>
           </li>
           <li className="flex justify-between">
             <p>Delivery</p>

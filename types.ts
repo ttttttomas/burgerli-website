@@ -37,7 +37,16 @@ export type SessionUser = {
   user_id_user_client: string;
   username: string;
   email: string;
+  coupons: Coupons[] | null;
   phone: string;
+};
+
+export type Coupons = {
+  id: string;
+  name: string;
+  tope?: number | null;
+  amount?: number;
+  type: "amount" | "porcent" | null;
 };
 
 // PRODUCTO DENTRO DEL CARRITO
@@ -68,6 +77,9 @@ export type Orders = {
   // created_at: string; // VIENEN CREADOS DESDE LA BASE DE DATOS
   payment_method: string;
   delivery_mode: string;
+  delivery_time?: string;
+  coupon_amount?: number | null;
+  coupon?: string | null;
   price: number;
   status: string;
   order_notes?: string | null;
@@ -76,7 +88,6 @@ export type Orders = {
   phone: number;
   email: string;
   address: string | null;
-  coupon?: string | null;
   fries?: string | null;
   drinks?: string | null;
   products: Products[];

@@ -569,6 +569,8 @@ function OrderContent({ id }: { id: string }) {
                 </p>
               </li>
             </ul>
+            <h6 className="font-bold text-lg md:text-xl">Descuento</h6>
+            <p>{order?.coupon}</p>
             {/* <hr className="border-[1px] my-5" />
             <h6 className="font-bold text-xl">Mi pago</h6>
             <ul className="my-5 flex flex-col gap-3">

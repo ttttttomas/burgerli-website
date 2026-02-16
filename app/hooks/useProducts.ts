@@ -26,6 +26,33 @@ export default function useAuth() {
     }
   };
 
+const getCoupons = async () => {
+    try {
+      const response = await axios.get(
+        "https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/coupons",
+      );
+      console.log("c", response);
+      if (!response) {
+        return null;
+      }
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error) {
+      console.log(error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 400) {
+          console.error("Not coupons found");
+        } else {
+          console.error(error);
+        }
+      } else {
+        console.error("An unexpected error occurred");
+      }
+    }
+  };
+
+
   const getBurgers = async () => {
     try {
       const response = await axios.get(
@@ -59,7 +86,6 @@ export default function useAuth() {
         return null;
       }
       if (response.status === 200) {
-        console.log(response.data);
         return response.data;
         
       }
@@ -202,5 +228,5 @@ export default function useAuth() {
       } 
     }
   };
-  return { getBurgers, getDrinks,getDips, getPromos, getOrder, getFries, createOrder, getLocals };    
+  return { getBurgers, getDrinks,getDips, getCoupons, getPromos, getOrder, getFries, createOrder, getLocals };    
 }

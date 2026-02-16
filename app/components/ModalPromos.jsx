@@ -92,8 +92,6 @@ const ModalPromos = ({ product }) => {
     closeModal();
   };
 
-  console.log(selectedProduct);
-
   return (
     <section>
       <Card

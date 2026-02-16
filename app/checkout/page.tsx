@@ -38,6 +38,7 @@ export default function CheckoutPage() {
     email: "",
     address: "",
     coupon: "",
+    coupon_amount: 0,
     products: [],
   });
 
@@ -72,6 +73,7 @@ export default function CheckoutPage() {
             : session?.email || "",
         address: draft.address || null,
         coupon: draft.coupon || null,
+        coupon_amount: draft.coupon_amount || null,
         products: draft.products,
       }));
     }
@@ -197,6 +199,7 @@ export default function CheckoutPage() {
         email: order.email,
         address: order.address || draft.address || "",
         coupon: order.coupon || draft.coupon || null,
+        coupon_amount: order.coupon_amount || draft.coupon_amount || null,
         products: (order.products || draft.products).map((p: any) =>
           JSON.stringify(p),
         ),
@@ -321,6 +324,10 @@ export default function CheckoutPage() {
           <li className="flex items-center text-gray-500 justify-between gap-3">
             <p>Cupon de descuento</p>
             <p>{draft.coupon?.toLocaleString("es-AR") ?? "-"}</p>
+          </li>
+          <li className="flex items-center text-gray-500 justify-between gap-3">
+            <p>Monto de descuento</p>
+            <p>{draft.coupon_amount?.toLocaleString("es-AR") ?? "-"}</p>
           </li>
           <hr />
           <li className="flex items-center justify-between gap-3">

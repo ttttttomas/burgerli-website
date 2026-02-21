@@ -56,6 +56,11 @@ export async function POST(req) {
         picture_url: it.picture_url,
         category_id: it.category_id ?? "general",
       })),
+      payment_methods: {
+        excluded_payment_types: [
+          { id: "ticket" }
+        ]
+      },
       metadata: {
         // Datos del cliente
         name: order.name ?? null,
@@ -77,7 +82,7 @@ export async function POST(req) {
       auto_return: "approved",
       back_urls: {
         success: `${FRONT_URL}/success`,
-        failure: `${FRONT_URL}/failure`,
+        failure: `${FRONT_URL}`,
         pending: `${FRONT_URL}/pending`,
       },
       notification_url: webhookUrl,

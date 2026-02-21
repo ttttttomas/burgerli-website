@@ -50,7 +50,7 @@ export default function Cart() {
   const [isTakeAwayChecked, setIsTakeAwayChecked] = useState(false);
   const [mode, setMode] = useState<"pickup" | "delivery" | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const [deliveryPricing, setDeliveryPricing] = useState(500);
+  const [deliveryPricing, setDeliveryPricing] = useState(1000);
   const [locals, setLocals] = useState<Local[] | null>(null);
   const [coupons, setCoupons] = useState<Coupons[] | null>(null);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupons | null>(null);
@@ -122,7 +122,7 @@ export default function Cart() {
     if (mode === "pickup" || mode === null) {
       setDeliveryPricing(0);
     } else {
-      setDeliveryPricing(500);
+      setDeliveryPricing(1000);
     }
   }, [mode, selectedAddress]);
 
@@ -459,13 +459,13 @@ export default function Cart() {
             <p>Delivery</p>
             <span>${deliveryPricing.toLocaleString("es-AR")}</span>
           </li>
-          <li className="flex items-center justify-between">
+          {/* <li className="flex items-center justify-between">
             <div className="flex items-end gap-2">
               <p>Costo de servicio web</p>
               <small>(Solo con MercadoPago)</small>
             </div>
             <span>8%</span>
-          </li>
+          </li> */}
           <li className="flex justify-between mt-10 text-xl mb-5 font-bold text-tertiary">
             <h4>Total</h4>
             {totalPricingCart === null ? (

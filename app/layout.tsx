@@ -61,6 +61,22 @@ export default function RootLayout({
     <html lang="es">
       <head>
         <Script
+          id="gtm-script"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,d,s,l,i){w[l]=w[l]||[];
+              w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+              var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+              j.async=true;
+              j.src='https://www.googletagmanager.com/gtm.js?id=GTM-MXTKF82B'+dl;
+              f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-MXTKF82B');
+            `,
+          }}
+        />
+        <Script
           src="https://t.contentsquare.net/uxa/78c58af8b6052.js"
           strategy="afterInteractive"
         />
@@ -68,6 +84,14 @@ export default function RootLayout({
       <SessionContextProvider>
         <CartContextProvider>
           <body className={`${roboto.className} bg-[#FCEDCC] antialiased`}>
+            <noscript>
+              <iframe
+                src="https://www.googletagmanager.com/ns.html?id=GTM-MXTKF82B"
+                height="0"
+                width="0"
+                style={{ display: "none", visibility: "hidden" }}
+              />
+            </noscript>
             <Toaster position="top-center" richColors />
             <Header />
             {children}

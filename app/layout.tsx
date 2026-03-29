@@ -60,22 +60,31 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-8V99TY920X"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="gtm-script" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-8V99TY920X');
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-MXTKF82B');
           `}
         </Script>
+        <Script
+          src="https://t.contentsquare.net/uxa/78c58af8b6052.js"
+          strategy="afterInteractive"
+        />
       </head>
       <SessionContextProvider>
         <CartContextProvider>
           <body className={`${roboto.className} bg-[#FCEDCC] antialiased`}>
+            <noscript>
+              <iframe
+                src="https://www.googletagmanager.com/ns.html?id=GTM-MXTKF82B"
+                height="0"
+                width="0"
+                style={{ display: "none", visibility: "hidden" }}
+              />
+            </noscript>
             <Toaster position="top-center" richColors />
             <Header />
             {children}

@@ -117,10 +117,10 @@ export default function CheckoutPage() {
     console.log("💳 [Checkout] Order data:", order);
 
     // Validar si hay sesión iniciada
-    if (!session) {
-      toast.error("Por favor, inicia sesión para pagar");
-      return;
-    }
+    // if (!session) {
+    //   toast.error("Por favor, inicia sesión para pagar");
+    //   return;
+    // }
 
     if (order.name && order.email && order.phone) {
       try {
@@ -174,10 +174,11 @@ export default function CheckoutPage() {
     }
 
     // Validar si hay sesión iniciada
-    if (!session) {
-      toast.error("Por favor, inicia sesión para pagar");
-      return;
-    }
+
+    // if (!session) {
+    //   toast.error("Por favor, inicia sesión para pagar");
+    //   return;
+    // }
     setCashLoading(true);
 
     try {
@@ -207,14 +208,20 @@ export default function CheckoutPage() {
       // Limpiar el draft del localStorage
       localStorage.removeItem("checkoutDraft:v1");
       toast.success("¡Orden creada exitosamente!");
-      // Obtener el ID de la orden creada
+      // Si hay sesión y tenemos un ID de orden, redirigir a la página de orden
       const orderId =
         createdOrder?.id_order || createdOrder?.id || createdOrder?.order_id;
-      // Si hay sesión y tenemos un ID de orden, redirigir a la página de orden
-      toast.success("Redirigiendo a seguimiento de envio...");
-      setTimeout(() => {
-        router.push(`/order/${orderId}`);
-      }, 2000);
+      if (session) {
+        toast.success("Redirigiendo a seguimiento de envio...");
+        setTimeout(() => {
+          router.push(`/order/${orderId}`);
+        }, 2000);
+      } else {
+        toast.success("Confirmando orden...");
+        setTimeout(() => {
+          router.push(`/cash-success?order_id=${orderId}`);
+        }, 2000);
+      }
     } catch (error) {
       console.error("Error al crear orden:", error);
       toast.error("Error al crear la orden. Intenta nuevamente.");

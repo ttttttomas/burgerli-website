@@ -42,31 +42,27 @@ export default function Productos() {
     getProducts();
   }, []);
 
-  // const product: Burgers = {
-  //   id_burger: "1",
-  //   name: "Producto de prueba",
-  //   price: 1,
-  //   fries: "Normal",
-  //   extras: ["Extra 1", "Extra 2"],
-  //   sin: ["Sin 1", "Sin 2"],
-  //   description: "Producto de prueba",
-  //   main_image: "https://i.imgur.com/v7q9p5j.jpg",
-  //   ingredients_list: ["Ingrediente 1", "Ingrediente 2"],
-  //   ingredients: ["Ingrediente 1", "Ingrediente 2"],
-
-  //   size: ["XL", "L", "M", "S"],
-  //   stock: true,
-  // };
+  const product: Burgers = {
+    id_burger: "1",
+    name: "Producto de prueba",
+    price: 1,
+    fries: "Normal",
+    extras: ["Extra 1", "Extra 2"],
+    sin: ["Sin 1", "Sin 2"],
+    description: "Producto de prueba",
+    main_image: "https://i.imgur.com/v7q9p5j.jpg",
+    ingredients_list: ["Ingrediente 1", "Ingrediente 2"],
+    ingredients: ["Ingrediente 1", "Ingrediente 2"],
+    size: ["Simple", "Doble", "Triple"],
+  };
 
   return (
     <section className="rounded-xl xl:w-3/4 w-full text-white">
       <div
         id="promociones"
-        className="relative rounded-xl bg_promos w-full h-24"
-      >
+        className="relative rounded-xl bg_promos w-full h-24">
         <div
-          className={`${anton.className} absolute rounded-xl inset-0 text-3xl z-10 flex items-center justify-center text-[#FCEDCC] font-bold`}
-        >
+          className={`${anton.className} absolute rounded-xl inset-0 text-3xl z-10 flex items-center justify-center text-[#FCEDCC] font-bold`}>
           PROMOCIONES
         </div>
         <img
@@ -76,19 +72,18 @@ export default function Productos() {
         />
       </div>
       <ul className="text-black flex flex-wrap gap-10 my-10 justify-center xl:justify-start">
-        {loading && <div className="text-center font-semibold text-2xl">Cargando...</div>}
+        {loading && (
+          <div className="text-center font-semibold text-2xl">Cargando...</div>
+        )}
         {promos.map((promo: Burgers) => (
           <ModalPromos key={promo.id_promos} product={promo} />
         ))}
-        {/* <ModalProducts product={product} /> */}
       </ul>
       <div
         id="hamburguesas"
-        className="relative rounded-xl bg_promos w-full h-24"
-      >
+        className="relative rounded-xl bg_promos w-full h-24">
         <div
-          className={`${anton.className} absolute rounded-xl inset-0 text-3xl z-10 flex items-center justify-center text-[#FCEDCC] font-bold`}
-        >
+          className={`${anton.className} absolute rounded-xl inset-0 text-3xl z-10 flex items-center justify-center text-[#FCEDCC] font-bold`}>
           HAMBURGUESAS
         </div>
         <img
@@ -98,18 +93,19 @@ export default function Productos() {
         />
       </div>
       <ul className="text-black flex flex-col items-center md:grid grid-cols-2 xl:grid-cols-4 gap-10 justify-center xl:place-items-center mt-10 mb-16">
-        {loading && <div className="text-center font-semibold text-2xl">Cargando...</div>}
+        {loading && (
+          <div className="text-center font-semibold text-2xl">Cargando...</div>
+        )}
         {burgers.map((burger: Burgers) => (
-          <ModalProducts  key={burger.id_burger} product={burger} />
+          <ModalProducts key={burger.id_burger} product={burger} />
         ))}
+        <ModalProducts product={product} />
       </ul>
       <div
         id="acompañamientos"
-        className="relative rounded-xl bg_promos w-full h-26 md:h-24"
-      >
+        className="relative rounded-xl bg_promos w-full h-26 md:h-24">
         <div
-          className={`${anton.className} absolute rounded-xl inset-0 text-3xl z-10 flex items-center justify-center text-[#FCEDCC] font-bold`}
-        >
+          className={`${anton.className} absolute rounded-xl inset-0 text-3xl z-10 flex items-center justify-center text-[#FCEDCC] font-bold`}>
           ACOMPAÑAMIENTOS
         </div>
         <img
@@ -119,7 +115,9 @@ export default function Productos() {
         />
       </div>
       <ul className="text-black flex flex-wrap gap-10 justify-center xl:justify-start mt-10 mb-16">
-        {loading && <div className="text-center font-semibold text-2xl">Cargando...</div>}
+        {loading && (
+          <div className="text-center font-semibold text-2xl">Cargando...</div>
+        )}
         {fries.map((fries: Burgers) => (
           <ModalFries key={fries.id_fries} product={fries} />
         ))}
@@ -129,8 +127,7 @@ export default function Productos() {
       </ul>
       <div id="bebidas" className="relative rounded-xl bg_promos w-full h-24">
         <div
-          className={`${anton.className} absolute rounded-xl inset-0 text-3xl z-10 flex items-center justify-center text-[#FCEDCC] font-bold`}
-        >
+          className={`${anton.className} absolute rounded-xl inset-0 text-3xl z-10 flex items-center justify-center text-[#FCEDCC] font-bold`}>
           BEBIDAS
         </div>
         <img
@@ -140,7 +137,9 @@ export default function Productos() {
         />
       </div>
       <ul className="text-black flex flex-wrap gap-10 justify-center xl:justify-start mt-10 mb-16">
-        {loading && <div className="text-center font-semibold text-2xl">Cargando...</div>}
+        {loading && (
+          <div className="text-center font-semibold text-2xl">Cargando...</div>
+        )}
         {drinks.map((drink: Burgers) => (
           <ModalDrinks key={drink.id_drinks} product={drink} />
         ))}

@@ -9,17 +9,20 @@ import { getBranchTokenByLocal } from "../config";
 const processedPayments = new Map<string, number>();
 
 // Limpiar pagos procesados cada 30 minutos
-setInterval(() => {
-  const now = Date.now();
-  const TTL = 30 * 60 * 1000; // 30 minutos
+setInterval(
+  () => {
+    const now = Date.now();
+    const TTL = 30 * 60 * 1000; // 30 minutos
 
-  for (const [paymentId, timestamp] of processedPayments.entries()) {
-    if (now - timestamp > TTL) {
-      processedPayments.delete(paymentId);
-      console.log(`🗑️ [Webhook] Pago procesado expirado: ${paymentId}`);
+    for (const [paymentId, timestamp] of processedPayments.entries()) {
+      if (now - timestamp > TTL) {
+        processedPayments.delete(paymentId);
+        console.log(`🗑️ [Webhook] Pago procesado expirado: ${paymentId}`);
+      }
     }
-  }
-}, 10 * 60 * 1000); // Ejecutar cada 10 minutos
+  },
+  10 * 60 * 1000,
+); // Ejecutar cada 10 minutos
 
 export async function POST(req: NextRequest) {
   try {
@@ -75,7 +78,7 @@ export async function POST(req: NextRequest) {
       // Procesar en background
       console.log("💳 [Webhook] Procesando payment:", id);
       handlePayment(id as string, MP_TOKEN, localParam).catch((err) =>
-        console.error("❌ [Webhook] Error procesando payment:", err)
+        console.error("❌ [Webhook] Error procesando payment:", err),
       );
       return response;
     }
@@ -86,7 +89,7 @@ export async function POST(req: NextRequest) {
       // La orden ya se creó en handlePayment
       console.log(
         "📦 [Webhook] merchant_order recibido (ignorado para evitar duplicados):",
-        id
+        id,
       );
       return response;
     }
@@ -105,7 +108,7 @@ async function handlePayment(paymentId: string, token: string, local: string) {
     if (processedPayments.has(paymentId)) {
       console.log(
         "⚠️ [HandlePayment] Pago ya procesado anteriormente:",
-        paymentId
+        paymentId,
       );
       return;
     }
@@ -119,14 +122,14 @@ async function handlePayment(paymentId: string, token: string, local: string) {
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-      }
+      },
     );
 
     if (!r.ok) {
       console.error(
         "❌ [HandlePayment] Error consultando MercadoPago:",
         r.status,
-        r.statusText
+        r.statusText,
       );
       return;
     }
@@ -157,16 +160,16 @@ async function handlePayment(paymentId: string, token: string, local: string) {
         console.log("🆔 [HandlePayment] Order ID detectado:", orderId);
         console.log(
           "📦 [HandlePayment] Orden completa:",
-          JSON.stringify(order, null, 2)
+          JSON.stringify(order, null, 2),
         );
       } catch (error) {
         console.error(
           "❌ [HandlePayment] Error creando orden en API externa:",
-          error
+          error,
         );
         // Continuar para guardar orden temporal con payment_id aunque falle la API
         console.log(
-          "⚠️ [HandlePayment] Continuando sin order_id de API externa"
+          "⚠️ [HandlePayment] Continuando sin order_id de API externa",
         );
       }
 
@@ -181,7 +184,7 @@ async function handlePayment(paymentId: string, token: string, local: string) {
 
         console.log(
           "💾 [HandlePayment] Guardando orden temporal:",
-          tempOrderData
+          tempOrderData,
         );
 
         const tempResponse = await fetch(
@@ -193,28 +196,28 @@ async function handlePayment(paymentId: string, token: string, local: string) {
             headers: { "Content-Type": "application/json" },
             credentials: "include",
             body: JSON.stringify(tempOrderData),
-          }
+          },
         );
 
         if (tempResponse.ok) {
           console.log(
-            "✅ [HandlePayment] Orden temporal guardada exitosamente"
+            "✅ [HandlePayment] Orden temporal guardada exitosamente",
           );
           console.log(
-            `📋 [HandlePayment] payment_id=${paymentId}, order_id=${tempOrderData.order_id}`
+            `📋 [HandlePayment] payment_id=${paymentId}, order_id=${tempOrderData.order_id}`,
           );
         } else {
           const errorText = await tempResponse.text();
           console.error(
             "❌ [HandlePayment] Error guardando orden temporal:",
             tempResponse.status,
-            errorText
+            errorText,
           );
         }
       } catch (error) {
         console.error(
           "❌ [HandlePayment] Error crítico guardando orden temporal:",
-          error
+          error,
         );
       }
 
@@ -227,7 +230,7 @@ async function handlePayment(paymentId: string, token: string, local: string) {
     } else {
       console.log(
         "❌ [HandlePayment] Payment failed or cancelled:",
-        data.status
+        data.status,
       );
     }
   } catch (e) {
@@ -238,7 +241,7 @@ async function handlePayment(paymentId: string, token: string, local: string) {
 // Función para crear orden desde el pago aprobado usando la API externa
 async function createOrderFromPayment(
   paymentData: Record<string, unknown>,
-  local: string
+  local: string,
 ) {
   try {
     console.log("🏗️ [CreateOrder] Iniciando creación de orden");
@@ -250,7 +253,7 @@ async function createOrderFromPayment(
 
     console.log(
       "📋 [CreateOrder] Metadata:",
-      JSON.stringify(metadata, null, 2)
+      JSON.stringify(metadata, null, 2),
     );
 
     // Crear orden usando el formato de tu API externa
@@ -283,20 +286,20 @@ async function createOrderFromPayment(
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(orderData),
-      }
+      },
     );
 
     console.log(
       "📥 [CreateOrder] Respuesta de API externa:",
       response.status,
-      response.statusText
+      response.statusText,
     );
 
     if (!response.ok) {
       const err = await response.text();
       console.error("❌ [CreateOrder] Error de API externa:", err);
       throw new Error(
-        `Error API externa: ${response.status} ${response.statusText} – ${err}`
+        `Error API externa: ${response.status} ${response.statusText} – ${err}`,
       );
     }
 
@@ -304,7 +307,7 @@ async function createOrderFromPayment(
     console.log("✅ [CreateOrder] Orden creada exitosamente en API externa");
     console.log(
       "📦 [CreateOrder] Respuesta:",
-      JSON.stringify(createdOrder, null, 2)
+      JSON.stringify(createdOrder, null, 2),
     );
 
     // Agregar información adicional del pago
@@ -323,9 +326,8 @@ async function createOrderFromPayment(
   } catch (error) {
     console.error(
       "❌ [CreateOrder] Error creando orden en API externa:",
-      error
+      error,
     );
     throw error;
   }
 }
-

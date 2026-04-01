@@ -19,17 +19,18 @@ export default function Cupon({
   const [coupon, setCoupon] = useState("");
 
   const submitCoupon = async () => {
+    const cuoponMayus = coupon.toUpperCase();
     const userFound = await getUserById(session?.user_id_user_client ?? "");
 
     if (products.length === 0) {
       toast.error("No hay productos en el carrito");
       return;
     }
-    if (userFound?.data[0].used_coupons?.includes(coupon)) {
+    if (userFound?.data[0].used_coupons?.includes(cuoponMayus)) {
       toast.error("Ya usaste este cupon");
       return;
     }
-    const couponFound = coupons?.find((c) => c.name === coupon);
+    const couponFound = coupons?.find((c) => c.name === cuoponMayus);
 
     if (couponFound) {
       if (

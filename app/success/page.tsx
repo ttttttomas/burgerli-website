@@ -35,6 +35,12 @@ function Content() {
         return;
       }
 
+      // Si no hay sesión, no intentar buscar order_id (no puede acceder a /order/)
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
       try {
         // Esperar un poco para que el webhook procese la orden
         await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -52,12 +58,11 @@ function Content() {
         if (data.order_id) {
           setOrderId(data.order_id);
           console.log("Order ID encontrado:", data.order_id);
-            setTimeout(() => {
-              router.push(`/order/${data.order_id}`);
-            }, 3000);
+          setTimeout(() => {
+            router.push(`/order/${data.order_id}`);
+          }, 3000);
         } else {
           console.log("Order ID no encontrado aún, reintentando...");
-          // Reintentar después de 3 segundos si no se encuentra
           setTimeout(fetchOrderId, 2000);
         }
       } catch (error) {
@@ -105,8 +110,7 @@ function Content() {
         <p className="text-gray-600">Intenta nuevamente</p>
         <button
           onClick={() => router.push("/")}
-          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/80"
-        >
+          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/80">
           Volver al inicio
         </button>
       </main>
@@ -121,8 +125,7 @@ function Content() {
         <p className="text-gray-600">Estado: {status}</p>
         <button
           onClick={() => router.push("/")}
-          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/80"
-        >
+          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/80">
           Volver al inicio
         </button>
       </main>
@@ -157,8 +160,7 @@ function Content() {
                 <>
                   <button
                     onClick={() => router.push(`/order/${orderId}`)}
-                    className="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary/80 transition-colors duration-200"
-                  >
+                    className="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary/80 transition-colors duration-200">
                     Ver detalles de mi orden
                   </button>
                   <p className="text-xs text-gray-500">
@@ -177,14 +179,12 @@ function Content() {
                   <div className="space-y-2">
                     <button
                       onClick={() => router.push("/login")}
-                      className="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary/80 transition-colors duration-200"
-                    >
+                      className="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary/80 transition-colors duration-200">
                       Iniciar sesión para ver mi orden
                     </button>
                     <button
                       onClick={() => router.push("/")}
-                      className="w-full bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-200"
-                    >
+                      className="w-full bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-200">
                       Continuar comprando
                     </button>
                   </div>

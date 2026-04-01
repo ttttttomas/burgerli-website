@@ -26,7 +26,7 @@ export default function useAuth() {
     }
   };
 
-const getCoupons = async () => {
+  const getCoupons = async () => {
     try {
       const response = await axios.get(
         "https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/coupons",
@@ -51,7 +51,6 @@ const getCoupons = async () => {
       }
     }
   };
-
 
   const getBurgers = async () => {
     try {
@@ -87,7 +86,6 @@ const getCoupons = async () => {
       }
       if (response.status === 200) {
         return response.data;
-        
       }
     } catch (error) {
       console.log(error);
@@ -178,7 +176,7 @@ const getCoupons = async () => {
   const getOrder = async (id: string) => {
     try {
       const response = await axios.get(
-        `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/orders/${id}`,
+        `https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api/getOrderById/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -215,7 +213,7 @@ const getCoupons = async () => {
         return response.data;
       }
     } catch (error) {
-      console.log(error); 
+      console.log(error);
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 400) {
           console.error("Not locals found");
@@ -223,10 +221,28 @@ const getCoupons = async () => {
           console.error(error);
         }
       } else {
-  return { getBurgers, getDrinks,getDips, getPromos, getOrder, getFries, createOrder };
+        return {
+          getBurgers,
+          getDrinks,
+          getDips,
+          getPromos,
+          getOrder,
+          getFries,
+          createOrder,
+        };
         console.error("An unexpected error occurred");
-      } 
+      }
     }
   };
-  return { getBurgers, getDrinks,getDips, getCoupons, getPromos, getOrder, getFries, createOrder, getLocals };    
+  return {
+    getBurgers,
+    getDrinks,
+    getDips,
+    getCoupons,
+    getPromos,
+    getOrder,
+    getFries,
+    createOrder,
+    getLocals,
+  };
 }

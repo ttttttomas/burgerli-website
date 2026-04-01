@@ -52,8 +52,10 @@ export default function Productos() {
     description: "Producto de prueba",
     main_image: "https://i.imgur.com/v7q9p5j.jpg",
     ingredients_list: ["Ingrediente 1", "Ingrediente 2"],
-    ingredients: ["Ingrediente 1", "Ingrediente 2"],
-    size: ["Simple", "Doble", "Triple"],
+    size_list: ["Simple", "Doble", "Triple"],
+    size: "Simple",
+    price_list: [1, 2, 3],
+    stock: 1,
   };
 
   return (

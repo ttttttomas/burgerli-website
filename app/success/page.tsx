@@ -198,11 +198,24 @@ function Content() {
           </>
         ) : (
           <>
-            <div className="animate-pulse mb-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-700">
+                💡 <strong>¿Sabías que...</strong> puedes crear una cuenta para
+                hacer seguimiento de todos tus pedidos?
+              </p>
             </div>
-            <p className="text-gray-600">Finalizando tu orden...</p>
+
+            <button
+              onClick={() => router.push("/login")}
+              className="w-full bg-primary text-white font-semibold cursor-pointer py-3 px-4 rounded-lg hover:bg-primary/80 transition-colors duration-200">
+              Iniciar sesión / Registrarse
+            </button>
+
+            <button
+              onClick={() => router.push("/")}
+              className="w-full bg-gray-200 text-gray-800 mt-5 cursor-pointer font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-200">
+              Continuar comprando
+            </button>
           </>
         )}
       </div>

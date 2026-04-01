@@ -255,13 +255,13 @@ function Content() {
 
               <button
                 onClick={() => router.push("/login")}
-                className="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary/80 transition-colors duration-200">
+                className="w-full bg-primary text-white font-semibold cursor-pointer py-3 px-4 rounded-lg hover:bg-primary/80 transition-colors duration-200">
                 Iniciar sesión / Registrarse
               </button>
 
               <button
                 onClick={() => router.push("/")}
-                className="w-full bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-200">
+                className="w-full bg-gray-200 text-gray-800 font- cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-200">
                 Continuar comprando
               </button>
             </>

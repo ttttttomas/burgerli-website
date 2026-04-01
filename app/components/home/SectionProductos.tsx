@@ -42,22 +42,6 @@ export default function Productos() {
     getProducts();
   }, []);
 
-  const product: Burgers = {
-    id_burger: "1",
-    name: "Producto de prueba",
-    price: 1,
-    fries: "Normal",
-    extras: ["Extra 1", "Extra 2"],
-    sin: ["Sin 1", "Sin 2"],
-    description: "Producto de prueba",
-    main_image: "https://i.imgur.com/v7q9p5j.jpg",
-    ingredients_list: ["Ingrediente 1", "Ingrediente 2"],
-    size_list: ["Simple", "Doble", "Triple"],
-    size: "Simple",
-    price_list: [1, 2, 3],
-    stock: 1,
-  };
-
   return (
     <section className="rounded-xl xl:w-3/4 w-full text-white">
       <div
@@ -101,7 +85,6 @@ export default function Productos() {
         {burgers.map((burger: Burgers) => (
           <ModalProducts key={burger.id_burger} product={burger} />
         ))}
-        <ModalProducts product={product} />
       </ul>
       <div
         id="acompañamientos"

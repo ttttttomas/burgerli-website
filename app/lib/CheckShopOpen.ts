@@ -28,7 +28,7 @@ const horarios: Record<number, HorariosDia> = {
   ],
   6: [
     { apertura: "12:05", cierre: "15:30" },
-    { apertura: "20:05", cierre: "23:30" },
+    { apertura: "20:05", cierre: "03:00" },
   ],
 };
 

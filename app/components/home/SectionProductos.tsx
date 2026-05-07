@@ -61,9 +61,12 @@ export default function Productos() {
         {loading && (
           <div className="text-center font-semibold text-2xl">Cargando...</div>
         )}
-        {promos.map((promo: Burgers) => (
-          <ModalPromos key={promo.id_promos} product={promo} />
-        ))}
+        {promos ?
+          promos.map((promo: Burgers) => (
+            <ModalPromos key={promo.id_promos} product={promo} />
+          )) : (
+            <div className="text-center font-semibold mx-auto text-xl">No tenemos promociones disponibles</div>
+          )}
       </ul>
       <div
         id="hamburguesas"

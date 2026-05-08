@@ -5,8 +5,7 @@ import ArrowDown from './icons/ArrowDown'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import MenuMobile from './icons/MenuMobile'
-import {useSession} from '@/app/context/SessionContext'
-
+import { useSession } from '@/app/context/SessionContext'
 
 export default function Header() {
     const { session, loading, logoutUser } = useSession()
@@ -15,10 +14,10 @@ export default function Header() {
     const pathname = usePathname()
     const router = useRouter()
 
-    const handleMobile = () => {setMobile(!mobile)}
-    const handleClick = () => {setMenu(!menu)}
-    const handleShow = () => {setMenu(false)}
-    
+    const handleMobile = () => { setMobile(!mobile) }
+    const handleClick = () => { setMenu(!menu) }
+    const handleShow = () => { setMenu(false) }
+
     const handleLogout = async () => {
         setMenu(false);
         await logoutUser();
@@ -28,28 +27,28 @@ export default function Header() {
             window.location.href = '/';
         }, 100);
     }
-    
+
     // Obtener el nombre de usuario de forma segura
     const username = session?.username || 'Usuario';
-    
 
-  return (
-        <header className="flex justify-between items-center text-md font-semibold bg-tertiary py-2 px-5">
+
+    return (
+        <header className="flex justify-between items-center text-md font-semibold bg-[#3B2B1B] text-white py-2 px-5">
             {mobile &&
-            <aside className='fixed right-0 top-0 w-full h-full z-30' onClick={() => setMobile(false)}>
-                <div className='bg-black/50 w-full h-full absolute top-0 left-0 -z-20'></div>
-                <nav className='fixed top-0 right-0 w-[250px] h-full bg-primary z-20 p-5'>
-                    <ul className='flex flex-col text-white gap-5'>
-                        <Link href="/" onClick={() => setMobile(false)}>Inicio</Link>
-                        <Link href="#hamburguesas" onClick={() => setMobile(false)}>Hamburguesas</Link>
-                        <Link href="#acompañamientos" onClick={() => setMobile(false)}>Acompañamientos</Link>
-                        <Link href="#bebidas" onClick={() => setMobile(false)}>Bebidas</Link>
-                        <Link href="#sucursales" onClick={() => setMobile(false)}>Sucursales</Link>
-                    </ul>
-                </nav>    
-            </aside>}
+                <aside className='fixed right-0 top-0 w-full h-full z-30' onClick={() => setMobile(false)}>
+                    <div className='bg-black/50 w-full h-full absolute top-0 left-0 -z-20'></div>
+                    <nav className='fixed top-0 right-0 w-[250px] h-full bg-primary z-20 p-5'>
+                        <ul className='flex flex-col text-white gap-5'>
+                            <Link href="/" onClick={() => setMobile(false)}>Inicio</Link>
+                            <Link href="#hamburguesas" onClick={() => setMobile(false)}>Hamburguesas</Link>
+                            <Link href="#acompañamientos" onClick={() => setMobile(false)}>Acompañamientos</Link>
+                            <Link href="#bebidas" onClick={() => setMobile(false)}>Bebidas</Link>
+                            <Link href="#sucursales" onClick={() => setMobile(false)}>Sucursales</Link>
+                        </ul>
+                    </nav>
+                </aside>}
             <Link href='/'>
-            <Logo width={70}/>
+                <Logo width={70} />
             </Link>
             <section className="flex gap-10 items-center">
                 {pathname === '/' && <ul className="flex gap-10">
@@ -65,16 +64,16 @@ export default function Header() {
                         <p className='text-sm hidden md:block'>Cargando...</p>
                     </div>
                 )}
-                
+
                 {/* Mostrar menú de usuario si hay sesión */}
                 {!loading && session && (
                     <section className="relative">
                         <div className="flex gap-3 md:gap-5 items-center">
-                            <Logo width={40}/>
+                            <Logo width={40} />
                             <span className="hidden md:block font-medium">{username}</span>
                             <span className="md:hidden font-medium text-sm truncate max-w-[100px]">{username}</span>
-                            <button 
-                                onClick={handleClick} 
+                            <button
+                                onClick={handleClick}
                                 className={`transition-transform duration-300 cursor-pointer ${menu ? 'rotate-180' : ''}`}
                                 aria-label="Abrir menú de usuario"
                             >
@@ -83,13 +82,13 @@ export default function Header() {
                         </div>
                     </section>
                 )}
-                
+
                 {/* Mostrar botón de login si no hay sesión */}
                 {!loading && !session && (
                     <section>
-                        <Link 
-                            href='/login' 
-                            className='bg-yellow-200 cursor-pointer px-4 md:px-6 py-2 md:py-[8px] shadow-gray-700 shadow-md rounded-xl font-semibold text-sm md:text-base hover:bg-yellow-300 transition-colors'
+                        <Link
+                            href='/login'
+                            className='bg-[#D4952E] text-[#3B2B1B] cursor-pointer px-4 md:px-6 py-2 md:py-[8px] shadow-black/30 shadow-md rounded-xl font-semibold text-sm md:text-base hover:bg-yellow-300 transition-colors'
                         >
                             Iniciar sesión
                         </Link>
@@ -107,8 +106,8 @@ export default function Header() {
                                 Mis favoritos
                         </li> */}
                         <li className="w-full">
-                            <Link 
-                                onClick={handleShow} 
+                            <Link
+                                onClick={handleShow}
                                 href="/myaccount/order-history"
                                 className="block py-2 px-2 hover:bg-amber-900 rounded transition-colors"
                             >
@@ -116,8 +115,8 @@ export default function Header() {
                             </Link>
                         </li>
                         <li className="w-full">
-                            <Link 
-                                onClick={handleShow} 
+                            <Link
+                                onClick={handleShow}
                                 href={`/myaccount/personal-information/${session.user_id_user_client}`}
                                 className="block py-2 px-2 hover:bg-amber-900 rounded transition-colors"
                             >
@@ -125,8 +124,8 @@ export default function Header() {
                             </Link>
                         </li>
                         <li className="w-full border-t border-amber-800 mt-2 pt-2">
-                            <button 
-                                onClick={handleLogout} 
+                            <button
+                                onClick={handleLogout}
                                 className='w-full text-left py-2 px-2 hover:bg-red-900 rounded transition-colors text-red-200 hover:text-white'
                             >
                                 Cerrar sesión

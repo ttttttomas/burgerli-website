@@ -1,37 +1,62 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary: #442915;
-    --color-secondary: #FFE936;
-    --color-tertiary: #EA951B;
-  }
-html{
+  --color-primary: #442915;
+  --color-secondary: #FFE936;
+  --color-tertiary: #EA951B;
+}
+
+html {
   scroll-behavior: smooth;
 }
 
-.cart{
+.map-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 550px;
+  /* alto deseado */
+}
+
+.map-wrapper iframe {
+  position: absolute;
+  top: -70px;
+  /* empuja el header para arriba y lo oculta */
+  height: calc(100% + 70px);
+  width: 100%;
+  border: none;
+}
+
+.cart {
   background-image: url("/bg-cart.png");
   background-size: contain;
   background-repeat: no-repeat;
 }
 
-.login{
+.login {
   background-image: url("/bg-cart.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
-  
-.footer{
+
+.footer {
   background-image: url("/bg-footer.png");
   background-size: contain;
   background-repeat: no-repeat;
 }
 
 @keyframes pulseScale {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .current-step {

@@ -131,7 +131,7 @@ const ModalProducts = ({ product }, stock) => {
       {/* Modal */}
       {selectedProduct && (
         <section
-          className="fixed rounded-4xl inset-0 h-screen z-50 flex items-center justify-center p-4 modal-overlay"
+          className="fixed rounded-4xl inset-0  h-screen z-50 flex items-center justify-center p-4 modal-overlay"
           style={{ touchAction: "none" }}>
           <div
             className="rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"

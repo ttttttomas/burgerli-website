@@ -76,7 +76,7 @@ export default function RootLayout({
       </head>
       <SessionContextProvider>
         <CartContextProvider>
-          <body className={`${roboto.className} bg-[#FCEDCC] antialiased`}>
+          <body className={`${roboto.className} bg-[#ECDDCA] antialiased`}>
             <noscript>
               <iframe
                 src="https://www.googletagmanager.com/ns.html?id=GTM-MXTKF82B"

@@ -1,4 +1,4 @@
-.bg_promos::after{
+.bg_promos::after {
     content: "";
     position: absolute;
     border-radius: 12px;
@@ -7,5 +7,6 @@
     width: 100%;
     height: 100%;
     background-color: black;
-    opacity: 0.65; /* Ajusta este valor para más o menos sombra */  
+    opacity: 0.6;
+    /* Ajusta este valor para más o menos sombra */
 }

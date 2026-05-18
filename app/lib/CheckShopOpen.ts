@@ -1,38 +1,35 @@
-type RangoHorario = { apertura: string; cierre: string };
-type HorariosDia = RangoHorario[] | null; // null = cerrado
-
-const horarios: Record<number, HorariosDia> = {
-  0: [
-    { apertura: "12:05", cierre: "03:30" },
-    { apertura: "20:05", cierre: "23:30" },
-  ],
-  1: [
-    { apertura: "12:05", cierre: "15:30" },
-    { apertura: "20:05", cierre: "23:30" },
-  ],
-  2: [
-    { apertura: "12:05", cierre: "15:30" },
-    { apertura: "20:05", cierre: "23:30" },
-  ],
-  3: [
-    { apertura: "12:05", cierre: "15:30" },
-    { apertura: "20:05", cierre: "23:30" },
-  ],
-  4: [
-    { apertura: "12:05", cierre: "15:30" },
-    { apertura: "20:05", cierre: "23:30" },
-  ],
-  5: [
-    { apertura: "12:05", cierre: "15:30" },
-    { apertura: "20:05", cierre: "03:00" },
-  ],
-  6: [
-    { apertura: "12:05", cierre: "03:30" },
-    { apertura: "20:05", cierre: "03:00" },
-  ],
+type RangoHorario = {
+  apertura: string;
+  cierre: string;
 };
 
-function estaDentroDeRango(ahora: Date, rango: RangoHorario, baseDate: Date = ahora): boolean {
+type HorariosDia = RangoHorario[] | null;
+
+type HorariosPorDia = Record<number, HorariosDia>;
+
+type LocalResponse = {
+  id: string;
+  name: string;
+  is_open: number;
+  opening_hours: string;
+};
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://burgerli.com.ar/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Burgerli/api';
+
+
+function parseHorarios(openingHours: string): HorariosPorDia {
+  try {
+    return JSON.parse(openingHours) as HorariosPorDia;
+  } catch {
+    return {};
+  }
+}
+
+function estaDentroDeRango(
+  ahora: Date,
+  rango: RangoHorario,
+  baseDate: Date = ahora
+): boolean {
   const [hA, mA] = rango.apertura.split(":").map(Number);
   const [hC, mC] = rango.cierre.split(":").map(Number);
 
@@ -42,7 +39,9 @@ function estaDentroDeRango(ahora: Date, rango: RangoHorario, baseDate: Date = ah
   const cierre = new Date(baseDate);
   cierre.setHours(hC, mC, 0, 0);
 
-  // Si cierra "antes" que abre, cruza medianoche
+  // Si el cierre es menor o igual a la apertura,
+  // significa que el rango cruza medianoche.
+  // Ej: 20:00 a 03:00
   if (cierre <= apertura) {
     cierre.setDate(cierre.getDate() + 1);
   }
@@ -50,32 +49,80 @@ function estaDentroDeRango(ahora: Date, rango: RangoHorario, baseDate: Date = ah
   return ahora >= apertura && ahora <= cierre;
 }
 
-const checkIsOpen = (): boolean => {
+function checkIsOpenByHorarios(horarios: HorariosPorDia): boolean {
   const ahora = new Date();
-  const dia = ahora.getDay(); // 0=Domingo, 6=Sábado
-  const rangos = horarios[dia] ?? [];
+  const dia = ahora.getDay(); // 0 = Domingo, 6 = Sábado
 
-  if (rangos.length > 0 && rangos.some((r) => estaDentroDeRango(ahora, r))) {
+  const rangosHoy = horarios[dia] ?? [];
+
+  if (
+    rangosHoy.length > 0 &&
+    rangosHoy.some((rango) => estaDentroDeRango(ahora, rango))
+  ) {
     return true;
   }
 
+  // Revisa el día anterior por si el horario cruzó medianoche.
+  // Ej: sábado 20:00 a domingo 03:00
   const diaAnterior = dia === 0 ? 6 : dia - 1;
-  const rangosAnterior = horarios[diaAnterior] ?? [];
+  const rangosAyer = horarios[diaAnterior] ?? [];
 
-  return rangosAnterior.some((r) => {
-    const [hA, mA] = r.apertura.split(":").map(Number);
-    const [hC, mC] = r.cierre.split(":").map(Number);
+  return rangosAyer.some((rango) => {
+    const [hA, mA] = rango.apertura.split(":").map(Number);
+    const [hC, mC] = rango.cierre.split(":").map(Number);
+
     const apertura = new Date(ahora);
     apertura.setHours(hA, mA, 0, 0);
+
     const cierre = new Date(ahora);
     cierre.setHours(hC, mC, 0, 0);
 
-    if (cierre <= apertura) {
-      return estaDentroDeRango(ahora, r, new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() - 1));
+    const cruzaMedianoche = cierre <= apertura;
+
+    if (!cruzaMedianoche) {
+      return false;
     }
 
-    return false;
-  });
-};
+    const ayer = new Date(
+      ahora.getFullYear(),
+      ahora.getMonth(),
+      ahora.getDate() - 1
+    );
 
-export default checkIsOpen;
+    return estaDentroDeRango(ahora, rango, ayer);
+  });
+}
+
+async function getLocalByName(localName: string): Promise<LocalResponse | null> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/getLocal/${encodeURIComponent(localName)}`
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return (await response.json()) as LocalResponse;
+  } catch {
+    return null;
+  }
+}
+
+export async function checkShopIsOpen(localName: string): Promise<boolean> {
+  const local = await getLocalByName(localName);
+
+  if (!local) {
+    return false;
+  }
+
+  if (local.is_open !== 1) {
+    return false;
+  }
+
+  const horarios = parseHorarios(local.opening_hours);
+
+  return checkIsOpenByHorarios(horarios);
+}
+
+export default checkShopIsOpen;

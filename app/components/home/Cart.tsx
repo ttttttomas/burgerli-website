@@ -12,7 +12,7 @@ import { useCart } from "@/app/context/CartContext";
 import { CartProduct, Coupons } from "@/types";
 
 import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
-import checkIsOpen from "@/app/lib/CheckShopOpen";
+import checkIsOpen, { checkShopIsOpen } from "@/app/lib/CheckShopOpen";
 import { useSession } from "@/app/context/SessionContext";
 import { toast } from "sonner";
 import useProducts from "@/app/hooks/useProducts";
@@ -177,8 +177,8 @@ export default function Cart() {
       return;
     }
 
-    if (!checkIsOpen()) {
-      toast.error("El tiempo de apertura de la tienda no es válido");
+    if (!(await checkShopIsOpen(sucursal))) {
+      toast.error("El tiempo de apertura de la tienda no es valido");
       return;
     }
 
@@ -295,11 +295,10 @@ export default function Cart() {
                 setIsDeliveryChecked(true);
                 setIsTakeAwayChecked(false);
               }}
-              className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
-                mode === "delivery"
+              className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${mode === "delivery"
                   ? "bg-white border-white text-black"
                   : "bg-transparent border-white text-white hover:bg-white/10"
-              }`}>
+                }`}>
               <span className="text-lg font-bold">Delivery</span>
               <Moto
                 className={`w-8 h-8 ${mode === "delivery" ? "text-black" : "text-white"}`}
@@ -311,11 +310,10 @@ export default function Cart() {
                 setIsDeliveryChecked(false);
                 setIsTakeAwayChecked(true);
               }}
-              className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${
-                mode === "pickup"
+              className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${mode === "pickup"
                   ? "bg-white border-white text-black"
                   : "bg-transparent border-white text-white hover:bg-white/10"
-              }`}>
+                }`}>
               <div className="text-center">
                 <span className="text-lg font-bold block leading-tight">
                   Retiro en

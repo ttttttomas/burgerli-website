@@ -67,7 +67,7 @@ export default function Card({ product, onClick }: CardProps) {
           <img
             src={product.main_image}
             alt="Foto Burger"
-            className={`h-60 w-full object-cover rounded-t-[50px] rounded-br-[100px] rounded-bl-[50px] ${isOutOfStock ? 'grayscale' : ''}`}
+            className={`h-60 w-full object-cover rounded-t-[50px] rounded-br-[150px] rounded-bl-[50px] ${isOutOfStock ? 'grayscale' : ''}`}
           />
           <div
             className={`
@@ -113,7 +113,7 @@ p-3
           <img
             src={product.main_image}
             alt="Foto Burger"
-            className={`h-60 w-full object-cover rounded-t-[50px] rounded-br-[100px] rounded-bl-[50px] ${isOutOfStock ? 'grayscale' : ''}`}
+            className={`h-60 w-full object-cover rounded-t-[50px] rounded-br-[150px] rounded-bl-[50px] ${isOutOfStock ? 'grayscale' : ''}`}
           />
           <div
             className={`
@@ -166,7 +166,7 @@ p-3
           <img
             src={product.main_image}
             alt="Foto Burger"
-            className={`h-60 w-full object-cover rounded-t-[50px] rounded-br-[100px] rounded-bl-[50px] ${isOutOfStock ? 'grayscale' : ''}`}
+            className={`h-60 w-full object-cover rounded-t-[50px] rounded-br-[150px] rounded-bl-[50px] ${isOutOfStock ? 'grayscale' : ''}`}
           />
           <div
             className={`
@@ -262,7 +262,7 @@ p-3
           <img
             src={product.image}
             alt="Foto Burger"
-            className={`h-60 w-full object-cover rounded-t-[50px] rounded-br-[100px] rounded-bl-[50px] ${isOutOfStock ? 'grayscale' : ''}`}
+            className={`h-60 w-full object-cover rounded-t-[50px] rounded-br-[150px] rounded-bl-[50px] ${isOutOfStock ? 'grayscale' : ''}`}
           />
           <div
             className={`

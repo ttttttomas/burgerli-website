@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 
 import { saveCheckoutDraft } from "@/app/lib/checkoutStorage";
 import { toast } from "sonner";
-import checkIsOpen from "../lib/CheckShopOpen";
+import checkIsOpen, { checkShopIsOpen } from "../lib/CheckShopOpen";
 import { useSession } from "../context/SessionContext";
 import useProducts from "@/app/hooks/useProducts";
 
@@ -197,8 +197,8 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
       return;
     }
 
-    if (!checkIsOpen()) {
-      toast.error("El tiempo de apertura de la tienda no es válido");
+    if (!(await checkShopIsOpen(sucursal))) {
+      toast.error("El tiempo de apertura de la tienda no es valido");
       return;
     }
 
@@ -492,17 +492,15 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
                     addresses.map((address) => (
                       <label
                         key={address}
-                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
-                          selectedAddress === address
+                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedAddress === address
                             ? "bg-tertiary/15 border border-tertiary/30"
                             : "bg-white/5 border border-white/10"
-                        }`}>
+                          }`}>
                         <div
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                            selectedAddress === address
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${selectedAddress === address
                               ? "border-tertiary bg-tertiary"
                               : "border-white/30"
-                          }`}>
+                            }`}>
                           {selectedAddress === address && (
                             <div className="w-2 h-2 rounded-full bg-white" />
                           )}

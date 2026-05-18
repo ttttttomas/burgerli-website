@@ -178,7 +178,7 @@ export default function Cart() {
     }
 
     if (!(await checkShopIsOpen(sucursal))) {
-      toast.error("El tiempo de apertura de la tienda no es valido");
+      toast.error(`El tiempo de apertura de la tienda de ${sucursal.charAt(0).toUpperCase() + sucursal.slice(1)} no es valido`);
       return;
     }
 
@@ -296,8 +296,8 @@ export default function Cart() {
                 setIsTakeAwayChecked(false);
               }}
               className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${mode === "delivery"
-                  ? "bg-white border-white text-black"
-                  : "bg-transparent border-white text-white hover:bg-white/10"
+                ? "bg-white border-white text-black"
+                : "bg-transparent border-white text-white hover:bg-white/10"
                 }`}>
               <span className="text-lg font-bold">Delivery</span>
               <Moto
@@ -311,8 +311,8 @@ export default function Cart() {
                 setIsTakeAwayChecked(true);
               }}
               className={`flex-1 flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${mode === "pickup"
-                  ? "bg-white border-white text-black"
-                  : "bg-transparent border-white text-white hover:bg-white/10"
+                ? "bg-white border-white text-black"
+                : "bg-transparent border-white text-white hover:bg-white/10"
                 }`}>
               <div className="text-center">
                 <span className="text-lg font-bold block leading-tight">

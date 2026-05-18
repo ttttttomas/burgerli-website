@@ -198,7 +198,7 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
     }
 
     if (!(await checkShopIsOpen(sucursal))) {
-      toast.error("El tiempo de apertura de la tienda no es valido");
+      toast.error(`El tiempo de apertura de la tienda de ${sucursal.charAt(0).toUpperCase() + sucursal.slice(1)} no es valido`);
       return;
     }
 
@@ -493,13 +493,13 @@ export default function CartResponsive({ closed }: { closed: () => void }) {
                       <label
                         key={address}
                         className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${selectedAddress === address
-                            ? "bg-tertiary/15 border border-tertiary/30"
-                            : "bg-white/5 border border-white/10"
+                          ? "bg-tertiary/15 border border-tertiary/30"
+                          : "bg-white/5 border border-white/10"
                           }`}>
                         <div
                           className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${selectedAddress === address
-                              ? "border-tertiary bg-tertiary"
-                              : "border-white/30"
+                            ? "border-tertiary bg-tertiary"
+                            : "border-white/30"
                             }`}>
                           {selectedAddress === address && (
                             <div className="w-2 h-2 rounded-full bg-white" />

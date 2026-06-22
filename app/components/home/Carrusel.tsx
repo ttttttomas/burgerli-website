@@ -2,7 +2,7 @@ export default function Carrusel() {
   return (
     <section>
       <picture>
-        <source media="(max-width: 768px)" srcSet="/Smarttv.png" />
+        <source media="(max-width: 768px)" srcSet="/lacuarta.png" />
         <source media="(min-width: 769px)" srcSet="/banner.jpg" />
         <img src="/banner.jpg" className="w-full" alt="Carrusel" />
       </picture>
